@@ -23,7 +23,7 @@ namespace Rector.UI
         readonly Subject<Unit> toggleMute = new();
         readonly Subject<Unit> system = new();
         readonly Subject<Unit> scene = new();
-        readonly Subject<Unit> resetGraphPositiion = new();
+        readonly Subject<Unit> resetGraphPosition = new();
 
         public Observable<Vector2> Navigate => navigate;
         public Observable<Unit> Submit => submit;
@@ -40,7 +40,7 @@ namespace Rector.UI
         public Observable<Unit> ToggleMute => toggleMute;
         public Observable<Unit> System => system;
         public Observable<Unit> Scene => scene;
-        public Observable<Unit> ResetGraphPosition => resetGraphPositiion;
+        public Observable<Unit> ResetGraphPosition => resetGraphPosition;
         public float ZoomValue => rectorInput.UI.Zoom.ReadValue<float>();
         public Vector2 TranslateValue => rectorInput.UI.Translate.ReadValue<Vector2>();
         public Vector2 NavigateValue => rectorInput.UI.Navigate.ReadValue<Vector2>();
@@ -215,6 +215,6 @@ namespace Rector.UI
         void OnMute(InputAction.CallbackContext ctx) => toggleMute.OnNext(Unit.Default);
         void OnMenu(InputAction.CallbackContext ctx) => system.OnNext(Unit.Default);
         void OnScene(InputAction.CallbackContext ctx) => scene.OnNext(Unit.Default);
-        void OnResetGraphPosition(InputAction.CallbackContext ctx) => resetGraphPositiion.OnNext(Unit.Default);
+        void OnResetGraphPosition(InputAction.CallbackContext ctx) => resetGraphPosition.OnNext(Unit.Default);
     }
 }
