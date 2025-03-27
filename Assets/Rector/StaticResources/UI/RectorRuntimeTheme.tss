@@ -1,4 +1,9 @@
 @import url("/Assets/UI Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss");
 
-@import url("RectorStyles.uss");
+@import url("StyleSheets/RectorCommon.uss");
+@import url("StyleSheets/RectorStyles.uss");
+@import url("StyleSheets/RectorNode.uss");
+@import url("StyleSheets/RectorNodeParameter.uss");
+
+
 

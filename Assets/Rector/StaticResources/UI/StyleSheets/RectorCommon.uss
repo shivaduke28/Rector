@@ -1,0 +1,93 @@
+:root {
+    -unity-font-definition: url("project://database/Assets/Rector/StaticResources/FontAssets/JetBrains_Mono/JetBrainsMono-Thin_SDF.asset?fileID=11400000&guid=b6a176f6b663ba14daeae5b096a8c812&type=2#JetBrainsMono-Thin_SDF");
+    --rector-highlighted: rgba(0, 100, 150, 0.2);
+    --rector-text-color: rgba(255, 255, 255, 0.5);
+    --rector-border-color: rgba(255, 255, 255, 0.1);
+    --rector-text-background-color: rgba(0, 0, 0, 0.2);
+    --rector-frame-dark: rgba(0, 0, 0, 0.1);
+    color: var(--rector-text-color);
+}
+
+.rector-button {
+    flex-direction: row;
+    justify-content: center;
+    border-width: 1px;
+}
+
+.rector-button--focused {
+    border-color: var(--rector-border-color);
+}
+
+.rector-button--highlighted {
+    background-color: var(--rector-highlighted);
+}
+
+.rector-button > Button {
+    color: var(--rector-text-color);
+    background-color: var(--rector-text-background-color);
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    flex-grow: 1;
+}
+
+.rector-button--focused > Button {
+    background-color: black;
+}
+
+.rector-label {
+    color: var(--rector-text-color);
+    background-color: var(--rector-text-background-color);
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+.rector-slider {
+    flex-grow: 1;
+}
+
+.rector-slider #unity-drag-container > #unity-dragger {
+    border-width: 0;
+    width: 2px;
+    height: 18px;
+    margin-top: -9px;
+    background-color: var(--rector-text-color);
+}
+
+.rector-slider #unity-drag-container > #unity-tracker {
+    border-width: 0;
+    background-color: var(--rector-border-color);
+    height: 1px;
+    margin-top: 0;
+}
+
+.rector-toggle {
+    background-color: var(--rector-text-background-color);
+    flex-direction: row;
+    justify-content: center;
+    width: 60px;
+    padding: 2px 4px;
+}
+
+.rector-toggle > Toggle {
+    border-width: 0;
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.rector-toggle > .unity-toggle > .unity-toggle__input > .unity-toggle__checkmark {
+    background-color: var(--rector-border-color);
+    border-width: 0;
+    margin: 0;
+    width: 40%;
+    height: 18px;
+}
+
+.rector-toggle > .unity-toggle > .unity-toggle__input:checked > .unity-toggle__checkmark {
+    background-color: var(--rector-text-color);
+    background-image: none;
+    margin-left: 60%;
+}

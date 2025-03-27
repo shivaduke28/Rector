@@ -1,0 +1,215 @@
+.rector-hud-header {
+    height: 140px;
+    padding: 40px 54px 20px 54px;
+    flex-direction: row;
+    margin-bottom: 0;
+    align-items: flex-end;
+    background-color: var(--rector-frame-dark);
+}
+
+.rector-hud-body {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.rector-hud-footer {
+    height: 168px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 24px 54px 16px 54px;
+    background-color: var(--rector-frame-dark);
+}
+
+.rector-hud-content-side-left {
+    width: 54px;
+    height: 100%;
+    background-color: var(--rector-frame-dark);
+}
+
+.rector-hud-content-side-right {
+    width: 54px;
+    height: 100%;
+    background-color: var(--rector-frame-dark);
+}
+
+.rector-hud-body-content-internal {
+    flex-grow: 1;
+    border-width: 1px;
+    border-color: var(--rector-border-color);
+}
+
+.rector-hud-logo {
+    margin: 0 0 -10px;
+    padding: 0;
+    background-image: url("project://database/Assets/Rector/StaticResources/Textures/RectorLogoTransparent.png?fileID=2800000&guid=09a80c6ddb98f4849b4b74cccbf89cd3&type=3#RectorLogoTransparent");
+    width: 100px;
+    height: 100px;
+    -unity-background-image-tint-color: var(--rector-text-color);
+}
+
+.rector-hud-version-label {
+    -unity-text-align: lower-left;
+    margin-left: 12px;
+    margin-bottom: -5px;
+}
+
+.rector-waveform-container {
+    height: 100%;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.rector-hud-spectrum {
+    width: 360px;
+    height: 100%;
+    background-image: url("project://database/Assets/Rector/StaticResources/Materials/Spectrum.asset?fileID=8600000&guid=2945b991fdd29442782ebf8571ff5f05&type=2#Spectrum");
+    border-width: 1px;
+    border-color: var(--rector-border-color);
+    align-items: flex-start;
+}
+
+.rector-hud-waveform {
+    width: 360px;
+    height: 100%;
+    background-image: url("project://database/Assets/Rector/StaticResources/Materials/Waveform.asset?fileID=8600000&guid=1498d7bcad6264347b4f0099c060eec0&type=2#Waveform");
+    margin-right: 35px;
+    border-width: 1px;
+    border-color: var(--rector-border-color);
+    align-items: flex-start;
+}
+
+.rector-stats {
+    width: 220px;
+    height: 100%;
+    margin-left: 24px;
+    align-items: flex-start;
+}
+
+.rector-stats-header-label {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.rector-stats-title-label {
+    flex-grow: 0;
+    -unity-text-align: middle-left;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.rector-stats-label-container {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.rector-stats-label {
+    font-size: 14px;
+}
+
+.rector-console {
+    width: 540px;
+    height: 100%;
+    align-items: flex-start;
+    margin-left: 30px;
+}
+
+.rector-console-mask {
+    height: 100%;
+    width: 100%;
+    align-items: flex-start;
+    overflow: hidden;
+    margin-left: 5px;
+}
+
+.rector-console-content {
+    align-items: flex-start;
+}
+
+.rector-console-log-label {
+    -unity-text-align: middle-left;
+    font-size: 10px;
+}
+
+.rector-page {
+    position: absolute;
+    flex-grow: 1;
+}
+
+.rector-button-list {
+    align-items: flex-start;
+    margin-left: 100px;
+    margin-top: 100px;
+}
+
+.rector-graph-page {
+    position: absolute;
+    flex-grow: 1;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    align-items: flex-start;
+}
+
+.rector-graph-mask {
+    overflow: hidden;
+    flex-shrink: 1;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.rector-graph-content {
+    width: 3000px;
+    height: 3000px;
+    position: absolute;
+}
+
+.rector-graph-content-animation {
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+}
+
+.rector-node-root {
+    position: absolute;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.rector-node-detail {
+    width: 360px;
+    flex-direction: column;
+    margin-top: 40px;
+    margin-bottom: 0;
+    padding: 20px;
+}
+
+.rector-node-detail-name-label-container {
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.rector-create-node-menu {
+    position: absolute;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: flex-start;
+    translate: 60px 30px;
+}
+
+.rector-create-node-menu-list {
+    align-items: flex-start;
+    margin-right: 4px;
+}
+
+.rector-create-node-menu-list > .rector-button > Button {
+    background-color: rgba(20, 20, 20, 0.7);
+    font-size: 12px;
+}
+
+.rector-create-node-menu-list > .rector-button--focused > Button {
+    background-color: black;
+}

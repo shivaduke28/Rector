@@ -1,16 +1,14 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Rector/StaticResources/UI/RectorStyles.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#RectorStyles" />
+    <Style src="project://database/Assets/Rector/StaticResources/UI/StyleSheets/RectorCommon.uss?fileID=7433441132597879392&amp;guid=7e18d0e458dc4fa0884ab502b69d9cc2&amp;type=3" />
+    <Style src="project://database/Assets/Rector/StaticResources/UI/StyleSheets/RectorStyles.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#RectorStyles" />
     <engine:VisualElement name="header" class="rector-hud-header">
-        <engine:VisualElement class="rector-logo" />
+        <engine:VisualElement class="rector-hud-logo" />
         <engine:Label text="Rector App ver.0.1.0" name="version-label" class="rector-label rector-hud-version-label" />
     </engine:VisualElement>
     <engine:VisualElement name="body" class="rector-hud-body">
         <engine:VisualElement name="side-left" class="rector-hud-content-side-left" />
-        <engine:VisualElement class="rector-hud-body-content-internal" style="flex-grow: 1;">
+        <engine:VisualElement class="rector-hud-body-content-internal">
             <engine:VisualElement name="graph-page" class="rector-graph-page rector-page">
-                <engine:VisualElement name="audio" class="rector-left-sidebar">
-                    <engine:Label text="Audio" name="name-label" class="rector-label" />
-                </engine:VisualElement>
                 <engine:VisualElement name="graph-mask" class="rector-graph-mask">
                     <engine:VisualElement name="graph-content" class="rector-graph-content rector-graph-content-animation">
                         <engine:VisualElement name="edge-root" class="rector-node-root" />
@@ -21,7 +19,7 @@
                         </engine:VisualElement>
                     </engine:VisualElement>
                 </engine:VisualElement>
-                <engine:VisualElement name="node-detail" class="rector-right-sidebar">
+                <engine:VisualElement name="node-detail" class="rector-node-detail">
                     <engine:VisualElement name="name-label-container" class="rector-node-detail-name-label-container">
                         <engine:Label text="Arrow Fish" name="name-label" class="rector-label" />
                     </engine:VisualElement>
@@ -29,22 +27,22 @@
                 </engine:VisualElement>
             </engine:VisualElement>
             <engine:VisualElement name="scene-page" class="rector-page">
-                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+                <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
             <engine:VisualElement name="system-page" class="rector-page">
-                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+                <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
             <engine:VisualElement name="audio-input-device-page" class="rector-page">
-                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+                <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
             <engine:VisualElement name="display-settings-page" class="rector-page">
-                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+                <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="side-right" class="rector-hud-content-side-right" />
     </engine:VisualElement>
     <engine:VisualElement name="footer" class="rector-hud-footer">
-        <engine:VisualElement style="height: 100%; flex-direction: row; flex-grow: 1;">
+        <engine:VisualElement class="rector-waveform-container">
             <engine:VisualElement class="rector-hud-waveform">
                 <engine:Label text="Waveform" class="rector-label rector-stats-header-label" />
             </engine:VisualElement>
@@ -94,9 +92,9 @@
                 <engine:Label text="1000.0MB" name="total-memory-label" class="rector-label rector-stats-label" />
             </engine:VisualElement>
         </engine:VisualElement>
-        <engine:VisualElement class="rector-console">
+        <engine:VisualElement name="console" class="rector-console">
             <engine:Label text="Console" class="rector-label rector-stats-header-label" />
-            <engine:VisualElement name="console" class="rector-console-mask">
+            <engine:VisualElement class="rector-console-mask">
                 <engine:VisualElement name="console-content" class="rector-console-content" />
             </engine:VisualElement>
         </engine:VisualElement>

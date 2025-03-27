@@ -1,0 +1,125 @@
+.rector-node {
+    border-width: 1px;
+    background-color: rgba(0, 0, 0, 0);
+    position: absolute;
+    flex-shrink: 0;
+    transition-property: translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+    translate: 60px 30px;
+}
+
+.rector-node-name-label {
+    font-size: 12px;
+}
+
+.rector-node--selected {
+    border-color: var(--rector-border-color);
+}
+
+.rector-node--selected > .rector-node-name-label {
+    background-color: black;
+}
+
+.rector-node-slot-list {
+    height: 2px;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-right: -5px;
+    margin-left: -5px;
+}
+
+.rector-node-input-slot-list {
+    margin-top: -1px;
+}
+
+.rector-node-output-slot-list {
+    margin-bottom: -1px;
+}
+
+.rector-node-slot {
+    width: 7px;
+    height: 2px;
+    margin-left: 4px;
+    margin-right: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.rector-node-input-slot {
+    flex-direction: column-reverse;
+}
+
+.rector-node-slot-name-label {
+    font-size: 10px;
+    padding: 0 2px;
+    margin-left: 4px;
+    display: none;
+    position: absolute;
+    background-color: black;
+}
+
+.rector-node-input-slot-name-label {
+    -unity-text-align: lower-left;
+    bottom: 3px;
+}
+
+.rector-node-output-slot-name-label {
+    -unity-text-align: upper-left;
+    top: 3px;
+}
+
+.rector-node-slot--active {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.rector-node-slot--selected {
+    background-color: white;
+}
+
+.rector-node-slot--selected > .rector-node-slot-name-label {
+    display: flex;
+}
+
+.rector-node-mute {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    flex-grow: 1;
+    flex-shrink: 0;
+    width: 100%;
+    top: 50%;
+    color: rgba(255, 255, 255, 0.39);
+    display: none;
+}
+
+.rector-node--muted > .rector-node-mute {
+    display: flex;
+}
+
+.rector-hold-guide {
+    position: absolute;
+    flex-shrink: 0;
+    background-color: rgba(0, 0, 0, 0);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.rector-hold-guide__fill {
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    height: 0;
+    width: 0;
+}
+
+.rector-hold-guide__fill--filled {
+    height: 100%;
+    width: 100%;
+    transition-property: height, width;
+    transition-duration: 0.5s;
+    transition-timing-function: linear;
+}

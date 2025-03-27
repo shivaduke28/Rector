@@ -1,0 +1,69 @@
+.rector-right-sidebar {
+    width: 360px;
+    flex-direction: column;
+    margin-top: 40px;
+    margin-bottom: 0;
+    padding: 20px;
+}
+
+.rector-node-detail-name-label-container {
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.rector-exposed-input {
+    flex-direction: row;
+    border-width: 1px;
+    justify-content: space-between;
+}
+
+.rector-exposed-name-label-container {
+    flex-direction: row;
+    align-items: center;
+    width: 100px;
+    margin-right: 8px;
+}
+
+.rector-exposed-name-label {
+    font-size: 14px;
+}
+
+.rector-exposed-value-label-container {
+    flex-direction: row;
+    width: 60px;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: 8px;
+}
+
+.rector-exposed-step-label-container {
+    flex-direction: row;
+    width: 38px;
+    align-items: flex-end;
+}
+
+.rector-exposed-step-label {
+    font-size: 14px;
+    visibility: hidden;
+}
+
+.rector-exposed-input--focused {
+    border-color: var(--rector-border-color);
+}
+
+.rector-exposed-input--focused > .rector-exposed-step-label-container > .rector-exposed-step-label {
+    visibility: visible;
+}
+
+.rector-exposed-input--focused .rector-label {
+    background-color: black;
+}
+
+.rector-exposed-value-label {
+    font-size: 14px;
+}
+
+.rector-exposed-toggle-container {
+    flex-direction: row-reverse;
+    flex-grow: 1;
+}
