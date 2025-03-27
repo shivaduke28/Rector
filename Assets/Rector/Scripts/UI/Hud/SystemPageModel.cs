@@ -12,6 +12,7 @@ namespace Rector.UI.Hud
 
         readonly AudioInputDevicePageModel audioInputDevicePageModel;
         readonly DisplaySettingsPageModel displaySettingsPageModel;
+        readonly CopyrightNoticesPageModel copyrightNoticesPageModel;
         readonly ButtonListPageView view;
         Action onExit;
         IDisposable disposable;
@@ -19,15 +20,19 @@ namespace Rector.UI.Hud
         public SystemPageModel(
             AudioInputDevicePageModel audioInputDevicePageModel,
             DisplaySettingsPageModel displaySettingsPageModel,
-            ButtonListPageView view)
+            CopyrightNoticesPageModel copyrightNoticesPageModel,
+            ButtonListPageView view
+        )
         {
             this.audioInputDevicePageModel = audioInputDevicePageModel;
             this.displaySettingsPageModel = displaySettingsPageModel;
+            this.copyrightNoticesPageModel = copyrightNoticesPageModel;
             this.view = view;
             buttons = new RectorButtonState[]
             {
                 new("Audio Settings", ShowAudioSettings),
                 new("Display settings", ShowDisplaySettings),
+                new("Copyright Notices", ShowCopyrightNotices),
                 new("Exit", ExitApplication),
             };
         }
@@ -86,6 +91,12 @@ namespace Rector.UI.Hud
         {
             isVisible.Value = false;
             displaySettingsPageModel.Enter(Resume);
+        }
+
+        void ShowCopyrightNotices()
+        {
+            isVisible.Value = false;
+            copyrightNoticesPageModel.Enter(Resume);
         }
 
         void ExitApplication()

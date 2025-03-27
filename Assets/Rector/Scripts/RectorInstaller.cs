@@ -60,14 +60,15 @@ namespace Rector
             var hudView = hudContainer.GetHudView(uiInput, nodeTemplateRepository);
             var graphPage = Register(hudView.GraphPage);
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, sceneLoader));
-            var audioInputDevicePage =
-                Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
-
+            var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
+            var copyrightNoticesPage = Register(new CopyrightNoticesPageModel(hudView.CopyrightNoticesPageView));
             var memoryStatsRecorder = Register(new MemoryStatsRecorder());
 
-            var menuPage = Register(new SystemPageModel(audioInputDevicePage,
+            var menuPage = Register(new SystemPageModel(
+                audioInputDevicePage,
                 displaySettingsPage,
+                copyrightNoticesPage,
                 hudView.SystemPageView));
             var hudModel = Register(new HudModel(uiInput, hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
 

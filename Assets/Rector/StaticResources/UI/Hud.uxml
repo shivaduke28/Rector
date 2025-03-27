@@ -38,6 +38,9 @@
             <engine:VisualElement name="display-settings-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
+            <engine:VisualElement name="copyright-notices-page" class="rector-page rector-copyright-notices-page">
+                <engine:Label name="copyright-notices-label" class="rector-copyright-notices-label" />
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="side-right" class="rector-hud-content-side-right" />
     </engine:VisualElement>
