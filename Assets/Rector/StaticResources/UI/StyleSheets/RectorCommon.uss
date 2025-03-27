@@ -1,5 +1,5 @@
 :root {
-    -unity-font-definition: url("project://database/Assets/Rector/StaticResources/FontAssets/JetBrains_Mono/JetBrainsMono-Thin_SDF.asset?fileID=11400000&guid=b6a176f6b663ba14daeae5b096a8c812&type=2#JetBrainsMono-Thin_SDF");
+    -unity-font-definition: url("project://database/Assets/Rector/StaticResources/FontAssets/JetBrains_Mono/JetBrainsMono-Thin_SDF.asset?fileID=11400000&guid=b6ce1c5bdf390407a9ff884d29ed1a80&type=2#JetBrainsMono-Thin_SDF");
     --rector-highlighted: rgba(0, 100, 150, 0.2);
     --rector-text-color: rgba(255, 255, 255, 0.5);
     --rector-border-color: rgba(255, 255, 255, 0.1);
