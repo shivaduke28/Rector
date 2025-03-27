@@ -1,6 +1,5 @@
 :root {
     -unity-font-definition: url("project://database/Assets/Rector/StaticResources/FontAssets/JetBrains_Mono/JetBrainsMono-Thin_SDF.asset?fileID=11400000&guid=b6a176f6b663ba14daeae5b096a8c812&type=2#JetBrainsMono-Thin_SDF");
-    --rector-dark: rgba(100, 100, 100, 0.1);
     --rector-highlighted: rgba(0, 100, 150, 0.2);
     --rector-text-color: rgba(255, 255, 255, 0.5);
     --rector-border-color: rgba(255, 255, 255, 0.1);
@@ -54,7 +53,7 @@
     width: 2px;
     height: 18px;
     margin-top: -9px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: var(--rector-text-color);
 }
 
 .rector-slider #unity-drag-container > #unity-tracker {
@@ -292,21 +291,6 @@
     flex-grow: 1;
 }
 
-.rector-scene-page {
-    position: absolute;
-    flex-grow: 1;
-}
-
-.rector-system-page {
-    position: absolute;
-    flex-grow: 1;
-}
-
-.rector-graph-page {
-    position: absolute;
-    flex-grow: 1;
-}
-
 .rector-graph-mask {
     overflow: hidden;
     flex-shrink: 1;
@@ -338,7 +322,7 @@
     height: 100%;
 }
 
-.rector-audio-input-device-page {
+.rector-page {
     position: absolute;
     flex-grow: 1;
 }
@@ -513,9 +497,10 @@
 .rector-logo {
     margin: 0 0 -10px;
     padding: 0;
-    background-image: url("project://database/Assets/Rector/StaticResources/Textures/rector_logo.png?fileID=2800000&guid=09a80c6ddb98f4849b4b74cccbf89cd3&type=3#rector_logo");
+    background-image: url("project://database/Assets/Rector/StaticResources/Textures/RectorLogoTransparent.png?fileID=2800000&guid=09a80c6ddb98f4849b4b74cccbf89cd3&type=3#RectorLogoTransparent");
     width: 100px;
     height: 100px;
+    -unity-background-image-tint-color: var(--rector-text-color);
 }
 
 .rector-stats-label {

@@ -24,10 +24,10 @@ namespace Rector.UI.Hud
         readonly HudFrameView hudFrameView;
 
         public GraphPage GraphPage { get; }
-        public ScenePageView ScenePageView { get; }
-        public SystemPageView SystemPageView { get; }
-        public AudioInputDevicePageView AudioInputDevicePageView { get; }
-        public DisplaySettingsPageView DisplaySettingsPageView { get; }
+        public ButtonListPageView ScenePageView { get; }
+        public ButtonListPageView SystemPageView { get; }
+        public ButtonListPageView AudioInputDevicePageView { get; }
+        public ButtonListPageView DisplaySettingsPageView { get; }
 
         public HudView(VisualElement root, UIInput uiInput, NodeTemplateRepository nodeTemplateRepository)
         {
@@ -50,10 +50,10 @@ namespace Rector.UI.Hud
             consoleView = new ConsoleView(root.Q<VisualElement>("console"));
 
             GraphPage = new GraphPage(root.Q<VisualElement>("graph-page"), uiInput, nodeTemplateRepository);
-            ScenePageView = new ScenePageView(root.Q<VisualElement>("scene-page"), uiInput);
-            SystemPageView = new SystemPageView(root.Q<VisualElement>("system-page"), uiInput);
-            AudioInputDevicePageView = new AudioInputDevicePageView(root.Q<VisualElement>("audio-input-device-page"), uiInput);
-            DisplaySettingsPageView = new DisplaySettingsPageView(root.Q<VisualElement>("display-settings-page"), uiInput);
+            ScenePageView = new ButtonListPageView(root.Q<VisualElement>("scene-page"), uiInput);
+            SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInput);
+            AudioInputDevicePageView = new ButtonListPageView(root.Q<VisualElement>("audio-input-device-page"), uiInput);
+            DisplaySettingsPageView = new ButtonListPageView(root.Q<VisualElement>("display-settings-page"), uiInput);
         }
 
         public IDisposable Bind(HudModel viewModel, UIInput uiInput)

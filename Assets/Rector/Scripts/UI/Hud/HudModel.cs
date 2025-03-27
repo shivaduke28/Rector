@@ -23,9 +23,9 @@ namespace Rector.UI.Hud
         readonly CameraManager cameraManager;
         readonly MemoryStatsRecorder memoryStatsRecorder;
 
-        readonly SystemPage systemPage;
+        readonly SystemPageModel systemPageModel;
         readonly GraphPage graphPage;
-        readonly ScenePage scenePage;
+        readonly ScenePageModel scenePageModel;
 
         // public Observable<string> SceneText => sceneManager.CurrentScene.Select(x => $"Scene: {x}");
         // public Observable<string> CameraText => cameraManager.CurrentCamera.Select(x => $"Camera: {x}");
@@ -55,8 +55,8 @@ namespace Rector.UI.Hud
             UIInput uiInput,
             HudView view,
             GraphPage graphPage,
-            ScenePage scenePage,
-            SystemPage systemPage,
+            ScenePageModel scenePageModel,
+            SystemPageModel systemPageModel,
             SceneManager sceneManager,
             CameraManager cameraManager, MemoryStatsRecorder memoryStatsRecorder)
         {
@@ -67,8 +67,8 @@ namespace Rector.UI.Hud
             this.memoryStatsRecorder = memoryStatsRecorder;
 
             this.graphPage = graphPage;
-            this.scenePage = scenePage;
-            this.systemPage = systemPage;
+            this.scenePageModel = scenePageModel;
+            this.systemPageModel = systemPageModel;
         }
 
         public void Initialize()
@@ -105,7 +105,7 @@ namespace Rector.UI.Hud
             if (state == State.Graph && graphPage.State.Value == GraphPageState.NodeSelection)
             {
                 graphPage.Exit();
-                systemPage.Enter(ResumeFromSystem);
+                systemPageModel.Enter(ResumeFromSystem);
                 state = State.System;
             }
         }
@@ -115,7 +115,7 @@ namespace Rector.UI.Hud
             if (state == State.Graph && graphPage.State.Value == GraphPageState.NodeSelection)
             {
                 graphPage.Exit();
-                scenePage.Enter(ResumeFromScene);
+                scenePageModel.Enter(ResumeFromScene);
                 state = State.Scene;
             }
         }

@@ -5,19 +5,21 @@ using UnityEngine;
 
 namespace Rector.UI.Hud
 {
-    public sealed class DisplaySettingsPage : IInitializable, IDisposable
+    public sealed class DisplaySettingsPage : IInitializable, IDisposable, IButtonListPageModel
     {
-        readonly DisplaySettingsPageView view;
-        public readonly ReactiveProperty<bool> IsVisible = new(false);
+        readonly ButtonListPageView view;
+        readonly ReactiveProperty<bool> isVisible = new(false);
+        ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
+
         Action onExit;
 
         int index;
 
-        public readonly List<RectorButtonState> Buttons = new();
+        readonly List<RectorButtonState> buttons = new();
 
         IDisposable disposable;
 
-        public DisplaySettingsPage(DisplaySettingsPageView view)
+        public DisplaySettingsPage(ButtonListPageView view)
         {
             this.view = view;
         }
@@ -34,48 +36,49 @@ namespace Rector.UI.Hud
             index = 0;
             onExit = onExitAction;
 
-            Buttons.Clear();
-
-            Buttons.Add(new RectorButtonState(FullScreenMode.ExclusiveFullScreen.ToString(), () => ChangeFullScreenMode(FullScreenMode.ExclusiveFullScreen)));
-            Buttons.Add(new RectorButtonState(FullScreenMode.FullScreenWindow.ToString(), () => ChangeFullScreenMode(FullScreenMode.FullScreenWindow)));
-            Buttons.Add(new RectorButtonState(FullScreenMode.MaximizedWindow.ToString(), () => ChangeFullScreenMode(FullScreenMode.MaximizedWindow)));
-            Buttons.Add(new RectorButtonState(FullScreenMode.Windowed.ToString(), () => ChangeFullScreenMode(FullScreenMode.Windowed)));
+            buttons.Clear();
+            buttons.Add(new RectorButtonState(FullScreenMode.ExclusiveFullScreen.ToString(), () => ChangeFullScreenMode(FullScreenMode.ExclusiveFullScreen)));
+            buttons.Add(new RectorButtonState(FullScreenMode.FullScreenWindow.ToString(), () => ChangeFullScreenMode(FullScreenMode.FullScreenWindow)));
+            buttons.Add(new RectorButtonState(FullScreenMode.MaximizedWindow.ToString(), () => ChangeFullScreenMode(FullScreenMode.MaximizedWindow)));
+            buttons.Add(new RectorButtonState(FullScreenMode.Windowed.ToString(), () => ChangeFullScreenMode(FullScreenMode.Windowed)));
 
             var resolutions = Screen.resolutions;
             foreach (var resolution in resolutions)
             {
-                Buttons.Add(new RectorButtonState($"{resolution.width} x {resolution.height}", () => UpdateResolution(resolution)));
+                buttons.Add(new RectorButtonState($"{resolution.width} x {resolution.height}", () => UpdateResolution(resolution)));
             }
 
-            if (Buttons.Count > 0)
+            if (buttons.Count > 0)
             {
-                Buttons[0].IsFocused.Value = true;
+                buttons[0].IsFocused.Value = true;
             }
 
-            IsVisible.Value = true;
+            isVisible.Value = true;
         }
 
-        public void Exit()
+        void IButtonListPageModel.Submit()
         {
-            IsVisible.Value = false;
+            buttons[index].OnClick();
+        }
+
+        void IButtonListPageModel.Cancel()
+        {
+            isVisible.Value = false;
             onExit?.Invoke();
             onExit = null;
         }
 
-        public void Submit()
+        void IButtonListPageModel.Navigate(bool next)
         {
-            Buttons[index].OnClick();
-        }
-
-        public void Navigate(bool next)
-        {
-            Buttons[index].IsFocused.Value = false;
+            buttons[index].IsFocused.Value = false;
 
             index += next ? 1 : -1;
-            index = (index + Buttons.Count) % Buttons.Count;
+            index = (index + buttons.Count) % buttons.Count;
 
-            Buttons[index].IsFocused.Value = true;
+            buttons[index].IsFocused.Value = true;
         }
+
+        IEnumerable<RectorButtonState> IButtonListPageModel.GetButtons() => buttons;
 
         static void ChangeFullScreenMode(FullScreenMode fullScreenMode)
         {

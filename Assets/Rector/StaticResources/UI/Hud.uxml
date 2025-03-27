@@ -1,20 +1,13 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Rector/StaticResources/UI/Rector.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3" />
+    <Style src="project://database/Assets/Rector/StaticResources/UI/RectorStyles.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#RectorStyles" />
     <engine:VisualElement name="header" class="rector-hud-header">
-        <engine:VisualElement class="rector-logo" style="-unity-background-image-tint-color: rgba(255, 255, 255, 0.39);" />
-        <engine:VisualElement name="Box" class="rector-box" style="display: none;" />
-        <engine:Label text="Rector ver.0.1.0" name="version-label" class="rector-label rector-hud-version-label" />
-        <engine:VisualElement name="Margin" style="flex-grow: 1;" />
-        <engine:VisualElement style="align-items: flex-start; margin-right: 40px; width: 220px; display: none;">
-            <engine:Label text="Scene: Room" name="scene-label" class="rector-label rector-stats-label" />
-            <engine:Label text="Camera: Player" name="camera-label" class="rector-label rector-stats-label" />
-        </engine:VisualElement>
-        <engine:VisualElement class="rector-draw-logo" />
+        <engine:VisualElement class="rector-logo" />
+        <engine:Label text="Rector App ver.0.1.0" name="version-label" class="rector-label rector-hud-version-label" />
     </engine:VisualElement>
     <engine:VisualElement name="body" class="rector-hud-body">
         <engine:VisualElement name="side-left" class="rector-hud-content-side-left" />
         <engine:VisualElement class="rector-hud-body-content-internal" style="flex-grow: 1;">
-            <engine:VisualElement name="graph-page" class="rector-graph-page">
+            <engine:VisualElement name="graph-page" class="rector-graph-page rector-page">
                 <engine:VisualElement name="audio" class="rector-left-sidebar">
                     <engine:Label text="Audio" name="name-label" class="rector-label" />
                 </engine:VisualElement>
@@ -35,16 +28,16 @@
                     <engine:VisualElement name="property-root" />
                 </engine:VisualElement>
             </engine:VisualElement>
-            <engine:VisualElement name="scene-page" class="rector-scene-page">
+            <engine:VisualElement name="scene-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-body-left-list" />
             </engine:VisualElement>
-            <engine:VisualElement name="system-page" class="rector-system-page">
+            <engine:VisualElement name="system-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-body-left-list" />
             </engine:VisualElement>
-            <engine:VisualElement name="audio-input-device-page" class="rector-audio-input-device-page">
+            <engine:VisualElement name="audio-input-device-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-body-left-list" />
             </engine:VisualElement>
-            <engine:VisualElement name="display-settings-page" class="rector-audio-input-device-page">
+            <engine:VisualElement name="display-settings-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-body-left-list" />
             </engine:VisualElement>
         </engine:VisualElement>
