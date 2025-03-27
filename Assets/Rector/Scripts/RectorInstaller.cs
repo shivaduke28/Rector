@@ -63,7 +63,7 @@ namespace Rector
             var audioInputDevicePage =
                 Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
 
-            var displaySettingsPage = Register(new DisplaySettingsPage(hudView.DisplaySettingsPageView));
+            var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
             var memoryStatsRecorder = Register(new MemoryStatsRecorder());
 
             var menuPage = Register(new SystemPageModel(audioInputDevicePage,

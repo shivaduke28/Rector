@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rector.UI.Hud
 {
-    public sealed class DisplaySettingsPage : IInitializable, IDisposable, IButtonListPageModel
+    public sealed class DisplaySettingsPageModel : IInitializable, IDisposable, IButtonListPageModel
     {
         readonly ButtonListPageView view;
         readonly ReactiveProperty<bool> isVisible = new(false);
@@ -19,7 +19,7 @@ namespace Rector.UI.Hud
 
         IDisposable disposable;
 
-        public DisplaySettingsPage(ButtonListPageView view)
+        public DisplaySettingsPageModel(ButtonListPageView view)
         {
             this.view = view;
         }

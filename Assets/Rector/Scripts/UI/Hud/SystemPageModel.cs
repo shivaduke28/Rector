@@ -11,18 +11,18 @@ namespace Rector.UI.Hud
         int index;
 
         readonly AudioInputDevicePageModel audioInputDevicePageModel;
-        readonly DisplaySettingsPage displaySettingsPage;
+        readonly DisplaySettingsPageModel displaySettingsPageModel;
         readonly ButtonListPageView view;
         Action onExit;
         IDisposable disposable;
 
         public SystemPageModel(
             AudioInputDevicePageModel audioInputDevicePageModel,
-            DisplaySettingsPage displaySettingsPage,
+            DisplaySettingsPageModel displaySettingsPageModel,
             ButtonListPageView view)
         {
             this.audioInputDevicePageModel = audioInputDevicePageModel;
-            this.displaySettingsPage = displaySettingsPage;
+            this.displaySettingsPageModel = displaySettingsPageModel;
             this.view = view;
             buttons = new RectorButtonState[]
             {
@@ -85,7 +85,7 @@ namespace Rector.UI.Hud
         void ShowDisplaySettings()
         {
             isVisible.Value = false;
-            displaySettingsPage.Enter(Resume);
+            displaySettingsPageModel.Enter(Resume);
         }
 
         void ExitApplication()
