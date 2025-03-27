@@ -22,7 +22,6 @@ namespace Rector.UI.Graphs
         public readonly ReactiveProperty<ISlot> TargetSlot = new();
 
         public readonly Graph Graph = new();
-        readonly NodeTemplateRepository nodeTemplateRepository;
         readonly Dictionary<GraphPageState, IGraphPageState> stateMap = new();
 
         IGraphPageState CurrentState => stateMap[State.Value];
@@ -62,7 +61,6 @@ namespace Rector.UI.Graphs
         public GraphPage(VisualElement container, UIInput uiInput, NodeTemplateRepository nodeTemplateRepository)
         {
             this.uiInput = uiInput;
-            this.nodeTemplateRepository = nodeTemplateRepository;
 
             // VisualElements
             root = container.Q<VisualElement>(RootName);
