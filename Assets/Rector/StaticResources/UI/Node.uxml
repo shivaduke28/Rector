@@ -1,0 +1,9 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Rector/StaticResources/UI/Rector.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#Rector" />
+    <engine:VisualElement name="node" class="rector-node">
+        <engine:VisualElement name="input-slot-list" class="rector-node-slot-list rector-node-input-slot-list" />
+        <engine:Label text="Arrow Fish" name="name-label" class="rector-node-name-label rector-label" />
+        <engine:VisualElement name="output-slot-list" class="rector-node-slot-list rector-node-output-slot-list" />
+        <engine:VisualElement name="mute" class="rector-node-mute" />
+    </engine:VisualElement>
+</engine:UXML>

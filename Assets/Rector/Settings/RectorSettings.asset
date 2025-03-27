@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 460b9ddb55af44f78afdfa8d4e4b6b94, type: 3}
+  m_Name: RectorSettings
+  m_EditorClassIdentifier: 
+  sceneSettings:
+    sceneNames:
+    - Room
+  vfxSettings:
+    vfxNodeBehaviours:
+    - {fileID: -4233992428353006084, guid: 5b20830707a43094daa7b0ab9a74fd7c, type: 3}
+    - {fileID: 1871585250903526353, guid: 677ac507aad7d0e4a835713d2286c190, type: 3}
+    - {fileID: 7193802573131792238, guid: 42fc501307163e649aeefca68b2bd32b, type: 3}
+    - {fileID: 877061114993312373, guid: eb5740f3e61dae5489a6f5fbea896cba, type: 3}
+    - {fileID: 8549564959209217536, guid: 9c34b9e3a59e0b540b79ee5bc75c9439, type: 3}
+    - {fileID: 6743897344694142504, guid: 91f3394e8648ea74cb47515319ad876f, type: 3}
+    - {fileID: 4108377784678761968, guid: d7b8a33d5f9d37141898f33bc00f3fb5, type: 3}
+    - {fileID: 4843034234368150193, guid: c265f14ca7a843d4a98d3b8e1d1c5272, type: 3}
+    - {fileID: 1160663013461878313, guid: b696f1ce80981554a946a4cec2a8adda, type: 3}
+    - {fileID: 2922375185127571935, guid: b7dbbf12eb04f4c42b60849b7a334c4e, type: 3}
+    - {fileID: 2283178683426882258, guid: e4ee88c04c54dae489955fe16eaa8a96, type: 3}
+    - {fileID: 5890325442845807954, guid: eb55ddd362ccaaa4592a97dd4c9a3257, type: 3}
+    - {fileID: 185391453575890483, guid: 63ff59d1f10536e4faf787213b385e57, type: 3}
+    - {fileID: 7988874530097586036, guid: de055ae09d2fa754ea76303dbf87d132, type: 3}
+    - {fileID: 7553203016023299512, guid: 8bd6cb65b7f36f4459bb4e4c7ea46e82, type: 3}
+    - {fileID: 5767904043593631964, guid: 7da7283b04d894d49977cdc684202144, type: 3}
+    - {fileID: 1785317180165460032, guid: 76cad274232212f41b487c38a50a1e8c, type: 3}
+    - {fileID: 7694325952618066358, guid: 79392f434ef96624c8123196ea2b8321, type: 3}

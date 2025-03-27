@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08052271d9f544a6bc9f94c5b426e386, type: 3}
+  m_Name: RectorUISettings
+  m_EditorClassIdentifier: 
+  node: {fileID: 9197481963319205126, guid: c261d48ddb4c8ae42a74f85252667be1, type: 3}
+  inputSlot: {fileID: 9197481963319205126, guid: fa75f62c5f4737b458067537d63e18a9,
+    type: 3}
+  outputSlot: {fileID: 9197481963319205126, guid: 3cc3ecc12db6abe40bc2df504205e321,
+    type: 3}
+  exposedFloatSlot: {fileID: 9197481963319205126, guid: cdaeaea2765436a4ebeacd909028e302,
+    type: 3}
+  exposedIntSlot: {fileID: 9197481963319205126, guid: cfd6a8cf79df24488af886cc0fab523d,
+    type: 3}
+  exposedBoolSlot: {fileID: 9197481963319205126, guid: 86b71bce24d994db4a22a0dc2be5636c,
+    type: 3}
+  exposedCallbackSlot: {fileID: 9197481963319205126, guid: a62208f24f0714037950dcd5ec833be8,
+    type: 3}
+  consoleLog: {fileID: 9197481963319205126, guid: de797c3cfaac3462a9cf0e3a7cd8a6a9,
+    type: 3}

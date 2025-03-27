@@ -1,0 +1,6 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Rector/StaticResources/UI/Rector.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#Rector" />
+    <engine:VisualElement name="output-slot" class="rector-node-slot rector-node-slot--selected">
+        <engine:Label text="Label" name="name-label" class="rector-node-slot-name-label rector-node-output-slot-name-label rector-label" />
+    </engine:VisualElement>
+</engine:UXML>

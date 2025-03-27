@@ -1,0 +1,22 @@
+{
+    "name": "Rector.Editor",
+    "rootNamespace": "",
+    "references": [
+        "Rector",
+        "jp.hadashikick.vyaml",
+        "UniTask"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "VYaml.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

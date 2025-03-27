@@ -1,0 +1,11 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Rector/StaticResources/UI/Rector.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#Rector" />
+    <engine:VisualElement name="input" class="rector-exposed-input">
+        <engine:VisualElement class="rector-exposed-name-label-container">
+            <engine:Label text="Label" name="name-label" class="rector-label rector-exposed-name-label" />
+        </engine:VisualElement>
+        <engine:VisualElement class="rector-exposed-value-label-container">
+            <engine:Label text="event" name="value-label" class="rector-label rector-exposed-value-label" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

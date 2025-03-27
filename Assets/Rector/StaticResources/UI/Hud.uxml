@@ -1,0 +1,111 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Rector/StaticResources/UI/Rector.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3" />
+    <engine:VisualElement name="header" class="rector-hud-header">
+        <engine:VisualElement class="rector-logo" style="-unity-background-image-tint-color: rgba(255, 255, 255, 0.39);" />
+        <engine:VisualElement name="Box" class="rector-box" style="display: none;" />
+        <engine:Label text="Rector ver.0.1.0" name="version-label" class="rector-label rector-hud-version-label" />
+        <engine:VisualElement name="Margin" style="flex-grow: 1;" />
+        <engine:VisualElement style="align-items: flex-start; margin-right: 40px; width: 220px; display: none;">
+            <engine:Label text="Scene: Room" name="scene-label" class="rector-label rector-stats-label" />
+            <engine:Label text="Camera: Player" name="camera-label" class="rector-label rector-stats-label" />
+        </engine:VisualElement>
+        <engine:VisualElement class="rector-draw-logo" />
+    </engine:VisualElement>
+    <engine:VisualElement name="body" class="rector-hud-body">
+        <engine:VisualElement name="side-left" class="rector-hud-content-side-left" />
+        <engine:VisualElement class="rector-hud-body-content-internal" style="flex-grow: 1;">
+            <engine:VisualElement name="graph-page" class="rector-graph-page">
+                <engine:VisualElement name="audio" class="rector-left-sidebar">
+                    <engine:Label text="Audio" name="name-label" class="rector-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="graph-mask" class="rector-graph-mask">
+                    <engine:VisualElement name="graph-content" class="rector-graph-content rector-graph-content-animation">
+                        <engine:VisualElement name="edge-root" class="rector-node-root" />
+                        <engine:VisualElement name="node-root" class="rector-node-root" />
+                        <engine:VisualElement name="create-node-menu" class="rector-create-node-menu">
+                            <engine:VisualElement name="create-node-menu-main-list" class="rector-create-node-menu-list" />
+                            <engine:VisualElement name="create-node-menu-sub-list" class="rector-create-node-menu-list" />
+                        </engine:VisualElement>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="node-detail" class="rector-right-sidebar">
+                    <engine:VisualElement name="name-label-container" class="rector-node-detail-name-label-container">
+                        <engine:Label text="Arrow Fish" name="name-label" class="rector-label" />
+                    </engine:VisualElement>
+                    <engine:VisualElement name="property-root" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+            <engine:VisualElement name="scene-page" class="rector-scene-page">
+                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="system-page" class="rector-system-page">
+                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="audio-input-device-page" class="rector-audio-input-device-page">
+                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="display-settings-page" class="rector-audio-input-device-page">
+                <engine:VisualElement name="left-list" class="rector-body-left-list" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="side-right" class="rector-hud-content-side-right" />
+    </engine:VisualElement>
+    <engine:VisualElement name="footer" class="rector-hud-footer">
+        <engine:VisualElement style="height: 100%; flex-direction: row; flex-grow: 1;">
+            <engine:VisualElement class="rector-hud-waveform">
+                <engine:Label text="Waveform" class="rector-label rector-stats-header-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-hud-spectrum">
+                <engine:Label text="Spectrum" class="rector-label rector-stats-header-label" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement class="rector-stats">
+            <engine:Label text="Graph" class="rector-label rector-stats-header-label" />
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Node" class="rector-label rector-stats-title-label" />
+                <engine:Label text="100" name="node-count-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Edge" class="rector-label rector-stats-title-label" />
+                <engine:Label text="150" name="edge-count-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Layer" name="Label" class="rector-label rector-stats-title-label" />
+                <engine:Label text="10" name="layer-count-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Dummy Node" class="rector-label rector-stats-title-label" />
+                <engine:Label text="5" name="dummy-node-count-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Type1 Conflict" class="rector-label rector-stats-title-label" />
+                <engine:Label text="4" name="type1-conflict-count-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement class="rector-stats">
+            <engine:Label text="Stats" class="rector-label rector-stats-header-label" />
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Time" class="rector-label rector-stats-title-label" />
+                <engine:Label text="03:15:32.12" name="time-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="FPS" class="rector-label rector-stats-title-label" />
+                <engine:Label text="60.0" name="fps-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Memory (OS)" class="rector-label rector-stats-title-label" />
+                <engine:Label text="1234.1MB" name="system-memory-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+            <engine:VisualElement class="rector-stats-label-container">
+                <engine:Label text="Memory (App)" class="rector-label rector-stats-title-label" />
+                <engine:Label text="1000.0MB" name="total-memory-label" class="rector-label rector-stats-label" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement class="rector-console">
+            <engine:Label text="Console" class="rector-label rector-stats-header-label" />
+            <engine:VisualElement name="console" class="rector-console-mask">
+                <engine:VisualElement name="console-content" class="rector-console-content" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
