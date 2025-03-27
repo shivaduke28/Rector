@@ -1,6 +1,5 @@
 ﻿using System;
 using R3;
-using Rector.Cameras;
 using Rector.UI.Graphs;
 using UnityEngine;
 
@@ -19,16 +18,12 @@ namespace Rector.UI.Hud
 
         readonly UIInput uiInput;
         readonly HudView view;
-        readonly SceneManager sceneManager;
-        readonly CameraManager cameraManager;
         readonly MemoryStatsRecorder memoryStatsRecorder;
 
         readonly SystemPageModel systemPageModel;
         readonly GraphPage graphPage;
         readonly ScenePageModel scenePageModel;
 
-        // public Observable<string> SceneText => sceneManager.CurrentScene.Select(x => $"Scene: {x}");
-        // public Observable<string> CameraText => cameraManager.CurrentCamera.Select(x => $"Camera: {x}");
         public ReadOnlyReactiveProperty<float> SystemUsedMemory => memoryStatsRecorder.SystemUsedMemory;
         public ReadOnlyReactiveProperty<float> TotalUsedMemory => memoryStatsRecorder.TotalUsedMemory;
         public Observable<float> PlayTime => Observable.EveryUpdate(UnityFrameProvider.Update).Select(_ => Time.realtimeSinceStartup);
@@ -57,13 +52,10 @@ namespace Rector.UI.Hud
             GraphPage graphPage,
             ScenePageModel scenePageModel,
             SystemPageModel systemPageModel,
-            SceneManager sceneManager,
-            CameraManager cameraManager, MemoryStatsRecorder memoryStatsRecorder)
+            MemoryStatsRecorder memoryStatsRecorder)
         {
             this.uiInput = uiInput;
             this.view = view;
-            this.sceneManager = sceneManager;
-            this.cameraManager = cameraManager;
             this.memoryStatsRecorder = memoryStatsRecorder;
 
             this.graphPage = graphPage;

@@ -8,8 +8,6 @@ namespace Rector.UI.Hud
 {
     public sealed class HudView
     {
-        // readonly Label sceneLabel;
-        // readonly Label cameraLabel;
         readonly Label timeLabel;
         readonly Label versionLabel;
         readonly Label fpsLabel;
@@ -33,9 +31,6 @@ namespace Rector.UI.Hud
         {
             var footer = root.Q<VisualElement>("footer");
             versionLabel = root.Q<Label>("version-label");
-            // sceneLabel = root.Q<Label>("scene-label");
-            // cameraLabel = root.Q<Label>("camera-label");
-
             timeLabel = footer.Q<Label>("time-label");
             fpsLabel = footer.Q<Label>("fps-label");
             systemMemoryLabel = footer.Q<Label>("system-memory-label");
@@ -60,8 +55,6 @@ namespace Rector.UI.Hud
         {
             versionLabel.text = viewModel.VersionText;
             return new CompositeDisposable(
-                // viewModel.SceneText.Subscribe(x => sceneLabel.text = ""),
-                // viewModel.CameraText.Subscribe(x => cameraLabel.text = ""),
                 viewModel.PlayTime.Subscribe(x => timeLabel.text = ToTimeText(x)),
                 viewModel.Fps.Subscribe(x => fpsLabel.text = $"{x:F1}"),
                 // System表示中にHUDを非表示にする場合はEnter/Exitで購読を管理するようにする

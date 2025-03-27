@@ -69,7 +69,7 @@ namespace Rector
             var menuPage = Register(new SystemPageModel(audioInputDevicePage,
                 displaySettingsPage,
                 hudView.SystemPageView));
-            var hudModel = Register(new HudModel(uiInput, hudView, graphPage, scenePage, menuPage, sceneLoader, cameraManager, memoryStatsRecorder));
+            var hudModel = Register(new HudModel(uiInput, hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
 
             Register(new NodeTemplateRegisterer(
                 nodeTemplateRepository,
