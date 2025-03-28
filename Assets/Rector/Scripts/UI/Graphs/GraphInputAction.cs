@@ -49,7 +49,9 @@ namespace Rector.UI.Graphs
         public float Zoom { get; private set; }
 
         bool removeNodeHolding;
+        int removeNodeHoldId;
         bool removeEdgeHolding;
+        int removeEdgeHoldId;
 
         public GraphInputAction(RectorInput rectorInput)
         {
@@ -114,7 +116,8 @@ namespace Rector.UI.Graphs
         {
             if (context.started)
             {
-                OnRemoveEdgeStartAsync().Forget();
+                removeEdgeHoldId = (removeEdgeHoldId + 1) % 255;
+                OnRemoveEdgeStartAsync(removeEdgeHoldId).Forget();
             }
             else if (context.canceled)
             {
@@ -131,11 +134,12 @@ namespace Rector.UI.Graphs
             }
         }
 
-        async UniTaskVoid OnRemoveEdgeStartAsync()
+        async UniTaskVoid OnRemoveEdgeStartAsync(int id)
         {
+            removeEdgeHoldId = id;
             removeEdgeHolding = true;
             await UniTask.Delay(TimeSpan.FromMilliseconds(200));
-            if (removeEdgeHolding)
+            if (removeEdgeHolding && removeEdgeHoldId == id)
             {
                 removeEdge.OnNext(HoldState.Start);
             }
@@ -145,7 +149,8 @@ namespace Rector.UI.Graphs
         {
             if (context.started)
             {
-                OnRemoveNodeStartAsync().Forget();
+                removeNodeHoldId = (removeNodeHoldId + 1) % 255;
+                OnRemoveNodeStartAsync(removeNodeHoldId).Forget();
             }
             else if (context.canceled)
             {
@@ -162,11 +167,12 @@ namespace Rector.UI.Graphs
             }
         }
 
-        async UniTaskVoid OnRemoveNodeStartAsync()
+        async UniTaskVoid OnRemoveNodeStartAsync(int id)
         {
             removeNodeHolding = true;
+            removeNodeHoldId = id;
             await UniTask.Delay(TimeSpan.FromMilliseconds(200));
-            if (removeNodeHolding)
+            if (removeNodeHolding && removeNodeHoldId == id)
             {
                 removeNode.OnNext(HoldState.Start);
             }
