@@ -81,7 +81,7 @@ namespace Rector.UI.Graphs
             //     }
             // }
 
-            return new SortResult(layers.Sum(x => x.Count(y => y.IsDummy)), layers.Count, markedEdges.Count);
+            return new SortResult(layers.Sum(layer => layer.Count(y => y.IsDummy)), layers.Count, markedEdges.Count);
         }
 
         /// <summary>
