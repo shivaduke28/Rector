@@ -5,15 +5,18 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs
 {
-    public static class GraphSorter
+    public sealed class GraphSorter
     {
-        public readonly struct Info
+        readonly List<NodeView> unsortedNodes = new();
+        readonly List<EdgeView> edges = new();
+
+        public readonly struct SortResult
         {
             public readonly int LayerCount;
             public readonly int DummyNodeCount;
             public readonly int Type1ConflictCount;
 
-            public Info(int dummyNodeCount, int layerCount, int type1ConflictCount)
+            public SortResult(int dummyNodeCount, int layerCount, int type1ConflictCount)
             {
                 DummyNodeCount = dummyNodeCount;
                 LayerCount = layerCount;
@@ -21,12 +24,14 @@ namespace Rector.UI.Graphs
             }
         }
 
-        public static Info Sort(IEnumerable<NodeView> nodeViews, IEnumerable<EdgeView> edgeViews)
+        public SortResult Sort(IEnumerable<NodeView> nodeViews, IEnumerable<EdgeView> edgeViews)
         {
             // FIXME: 新規作成したノードが配列に置かれるように生成時にIndexInLayerを指定して、ここでソートしている
             // 富豪的なので負荷に問題がでたら修正する
-            var unsortedNodes = nodeViews.OrderBy(x => x.LayerIndex * 100 + x.IndexInLayer).ToList();
-            var edges = edgeViews.ToList();
+            unsortedNodes.Clear();
+            unsortedNodes.AddRange(nodeViews.OrderBy(x => x.LayerIndex * 100 + x.IndexInLayer));
+            edges.Clear();
+            edges.AddRange(edgeViews);
 
             foreach (var edge in edges)
             {
@@ -76,7 +81,7 @@ namespace Rector.UI.Graphs
             //     }
             // }
 
-            return new Info(layers.Sum(x => x.Count(y => y.IsDummy)), layers.Count, markedEdges.Count);
+            return new SortResult(layers.Sum(x => x.Count(y => y.IsDummy)), layers.Count, markedEdges.Count);
         }
 
         /// <summary>
@@ -84,8 +89,8 @@ namespace Rector.UI.Graphs
         /// https://arxiv.org/abs/2008.01252 をそのまま実装した
         /// </summary>
         static Dictionary<NodeId, float> HorizontalCompaction(
-            List<List<SortNode>> layers,
-            Dictionary<NodeId, SortNode> layeredNodes,
+            List<List<SortableNode>> layers,
+            Dictionary<NodeId, SortableNode> layeredNodes,
             Dictionary<NodeId, NodeId> root,
             Dictionary<NodeId, NodeId> align)
         {
@@ -154,7 +159,7 @@ namespace Rector.UI.Graphs
 
             // block内のnodeのxとsinkを決める
             // blockとsinkが共通のblockがある場合は先にそれを計算する（ので再起処理になってる）
-            void PlaceBlock(SortNode rootNode)
+            void PlaceBlock(SortableNode rootNode)
             {
                 if (x.TryAdd(rootNode.Id, 0f))
                 {
@@ -201,7 +206,7 @@ namespace Rector.UI.Graphs
         /// v2 = align[v1]
         /// </summary>
         static (Dictionary<NodeId, NodeId> root, Dictionary<NodeId, NodeId> align) CalculateVerticalAlignment(
-            List<List<SortNode>> layers,
+            List<List<SortableNode>> layers,
             HashSet<(NodeId up, NodeId down)> markedEdges)
         {
             var root = new Dictionary<NodeId, NodeId>();
@@ -217,7 +222,7 @@ namespace Rector.UI.Graphs
             }
 
 
-            var temp = new List<SortNode>();
+            var temp = new List<SortableNode>();
             foreach (var layer in layers)
             {
                 var prevParentIndex = -1;
@@ -268,7 +273,7 @@ namespace Rector.UI.Graphs
         /// </summary>
         /// <param name="layers"></param>
         /// <returns></returns>
-        static HashSet<(NodeId up, NodeId down)> MarkType1ConflictEdges(List<List<SortNode>> layers)
+        static HashSet<(NodeId up, NodeId down)> MarkType1ConflictEdges(List<List<SortableNode>> layers)
         {
             var markedEdges = new HashSet<(NodeId up, NodeId down)>();
             for (var layerIndex = 1; layerIndex < layers.Count - 1; layerIndex++)
@@ -281,7 +286,7 @@ namespace Rector.UI.Graphs
                 {
                     var innerChild = layerChild[innerChildIndex];
                     var isInner = false;
-                    SortNode innerParent = null;
+                    SortableNode innerParent = null;
                     if (innerChild.IsDummy)
                     {
                         var parent = innerChild.Parents[0].Node;
@@ -323,14 +328,14 @@ namespace Rector.UI.Graphs
             return markedEdges;
         }
 
-        static (List<List<SortNode>>, Dictionary<NodeId, SortNode>) ConstructLayers(List<NodeView> unsortedNodes,
+        static (List<List<SortableNode>>, Dictionary<NodeId, SortableNode>) ConstructLayers(List<NodeView> unsortedNodes,
             List<EdgeView> edges)
         {
-            var layers = new List<List<SortNode>>();
-            var layeredNodes = new Dictionary<NodeId, SortNode>();
+            var layers = new List<List<SortableNode>>();
+            var layeredNodes = new Dictionary<NodeId, SortableNode>();
 
-            var islands = new List<SortNode>();
-            var sources = new List<SortNode>();
+            var islands = new List<SortableNode>();
+            var sources = new List<SortableNode>();
 
 
             // step1: island
@@ -388,7 +393,7 @@ namespace Rector.UI.Graphs
             {
                 var found = false;
                 var layerIndex = layers.Count;
-                var layer = new List<SortNode>();
+                var layer = new List<SortableNode>();
                 for (var i = 0; i < unsortedNodes.Count;)
                 {
                     var node = unsortedNodes[i];
@@ -451,30 +456,7 @@ namespace Rector.UI.Graphs
         }
 
 
-        public abstract class SortNode
-        {
-            public abstract string Name { get; }
-            public virtual bool IsDummy => false;
-            public readonly NodeId Id;
-            public readonly int LayerIndex;
-            public readonly List<(SortNode Node, int SlotIndex)> Parents = new(0);
-            public readonly List<(SortNode Node, int SlotIndex)> Children = new(0);
-            public readonly int InputCount;
-            public readonly int OutputCount;
-            public abstract Vector2 Position { get; set; }
-            public virtual int Index { get; set; }
-            public abstract float Width { get; }
-
-            protected SortNode(NodeId id, int layerIndex, int inputCount, int outputCount)
-            {
-                Id = id;
-                LayerIndex = layerIndex;
-                InputCount = inputCount;
-                OutputCount = outputCount;
-            }
-        }
-
-        public sealed class GenuineNode : SortNode
+        public sealed class GenuineNode : SortableNode
         {
             readonly NodeView node;
             public override float Width => node.Width;
@@ -499,19 +481,43 @@ namespace Rector.UI.Graphs
                 set => node.Position = value;
             }
         }
+    }
 
-        public sealed class DummyNode : SortNode
+    public sealed class DummyNode : SortableNode
+    {
+        public override string Name => "Dummy";
+        public override bool IsDummy => true;
+        public readonly EdgeId EdgeId;
+        public override Vector2 Position { get; set; }
+        public override float Width => 10f;
+
+        public DummyNode(NodeId id, int layerIndex, EdgeId edgeId) : base(id, layerIndex, 1, 1)
         {
-            public override string Name => "Dummy";
-            public override bool IsDummy => true;
-            public readonly EdgeId EdgeId;
-            public override Vector2 Position { get; set; }
-            public override float Width => 10f;
+            EdgeId = edgeId;
+        }
+    }
 
-            public DummyNode(NodeId id, int layerIndex, EdgeId edgeId) : base(id, layerIndex, 1, 1)
-            {
-                EdgeId = edgeId;
-            }
+
+    public abstract class SortableNode
+    {
+        public abstract string Name { get; }
+        public virtual bool IsDummy => false;
+        public readonly NodeId Id;
+        public readonly int LayerIndex;
+        public readonly List<(SortableNode Node, int SlotIndex)> Parents = new(0);
+        public readonly List<(SortableNode Node, int SlotIndex)> Children = new(0);
+        public readonly int InputCount;
+        public readonly int OutputCount;
+        public abstract Vector2 Position { get; set; }
+        public virtual int Index { get; set; }
+        public abstract float Width { get; }
+
+        protected SortableNode(NodeId id, int layerIndex, int inputCount, int outputCount)
+        {
+            Id = id;
+            LayerIndex = layerIndex;
+            InputCount = inputCount;
+            OutputCount = outputCount;
         }
     }
 }

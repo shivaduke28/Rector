@@ -6,21 +6,21 @@ namespace Rector.UI.Graphs
 {
     public static class LayerOrderAssigner
     {
-        static readonly Comparison<GraphSorter.SortNode> ParentComparison = (a, b) =>
+        static readonly Comparison<SortableNode> ParentComparison = (a, b) =>
         {
             var aCenter = GetBaryCenter(a, true);
             var bCenter = GetBaryCenter(b, true);
             return BaryCenter.Compare(aCenter, bCenter);
         };
 
-        static readonly Comparison<GraphSorter.SortNode> ChildComparison = (a, b) =>
+        static readonly Comparison<SortableNode> ChildComparison = (a, b) =>
         {
             var aCenter = GetBaryCenter(a, false);
             var bCenter = GetBaryCenter(b, false);
             return BaryCenter.Compare(aCenter, bCenter);
         };
 
-        static BaryCenter GetBaryCenter(GraphSorter.SortNode node, bool useParent)
+        static BaryCenter GetBaryCenter(SortableNode node, bool useParent)
         {
             var neighbors = useParent ? node.Parents : node.Children;
             var nodeCenter = 0f;
@@ -49,7 +49,7 @@ namespace Rector.UI.Graphs
         /// レイヤーの順番を決定する
         /// SortNode.Indexに値が入っている前提のコードになっているのに注意
         /// </summary>
-        public static void AssignOrdering(List<List<GraphSorter.SortNode>> layers)
+        public static void AssignOrdering(List<List<SortableNode>> layers)
         {
             // 何回か繰り返すとよいらしいので２往復させる
             SortByParent(layers);
@@ -60,7 +60,7 @@ namespace Rector.UI.Graphs
 
             return;
 
-            static void SortByParent(List<List<GraphSorter.SortNode>> layers)
+            static void SortByParent(List<List<SortableNode>> layers)
             {
                 // Debug.Log("--------------SortByParent-----------------");
                 foreach (var layer in layers)
@@ -79,7 +79,7 @@ namespace Rector.UI.Graphs
                 }
             }
 
-            static void SortByChild(List<List<GraphSorter.SortNode>> layers)
+            static void SortByChild(List<List<SortableNode>> layers)
             {
                 // Debug.Log("--------------SortByChild-----------------");
                 for (var l = layers.Count - 1; l >= 0; l--)

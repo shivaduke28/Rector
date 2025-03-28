@@ -48,6 +48,7 @@ namespace Rector.UI.Graphs
         readonly NodeViewFactory nodeViewFactory = new();
 
         readonly GraphContentTransformer graphContentTransformer;
+        readonly GraphSorter graphSorter = new();
 
         readonly CompositeDisposable disposable = new();
 
@@ -354,7 +355,7 @@ namespace Rector.UI.Graphs
         void SortInternal()
         {
             shouldSort = false;
-            var result = GraphSorter.Sort(NodeViews.Values, edgeViews.Values);
+            var result = graphSorter.Sort(NodeViews.Values, edgeViews.Values);
             Layers.Clear();
             foreach (var nodeView in NodeViews.Values)
             {

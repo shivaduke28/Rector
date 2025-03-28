@@ -11,7 +11,7 @@ namespace Rector.UI.Graphs
     {
         readonly OutputSlotView output;
         readonly InputSlotView input;
-        public List<GraphSorter.DummyNode> DummyNodes { get; } = new();
+        public List<DummyNode> DummyNodes { get; } = new();
 
         public Edge Edge { get; }
         readonly IDisposable disposable;
