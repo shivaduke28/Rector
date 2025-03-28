@@ -7,16 +7,6 @@ namespace Rector.UI.Hud
 {
     public sealed class HudModel : IInitializable, IDisposable
     {
-        enum State
-        {
-            Graph,
-            Scene,
-            System
-        }
-
-        State state = State.Graph;
-
-        readonly UIInput uiInput;
         readonly HudView view;
         readonly MemoryStatsRecorder memoryStatsRecorder;
 
@@ -46,15 +36,12 @@ namespace Rector.UI.Hud
         readonly CompositeDisposable disposable = new();
 
 
-        public HudModel(
-            UIInput uiInput,
-            HudView view,
+        public HudModel(HudView view,
             GraphPage graphPage,
             ScenePageModel scenePageModel,
             SystemPageModel systemPageModel,
             MemoryStatsRecorder memoryStatsRecorder)
         {
-            this.uiInput = uiInput;
             this.view = view;
             this.memoryStatsRecorder = memoryStatsRecorder;
 
@@ -65,10 +52,13 @@ namespace Rector.UI.Hud
 
         public void Initialize()
         {
-            view.Bind(this, uiInput).AddTo(disposable);
+            view.Bind(this).AddTo(disposable);
             Observable.EveryUpdate(UnityFrameProvider.Update).Subscribe(_ => UpdateFps()).AddTo(disposable);
+
+            graphPage.OpenScenePage.Subscribe(_ => OpenScene()).AddTo(disposable);
+            graphPage.OpenSystemPage.Subscribe(_ => OpenSystem()).AddTo(disposable);
+
             graphPage.Enter();
-            state = State.Graph;
         }
 
         public void Dispose()
@@ -92,36 +82,26 @@ namespace Rector.UI.Hud
             }
         }
 
-        public void OpenSystem()
+        void OpenSystem()
         {
-            if (state == State.Graph && graphPage.State.Value == GraphPageState.NodeSelection)
-            {
-                graphPage.Exit();
-                systemPageModel.Enter(ResumeFromSystem);
-                state = State.System;
-            }
+            graphPage.Exit();
+            systemPageModel.Enter(ResumeFromSystem);
         }
 
-        public void OpenScene()
+        void OpenScene()
         {
-            if (state == State.Graph && graphPage.State.Value == GraphPageState.NodeSelection)
-            {
-                graphPage.Exit();
-                scenePageModel.Enter(ResumeFromScene);
-                state = State.Scene;
-            }
+            graphPage.Exit();
+            scenePageModel.Enter(ResumeFromScene);
         }
 
         void ResumeFromScene()
         {
             graphPage.Enter();
-            state = State.Graph;
         }
 
         void ResumeFromSystem()
         {
             graphPage.Enter();
-            state = State.Graph;
         }
     }
 }

@@ -56,8 +56,9 @@ namespace Rector
             var sceneLoader = Register(new SceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository));
 
             var uiInput = Register(new UIInput(rectorInput));
+            var graphInputAction = Register(new GraphInputAction(rectorInput));
 
-            var hudView = hudContainer.GetHudView(uiInput, nodeTemplateRepository);
+            var hudView = hudContainer.GetHudView(uiInput, graphInputAction, nodeTemplateRepository);
             var graphPage = Register(hudView.GraphPage);
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, sceneLoader));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
@@ -70,7 +71,7 @@ namespace Rector
                 displaySettingsPage,
                 copyrightNoticesPage,
                 hudView.SystemPageView));
-            var hudModel = Register(new HudModel(uiInput, hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
+            var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
 
             Register(new NodeTemplateRegisterer(
                 nodeTemplateRepository,

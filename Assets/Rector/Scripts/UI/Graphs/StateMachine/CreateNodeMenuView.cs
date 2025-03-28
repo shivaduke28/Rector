@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class CreateNodeMenuView : IGraphPageState
+    public sealed class CreateNodeMenuView : GraphPageState
     {
         public const string RootName = "create-node-menu";
         readonly VisualElement root;
@@ -66,7 +66,7 @@ namespace Rector.UI.Graphs.StateMachine
             root.transform.position = position;
         }
 
-        public void Navigate(Vector2 value)
+        public override void Navigate(Vector2 value)
         {
             if (value.y != 0)
             {
@@ -74,44 +74,8 @@ namespace Rector.UI.Graphs.StateMachine
             }
         }
 
-        public void Cancel() => model.Cancel();
+        public override void Cancel() => model.Cancel();
 
-        public void Submit() => model.Submit();
-
-        public void Action1()
-        {
-        }
-
-        public void Action2()
-        {
-        }
-
-        public void SubmitHoldStart()
-        {
-        }
-
-        public void SubmitHoldCancel()
-        {
-        }
-
-        public void SubmitHold()
-        {
-        }
-
-        public void Action2HoldStart()
-        {
-        }
-
-        public void Action2HoldCancel()
-        {
-        }
-
-        public void Action2Hold()
-        {
-        }
-
-        public void ToggleMute()
-        {
-        }
+        public override void Submit() => model.Submit();
     }
 }

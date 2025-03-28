@@ -2,6 +2,7 @@
 using R3;
 using Rector.UI.NodeEdit;
 using Rector.UI.Nodes;
+using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
@@ -26,7 +27,7 @@ namespace Rector.UI.Graphs.StateMachine
             this.page = page;
         }
 
-        public void Show()
+        public void Enter()
         {
             ExposedInputs.Clear();
             if (Node != null)
@@ -64,9 +65,10 @@ namespace Rector.UI.Graphs.StateMachine
             IsVisible.Value = true;
         }
 
-        public void Hide()
+        public void Close()
         {
             IsVisible.Value = false;
+            page.State.Value = Graphs.GraphPageState.NodeSelection;
         }
 
         public void Navigate(bool next)

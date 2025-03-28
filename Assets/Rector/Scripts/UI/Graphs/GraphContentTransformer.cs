@@ -9,7 +9,7 @@ namespace Rector.UI.Graphs
     {
         readonly VisualElement mask;
         readonly VisualElement content;
-        readonly UIInput input;
+        readonly GraphInputAction graphInputAction;
         readonly CompositeDisposable disposable = new();
 
         const string AnimationClassName = "rector-graph-content-animation";
@@ -18,11 +18,11 @@ namespace Rector.UI.Graphs
         const float MaxScale = 4f;
         const float MinScale = 0.5f;
 
-        public GraphContentTransformer(VisualElement mask, VisualElement content, UIInput input)
+        public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction)
         {
             this.mask = mask;
             this.content = content;
-            this.input = input;
+            this.graphInputAction = graphInputAction;
         }
 
         public void Initialize()
@@ -30,7 +30,7 @@ namespace Rector.UI.Graphs
             // FIXME: グラフを表示していない間も操作できてしまう
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ => { ApplyTranslateAndZoom(); }).AddTo(disposable);
 
-            input.ResetGraphPosition.Subscribe(_ => Reset()).AddTo(disposable);
+            graphInputAction.ResetTransform.Subscribe(_ => Reset()).AddTo(disposable);
         }
 
         void DisableAnimation()
@@ -70,8 +70,8 @@ namespace Rector.UI.Graphs
 
         void ApplyTranslateAndZoom()
         {
-            var translate = input.TranslateValue;
-            var zoom = input.ZoomValue;
+            var translate = graphInputAction.Translate;
+            var zoom = graphInputAction.Zoom;
 
             var hasTranslate = translate.sqrMagnitude != 0f;
             var hasZoom = !Mathf.Approximately(zoom, 0f);

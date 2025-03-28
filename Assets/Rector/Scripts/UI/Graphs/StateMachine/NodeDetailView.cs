@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class NodeDetailView : IGraphPageState
+    public sealed class NodeDetailView : GraphPageState
     {
         public const string RootName = "node-detail";
         readonly VisualElement root;
@@ -30,13 +30,9 @@ namespace Rector.UI.Graphs.StateMachine
                 model.IsVisible.Subscribe(visible =>
                 {
                     if (visible)
-                    {
                         Show();
-                    }
                     else
-                    {
                         Hide();
-                    }
                 })
             );
         }
@@ -100,7 +96,7 @@ namespace Rector.UI.Graphs.StateMachine
         }
 
 
-        public void Navigate(Vector2 value)
+        public override void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
             if (Mathf.Abs(value.x) > Mathf.Abs(value.y))
@@ -120,49 +116,8 @@ namespace Rector.UI.Graphs.StateMachine
             }
         }
 
-        public void Cancel()
-        {
-        }
+        public override void Action() => model.DoAction();
 
-        public void Submit()
-        {
-        }
-
-        public void Action1()
-        {
-            model.DoAction();
-        }
-
-        public void Action2()
-        {
-        }
-
-        public void SubmitHoldStart()
-        {
-        }
-
-        public void SubmitHoldCancel()
-        {
-        }
-
-        public void SubmitHold()
-        {
-        }
-
-        public void Action2HoldStart()
-        {
-        }
-
-        public void Action2HoldCancel()
-        {
-        }
-
-        public void Action2Hold()
-        {
-        }
-
-        public void ToggleMute()
-        {
-        }
+        public override void CloseNodeParameter() => model.Close();
     }
 }

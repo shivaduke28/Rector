@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class TargetSlotSelectionState : IGraphPageState
+    public sealed class TargetSlotSelectionState : GraphPageState
     {
         readonly GraphPage graphPage;
 
@@ -14,7 +14,7 @@ namespace Rector.UI.Graphs.StateMachine
         }
 
 
-        public void Navigate(Vector2 value)
+        public override void Navigate(Vector2 value)
         {
             if (value.x != 0)
             {
@@ -41,13 +41,13 @@ namespace Rector.UI.Graphs.StateMachine
             }
         }
 
-        public void Cancel()
+        public override void Cancel()
         {
             graphPage.SelectTargetSlot(null);
-            graphPage.State.Value = GraphPageState.TargetNodeSelection;
+            graphPage.State.Value = Graphs.GraphPageState.TargetNodeSelection;
         }
 
-        public void Submit()
+        public override void Submit()
         {
             if (!ToOutputAndInput(graphPage.SelectedSlot.Value, graphPage.TargetSlot.Value, out var output, out var input)) return;
             var edgeId = new EdgeId(output, input);
@@ -72,40 +72,13 @@ namespace Rector.UI.Graphs.StateMachine
         }
 
 
-        public void Action1()
+        public override void Action()
         {
             graphPage.TargetNode.Value?.DoAction();
         }
 
-        public void Action2()
-        {
-        }
 
-        public void SubmitHoldStart()
-        {
-        }
-
-        public void SubmitHoldCancel()
-        {
-        }
-
-        public void SubmitHold()
-        {
-        }
-
-        public void Action2HoldStart()
-        {
-        }
-
-        public void Action2HoldCancel()
-        {
-        }
-
-        public void Action2Hold()
-        {
-        }
-
-        public void ToggleMute()
+        public override void Mute()
         {
             if (graphPage.TargetNode.Value is { } targetNode)
             {

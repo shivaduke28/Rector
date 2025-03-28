@@ -10,9 +10,9 @@ namespace Rector.UI.Hud
 
         HudView view;
 
-        public HudView GetHudView(UIInput uiInput, NodeTemplateRepository nodeTemplateRepository)
+        public HudView GetHudView(UIInput uiInput, GraphInputAction graphInputAction, NodeTemplateRepository nodeTemplateRepository)
         {
-            return view ??= new HudView(uiDocument.rootVisualElement, uiInput, nodeTemplateRepository);
+            return view ??= new HudView(uiDocument.rootVisualElement, uiInput, graphInputAction, nodeTemplateRepository);
         }
     }
 }
