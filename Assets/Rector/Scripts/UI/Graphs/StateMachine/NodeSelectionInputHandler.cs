@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class NodeSelectionState : GraphPageState
+    public sealed class NodeSelectionInputHandler : GraphPageInputHandler
     {
         readonly GraphPage graphPage;
 
-        public NodeSelectionState(GraphPage graphPage)
+        public NodeSelectionInputHandler(GraphPage graphPage)
         {
             this.graphPage = graphPage;
         }
@@ -39,7 +39,7 @@ namespace Rector.UI.Graphs.StateMachine
         {
             if (graphPage.SelectedNode.Value is { } selected && (selected.InputSlots.Length > 0 || selected.OutputSlots.Length > 0))
             {
-                graphPage.State.Value = Graphs.GraphPageState.SlotSelection;
+                graphPage.State.Value = GraphPageState.SlotSelection;
                 graphPage.SelectSlot(selected.InputSlots.Length > 0 ? selected.InputSlots[0] : selected.OutputSlots[0]);
             }
         }
@@ -51,7 +51,7 @@ namespace Rector.UI.Graphs.StateMachine
 
         public override void AddNode()
         {
-            graphPage.State.Value = Graphs.GraphPageState.NodeCreation;
+            graphPage.State.Value = GraphPageState.NodeCreation;
         }
 
         public override void RemoveEdge(HoldState state)
@@ -124,7 +124,7 @@ namespace Rector.UI.Graphs.StateMachine
         {
             if (graphPage.SelectedNode.Value is not null)
             {
-                graphPage.State.Value = Graphs.GraphPageState.NodeDetail;
+                graphPage.State.Value = GraphPageState.NodeDetail;
             }
         }
     }

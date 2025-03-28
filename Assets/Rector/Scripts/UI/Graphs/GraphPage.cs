@@ -24,9 +24,9 @@ namespace Rector.UI.Graphs
         public Observable<Unit> OpenSystemPage => graphInputAction.OpenSystem.Where(_ => State.Value == GraphPageState.NodeSelection);
 
         public readonly Graph Graph = new();
-        readonly Dictionary<GraphPageState, StateMachine.GraphPageState> stateMap = new();
+        readonly Dictionary<GraphPageState, StateMachine.GraphPageInputHandler> stateMap = new();
 
-        StateMachine.GraphPageState CurrentState => stateMap[State.Value];
+        StateMachine.GraphPageInputHandler CurrentInputHandler => stateMap[State.Value];
 
         const string RootName = "graph-page";
         readonly VisualElement root;
@@ -80,10 +80,10 @@ namespace Rector.UI.Graphs
             graphContentTransformer = new GraphContentTransformer(graphMask, graphContent, graphInputAction);
 
             // state machine
-            stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionState(this));
-            stateMap.Add(GraphPageState.SlotSelection, new SlotSelectionState(this));
-            stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionState(this));
-            stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionState(this));
+            stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionInputHandler(this));
+            stateMap.Add(GraphPageState.SlotSelection, new SlotSelectionInputHandler(this));
+            stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this));
+            stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.NodeCreation, createNodeMenuView);
             stateMap.Add(GraphPageState.NodeDetail, nodeDetailView);
         }
@@ -128,16 +128,16 @@ namespace Rector.UI.Graphs
             State.Where(x => x == GraphPageState.NodeDetail)
                 .Subscribe(_ => nodeDetailModel.Enter()).AddTo(disposable);
 
-            graphInputAction.Navigate.Subscribe(x => CurrentState.Navigate(x)).AddTo(disposable);
-            graphInputAction.Submit.Subscribe(_ => CurrentState.Submit()).AddTo(disposable);
-            graphInputAction.Cancel.Subscribe(_ => CurrentState.Cancel()).AddTo(disposable);
-            graphInputAction.Action.Subscribe(_ => CurrentState.Action()).AddTo(disposable);
-            graphInputAction.AddNode.Subscribe(_ => CurrentState.AddNode()).AddTo(disposable);
-            graphInputAction.Mute.Subscribe(_ => CurrentState.Mute()).AddTo(disposable);
-            graphInputAction.OpenNodeParameter.Subscribe(_ => CurrentState.OpenNodeParameter()).AddTo(disposable);
-            graphInputAction.CloseNodeParameter.Subscribe(_ => CurrentState.CloseNodeParameter()).AddTo(disposable);
-            graphInputAction.RemoveNode.Subscribe(x => CurrentState.RemoveNode(x)).AddTo(disposable);
-            graphInputAction.RemoveEdge.Subscribe(x => CurrentState.RemoveEdge(x)).AddTo(disposable);
+            graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
+            graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
+            graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
+            graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
+            graphInputAction.AddNode.Subscribe(_ => CurrentInputHandler.AddNode()).AddTo(disposable);
+            graphInputAction.Mute.Subscribe(_ => CurrentInputHandler.Mute()).AddTo(disposable);
+            graphInputAction.OpenNodeParameter.Subscribe(_ => CurrentInputHandler.OpenNodeParameter()).AddTo(disposable);
+            graphInputAction.CloseNodeParameter.Subscribe(_ => CurrentInputHandler.CloseNodeParameter()).AddTo(disposable);
+            graphInputAction.RemoveNode.Subscribe(x => CurrentInputHandler.RemoveNode(x)).AddTo(disposable);
+            graphInputAction.RemoveEdge.Subscribe(x => CurrentInputHandler.RemoveEdge(x)).AddTo(disposable);
 
             holdGuideView.Bind(holdGuideModel).AddTo(disposable);
             nodeDetailView.Bind(nodeDetailModel).AddTo(disposable);

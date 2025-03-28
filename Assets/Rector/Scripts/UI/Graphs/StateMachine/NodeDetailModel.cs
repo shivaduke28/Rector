@@ -2,7 +2,6 @@
 using R3;
 using Rector.UI.NodeEdit;
 using Rector.UI.Nodes;
-using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
@@ -68,7 +67,7 @@ namespace Rector.UI.Graphs.StateMachine
         public void Close()
         {
             IsVisible.Value = false;
-            page.State.Value = Graphs.GraphPageState.NodeSelection;
+            page.State.Value = GraphPageState.NodeSelection;
         }
 
         public void Navigate(bool next)

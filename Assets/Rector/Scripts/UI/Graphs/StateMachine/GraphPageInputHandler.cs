@@ -2,7 +2,7 @@
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public abstract class GraphPageState
+    public abstract class GraphPageInputHandler
     {
         public virtual void Navigate(Vector2 value)
         {

@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class CreateNodeMenuView : GraphPageState
+    public sealed class CreateNodeMenuView : GraphPageInputHandler
     {
         public const string RootName = "create-node-menu";
         readonly VisualElement root;

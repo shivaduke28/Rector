@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class TargetNodeSelectionState : GraphPageState
+    public sealed class TargetNodeSelectionInputHandler : GraphPageInputHandler
     {
         readonly GraphPage graphPage;
 
-        public TargetNodeSelectionState(GraphPage graphPage)
+        public TargetNodeSelectionInputHandler(GraphPage graphPage)
         {
             this.graphPage = graphPage;
         }
@@ -30,7 +30,7 @@ namespace Rector.UI.Graphs.StateMachine
         public override void Cancel()
         {
             graphPage.SelectTargetNode(null);
-            graphPage.State.Value = Graphs.GraphPageState.SlotSelection;
+            graphPage.State.Value = GraphPageState.SlotSelection;
         }
 
         public override void Submit()
@@ -38,7 +38,7 @@ namespace Rector.UI.Graphs.StateMachine
             if (graphPage.SelectedSlot.Value is { } sourceSlot && graphPage.TargetNode.Value is { } targetNode &&
                 EdgeConnector.CanConnect(sourceSlot, targetNode))
             {
-                graphPage.State.Value = Graphs.GraphPageState.TargetSlotSelection;
+                graphPage.State.Value = GraphPageState.TargetSlotSelection;
                 if (sourceSlot.Direction == SlotDirection.Output)
                 {
                     graphPage.SelectTargetSlot(targetNode.InputSlots.FirstOrDefault(x => EdgeConnector.CanConnect(sourceSlot, x)));

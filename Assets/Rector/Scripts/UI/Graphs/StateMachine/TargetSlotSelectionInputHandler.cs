@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class TargetSlotSelectionState : GraphPageState
+    public sealed class TargetSlotSelectionInputHandler : GraphPageInputHandler
     {
         readonly GraphPage graphPage;
 
-        public TargetSlotSelectionState(GraphPage graphPage)
+        public TargetSlotSelectionInputHandler(GraphPage graphPage)
         {
             this.graphPage = graphPage;
         }
@@ -44,7 +44,7 @@ namespace Rector.UI.Graphs.StateMachine
         public override void Cancel()
         {
             graphPage.SelectTargetSlot(null);
-            graphPage.State.Value = Graphs.GraphPageState.TargetNodeSelection;
+            graphPage.State.Value = GraphPageState.TargetNodeSelection;
         }
 
         public override void Submit()

@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class NodeDetailView : GraphPageState
+    public sealed class NodeDetailView : GraphPageInputHandler
     {
         public const string RootName = "node-detail";
         readonly VisualElement root;

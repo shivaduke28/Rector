@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class SlotSelectionState : GraphPageState
+    public sealed class SlotSelectionInputHandler : GraphPageInputHandler
     {
         readonly GraphPage graphPage;
 
-        public SlotSelectionState(GraphPage graphPage)
+        public SlotSelectionInputHandler(GraphPage graphPage)
         {
             this.graphPage = graphPage;
         }
@@ -70,16 +70,16 @@ namespace Rector.UI.Graphs.StateMachine
 
         public override void Cancel()
         {
-            if (graphPage.State.Value != Graphs.GraphPageState.SlotSelection) throw new InvalidOperationException($"state is not {Graphs.GraphPageState.SlotSelection}");
+            if (graphPage.State.Value != GraphPageState.SlotSelection) throw new InvalidOperationException($"state is not {GraphPageState.SlotSelection}");
             graphPage.SelectSlot(null);
-            graphPage.State.Value = Graphs.GraphPageState.NodeSelection;
+            graphPage.State.Value = GraphPageState.NodeSelection;
         }
 
         public override void Submit()
         {
             graphPage.TargetSlot.Value = null;
             graphPage.TargetNode.Value = graphPage.SelectedNode.Value;
-            graphPage.State.Value = Graphs.GraphPageState.TargetNodeSelection;
+            graphPage.State.Value = GraphPageState.TargetNodeSelection;
         }
 
         public override void Action()
