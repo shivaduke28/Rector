@@ -27,7 +27,7 @@ namespace Rector.UI.Graphs
             style.left = 0f;
             style.top = 0f;
             disposable = Observable.EveryValueChanged(output, s => s.ConnectorPosition).DistinctUntilChanged()
-                .Merge(Observable.EveryValueChanged(input, s => s.CenterPosition).DistinctUntilChanged())
+                .Merge(Observable.EveryValueChanged(input, s => s.ConnectorPosition).DistinctUntilChanged())
                 .AsUnitObservable()
                 .Subscribe(_ => Repaint());
         }
@@ -47,28 +47,22 @@ namespace Rector.UI.Graphs
             painter.BeginPath();
 
             var startPoint = parent.WorldToLocal(output.ConnectorPosition);
-            var endPoint = parent.WorldToLocal(input.CenterPosition);
-            var c1 = startPoint + new Vector2(0, 30f);
+            var endPoint = parent.WorldToLocal(input.ConnectorPosition);
 
-            for (var i = 0; i < DummyNodes.Count; i++)
+            foreach (var dummy in DummyNodes)
             {
-                var dummy = DummyNodes[i];
                 var dummyPoint = dummy.Position + new Vector2(0, 15f);
-                var dummyC2 = dummyPoint - new Vector2(0, 50f);
-                DrawLine(startPoint, c1, dummyPoint, dummyC2, painter);
+                DrawLine(startPoint, dummyPoint, painter);
                 startPoint = dummyPoint;
-                c1 = dummyPoint + new Vector2(0, 50f);
             }
 
-            var c2 = endPoint - new Vector2(0, 30f);
-            DrawLine(startPoint, c1, endPoint, c2, painter);
+            DrawLine(startPoint, endPoint, painter);
             painter.Stroke();
             return;
 
-            static void DrawLine(Vector2 start, Vector2 c1, Vector2 end, Vector2 c2, Painter2D painter)
+            static void DrawLine(Vector2 start, Vector2 end, Painter2D painter)
             {
                 painter.MoveTo(start);
-                // painter.BezierCurveTo(c1, c2, end);
                 painter.LineTo(end);
             }
         }

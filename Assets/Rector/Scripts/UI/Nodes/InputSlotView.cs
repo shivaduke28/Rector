@@ -12,7 +12,7 @@ namespace Rector.UI.Nodes
         readonly Label nameLabel;
         const string SelectedClassName = "rector-node-slot--selected";
         const string ActiveClassName = "rector-node-slot--active";
-        public Vector2 CenterPosition => root.worldBound.center;
+        public Vector2 ConnectorPosition => root.worldBound.center;
 
         public InputSlotView(VisualElement templateContainer)
         {
