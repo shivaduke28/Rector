@@ -108,7 +108,7 @@ namespace Rector
                     ""id"": ""e5da0ab8-f142-45a2-bcb1-53b6cfbea470"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Tap"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -117,7 +117,7 @@ namespace Rector
                     ""id"": ""1818c1dc-6741-4992-bd68-d6db3fdc94e5"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Tap"",
                     ""initialStateCheck"": false
                 },
                 {
@@ -367,7 +367,7 @@ namespace Rector
                 {
                     ""name"": """",
                     ""id"": ""4da35af1-8b46-49e8-bc7d-5ca98ef82500"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse;Gamepad;Touch;Joystick;XR"",
@@ -378,7 +378,7 @@ namespace Rector
                 {
                     ""name"": """",
                     ""id"": ""1814d426-f385-416b-9aad-e5e7bd9656c3"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -389,7 +389,7 @@ namespace Rector
                 {
                     ""name"": """",
                     ""id"": ""1b2221d9-26b9-4429-aa04-edfb688e0d0a"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

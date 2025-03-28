@@ -15,7 +15,7 @@ namespace Rector.UI.Graphs
 
     public sealed class GraphInputAction : RectorInput.IGraphActions, IInitializable, IDisposable
     {
-        readonly RectorInput actions;
+        readonly RectorInput rectorInput;
         readonly Subject<Unit> submit = new();
         readonly Subject<Unit> cancel = new();
         readonly Subject<Unit> action = new();
@@ -51,19 +51,19 @@ namespace Rector.UI.Graphs
         bool removeNodeHolding;
         bool removeEdgeHolding;
 
-        public GraphInputAction(RectorInput actions)
+        public GraphInputAction(RectorInput rectorInput)
         {
-            this.actions = actions;
+            this.rectorInput = rectorInput;
         }
 
         public void Enable()
         {
-            actions.Graph.Enable();
+            rectorInput.Graph.Enable();
         }
 
         public void Disable()
         {
-            actions.Graph.Disable();
+            rectorInput.Graph.Disable();
         }
 
         public void OnNavigate(InputAction.CallbackContext context)
@@ -242,7 +242,7 @@ namespace Rector.UI.Graphs
 
         public void Initialize()
         {
-            actions.Graph.SetCallbacks(this);
+            rectorInput.Graph.SetCallbacks(this);
             navigateInputThrottle.Initialize();
         }
 
