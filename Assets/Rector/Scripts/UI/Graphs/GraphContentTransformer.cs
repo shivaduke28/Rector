@@ -27,9 +27,7 @@ namespace Rector.UI.Graphs
 
         public void Initialize()
         {
-            // FIXME: グラフを表示していない間も操作できてしまう
-            Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ => { ApplyTranslateAndZoom(); }).AddTo(disposable);
-
+            Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ => ApplyTranslateAndZoom()).AddTo(disposable);
             graphInputAction.ResetTransform.Subscribe(_ => Reset()).AddTo(disposable);
         }
 

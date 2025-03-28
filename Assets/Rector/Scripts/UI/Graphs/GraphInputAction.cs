@@ -65,6 +65,8 @@ namespace Rector.UI.Graphs
 
         public void Disable()
         {
+            Translate = Vector2.zero;
+            Zoom = 0f;
             rectorInput.Graph.Disable();
         }
 
