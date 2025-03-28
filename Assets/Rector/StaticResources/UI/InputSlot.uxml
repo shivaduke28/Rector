@@ -2,6 +2,6 @@
     <Style src="project://database/Assets/Rector/StaticResources/UI/StyleSheets/RectorCommon.uss?fileID=7433441132597879392&amp;guid=7e18d0e458dc4fa0884ab502b69d9cc2&amp;type=3#RectorCommon" />
     <Style src="project://database/Assets/Rector/StaticResources/UI/StyleSheets/RectorNode.uss?fileID=7433441132597879392&amp;guid=757db838f8e74c6f8f902c203a8cc049&amp;type=3#RectorNode" />
     <engine:VisualElement name="input-slot" class="rector-node-slot rector-node-input-slot rector-node-slot--selected">
-        <engine:Label text="Label" name="name-label" class="rector-node-slot-name-label rector-node-input-slot-name-label rector-label" />
+        <engine:Label text="Label" name="name-label" class="rector-label rector-node-slot-name-label rector-node-input-slot-name-label" />
     </engine:VisualElement>
 </engine:UXML>

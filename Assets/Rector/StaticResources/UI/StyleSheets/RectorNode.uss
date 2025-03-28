@@ -120,6 +120,6 @@
     height: 100%;
     width: 100%;
     transition-property: height, width;
-    transition-duration: 0.5s;
+    transition-duration: 0.3s;
     transition-timing-function: linear;
 }

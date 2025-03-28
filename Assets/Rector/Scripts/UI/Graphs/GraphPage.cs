@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using R3;
 using Rector.UI.Graphs.StateMachine;
 using Rector.UI.Nodes;
@@ -21,12 +20,13 @@ namespace Rector.UI.Graphs
         public readonly ReactiveProperty<Node> TargetNode = new();
         public readonly ReactiveProperty<ISlot> TargetSlot = new();
 
+        public Observable<Unit> OpenScenePage => graphInputAction.OpenScene.Where(_ => State.Value == GraphPageState.NodeSelection);
+        public Observable<Unit> OpenSystemPage => graphInputAction.OpenSystem.Where(_ => State.Value == GraphPageState.NodeSelection);
+
         public readonly Graph Graph = new();
-        readonly Dictionary<GraphPageState, IGraphPageState> stateMap = new();
+        readonly Dictionary<GraphPageState, StateMachine.GraphPageState> stateMap = new();
 
-        IGraphPageState CurrentState => stateMap[State.Value];
-        readonly SerialDisposable inputDisposable = new();
-
+        StateMachine.GraphPageState CurrentState => stateMap[State.Value];
 
         const string RootName = "graph-page";
         readonly VisualElement root;
@@ -34,7 +34,7 @@ namespace Rector.UI.Graphs
         readonly VisualElement graphContent;
         readonly VisualElement nodeRoot;
         readonly VisualElement edgeRoot;
-        readonly UIInput uiInput;
+        readonly GraphInputAction graphInputAction;
         public readonly List<List<NodeView>> Layers = new();
         public readonly Dictionary<NodeId, NodeView> NodeViews = new();
         readonly Dictionary<EdgeId, EdgeView> edgeViews = new();
@@ -58,9 +58,11 @@ namespace Rector.UI.Graphs
         public readonly ReactiveProperty<int> DummyNodeCount = new();
         public readonly ReactiveProperty<int> Type1ConflictCount = new();
 
-        public GraphPage(VisualElement container, UIInput uiInput, NodeTemplateRepository nodeTemplateRepository)
+        public GraphPage(VisualElement container,
+            GraphInputAction graphInputAction,
+            NodeTemplateRepository nodeTemplateRepository)
         {
-            this.uiInput = uiInput;
+            this.graphInputAction = graphInputAction;
 
             // VisualElements
             root = container.Q<VisualElement>(RootName);
@@ -74,7 +76,7 @@ namespace Rector.UI.Graphs
             createNodeMenuModel = new CreateNodeMenuModel(nodeTemplateRepository, Graph,
                 () => State.Value = GraphPageState.NodeSelection);
             graphContent.Add(holdGuideView);
-            graphContentTransformer = new GraphContentTransformer(graphMask, graphContent, uiInput);
+            graphContentTransformer = new GraphContentTransformer(graphMask, graphContent, graphInputAction);
 
             // state machine
             stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionState(this));
@@ -88,30 +90,14 @@ namespace Rector.UI.Graphs
         public void Enter()
         {
             isVisible.Value = true;
-            inputDisposable.Disposable = new CompositeDisposable(
-                uiInput.Submit.Subscribe(_ => CurrentState.Submit()),
-                uiInput.Cancel.Subscribe(_ => CurrentState.Cancel()),
-                uiInput.Navigate.Subscribe(x => CurrentState.Navigate(x)),
-                uiInput.Action1.Subscribe(_ => CurrentState.Action1()),
-                uiInput.Action2.Subscribe(_ => CurrentState.Action2()),
-                uiInput.SubmitHoldStart.Subscribe(_ => CurrentState.SubmitHoldStart()),
-                uiInput.SubmitHoldCancel.Subscribe(_ => CurrentState.SubmitHoldCancel()),
-                uiInput.SubmitHold.Subscribe(_ => CurrentState.SubmitHold()),
-                uiInput.Action2HoldStart.Subscribe(_ => CurrentState.Action2HoldStart()),
-                uiInput.Action2HoldCancel.Subscribe(_ => CurrentState.Action2HoldCancel()),
-                uiInput.Action2Hold.Subscribe(_ => CurrentState.Action2Hold()),
-                uiInput.RightSideBar.Subscribe(on => ToggleNodeEdit(on)),
-                uiInput.ToggleMute.Subscribe(_ => CurrentState.ToggleMute())
-            );
+            graphInputAction.Enable();
         }
 
         public void Exit()
         {
-            ToggleNodeEdit(false);
-            inputDisposable.Disposable = null;
             isVisible.Value = false;
+            graphInputAction.Disable();
         }
-
 
         void IInitializable.Initialize()
         {
@@ -138,6 +124,19 @@ namespace Rector.UI.Graphs
 
                     createNodeMenuView.SetPosition(position);
                 }).AddTo(disposable);
+            State.Where(x => x == GraphPageState.NodeDetail)
+                .Subscribe(_ => nodeDetailModel.Enter()).AddTo(disposable);
+
+            graphInputAction.Navigate.Subscribe(x => CurrentState.Navigate(x)).AddTo(disposable);
+            graphInputAction.Submit.Subscribe(_ => CurrentState.Submit()).AddTo(disposable);
+            graphInputAction.Cancel.Subscribe(_ => CurrentState.Cancel()).AddTo(disposable);
+            graphInputAction.Action.Subscribe(_ => CurrentState.Action()).AddTo(disposable);
+            graphInputAction.AddNode.Subscribe(_ => CurrentState.AddNode()).AddTo(disposable);
+            graphInputAction.Mute.Subscribe(_ => CurrentState.Mute()).AddTo(disposable);
+            graphInputAction.OpenNodeParameter.Subscribe(_ => CurrentState.OpenNodeParameter()).AddTo(disposable);
+            graphInputAction.CloseNodeParameter.Subscribe(_ => CurrentState.CloseNodeParameter()).AddTo(disposable);
+            graphInputAction.RemoveNode.Subscribe(x => CurrentState.RemoveNode(x)).AddTo(disposable);
+            graphInputAction.RemoveEdge.Subscribe(x => CurrentState.RemoveEdge(x)).AddTo(disposable);
 
             holdGuideView.Bind(holdGuideModel).AddTo(disposable);
             nodeDetailView.Bind(nodeDetailModel).AddTo(disposable);
@@ -379,32 +378,9 @@ namespace Rector.UI.Graphs
             Type1ConflictCount.Value = result.Type1ConflictCount;
         }
 
-        void ToggleNodeEdit(bool on)
-        {
-            if (on)
-            {
-                if (State.Value == GraphPageState.NodeDetail) return;
-
-                // NOTE: last state、ホンマか...?
-                // HideはNodeDetailからやる方が良い気もする
-                lastState = State.Value;
-                State.Value = GraphPageState.NodeDetail;
-                nodeDetailModel.Show();
-            }
-            else
-            {
-                if (State.Value == GraphPageState.NodeDetail)
-                {
-                    State.Value = lastState;
-                    nodeDetailModel.Hide();
-                }
-            }
-        }
-
         void IDisposable.Dispose()
         {
             disposable.Dispose();
-            inputDisposable.Dispose();
         }
     }
 }

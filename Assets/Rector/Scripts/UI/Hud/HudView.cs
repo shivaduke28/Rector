@@ -28,7 +28,7 @@ namespace Rector.UI.Hud
         public ButtonListPageView DisplaySettingsPageView { get; }
         public CopyrightNoticesPageView CopyrightNoticesPageView { get; }
 
-        public HudView(VisualElement root, UIInput uiInput, NodeTemplateRepository nodeTemplateRepository)
+        public HudView(VisualElement root, UIInputAction uiInputAction, GraphInputAction graphInputAction, NodeTemplateRepository nodeTemplateRepository)
         {
             var footer = root.Q<VisualElement>("footer");
             versionLabel = root.Q<Label>("version-label");
@@ -45,23 +45,20 @@ namespace Rector.UI.Hud
 
             consoleView = new ConsoleView(root.Q<VisualElement>("console"));
 
-            GraphPage = new GraphPage(root.Q<VisualElement>("graph-page"), uiInput, nodeTemplateRepository);
-            ScenePageView = new ButtonListPageView(root.Q<VisualElement>("scene-page"), uiInput);
-            SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInput);
-            AudioInputDevicePageView = new ButtonListPageView(root.Q<VisualElement>("audio-input-device-page"), uiInput);
-            DisplaySettingsPageView = new ButtonListPageView(root.Q<VisualElement>("display-settings-page"), uiInput);
-            CopyrightNoticesPageView = new CopyrightNoticesPageView(root.Q<VisualElement>("copyright-notices-page"), uiInput);
+            GraphPage = new GraphPage(root.Q<VisualElement>("graph-page"), graphInputAction, nodeTemplateRepository);
+            ScenePageView = new ButtonListPageView(root.Q<VisualElement>("scene-page"), uiInputAction);
+            SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInputAction);
+            AudioInputDevicePageView = new ButtonListPageView(root.Q<VisualElement>("audio-input-device-page"), uiInputAction);
+            DisplaySettingsPageView = new ButtonListPageView(root.Q<VisualElement>("display-settings-page"), uiInputAction);
+            CopyrightNoticesPageView = new CopyrightNoticesPageView(root.Q<VisualElement>("copyright-notices-page"), uiInputAction);
         }
 
-        public IDisposable Bind(HudModel viewModel, UIInput uiInput)
+        public IDisposable Bind(HudModel viewModel)
         {
             versionLabel.text = viewModel.VersionText;
             return new CompositeDisposable(
                 viewModel.PlayTime.Subscribe(x => timeLabel.text = ToTimeText(x)),
                 viewModel.Fps.Subscribe(x => fpsLabel.text = $"{x:F1}"),
-                // System表示中にHUDを非表示にする場合はEnter/Exitで購読を管理するようにする
-                uiInput.System.Subscribe(_ => viewModel.OpenSystem()),
-                uiInput.Scene.Subscribe(_ => viewModel.OpenScene()),
                 consoleView.Bind(),
                 viewModel.SystemUsedMemory.Subscribe(x => systemMemoryLabel.text = $"{x / (1024f * 1024f):F1}MB"),
                 viewModel.TotalUsedMemory.Subscribe(x => totalMemoryLabel.text = $"{x / (1024f * 1024f):F1}MB"),

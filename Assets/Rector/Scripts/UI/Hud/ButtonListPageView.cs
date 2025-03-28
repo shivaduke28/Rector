@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using R3;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Rector.UI.Hud
@@ -14,19 +16,19 @@ namespace Rector.UI.Hud
         ReadOnlyReactiveProperty<bool> IsVisible { get; }
     }
 
-    public sealed class ButtonListPageView
+    public sealed class ButtonListPageView : IUIInputHandler
     {
         readonly VisualElement root;
-        readonly UIInput uiInput;
+        readonly UIInputAction uiInputAction;
         readonly VisualElement leftList;
         readonly SerialDisposable inputDisposable = new();
 
         IButtonListPageModel model;
 
-        public ButtonListPageView(VisualElement root, UIInput uiInput)
+        public ButtonListPageView(VisualElement root, UIInputAction uiInputAction)
         {
             this.root = root;
-            this.uiInput = uiInput;
+            this.uiInputAction = uiInputAction;
             leftList = root.Q<VisualElement>("left-list");
         }
 
@@ -49,15 +51,10 @@ namespace Rector.UI.Hud
         void Show()
         {
             root.style.display = DisplayStyle.Flex;
-
-            var d = new CompositeDisposable(
-                uiInput.Submit.Subscribe(_ => model.Submit()),
-                uiInput.Cancel.Subscribe(_ => model.Cancel()),
-                uiInput.Navigate.Where(i => i.y != 0)
-                    .Subscribe(input => model.Navigate(input.y < 0))
-            );
+            uiInputAction.Register(this);
 
             leftList.Clear();
+            var d = new CompositeDisposable();
             foreach (var button in model.GetButtons())
             {
                 var rectorButton = new RectorButton();
@@ -70,8 +67,31 @@ namespace Rector.UI.Hud
 
         void Hide()
         {
+            uiInputAction.Unregister(this);
             root.style.display = DisplayStyle.None;
             inputDisposable.Disposable = null;
+        }
+
+        void IUIInputHandler.OnNavigate(Vector2 value)
+        {
+            if (value.y > 0)
+            {
+                model.Navigate(false);
+            }
+            else if (value.y < 0)
+            {
+                model.Navigate(true);
+            }
+        }
+
+        void IUIInputHandler.OnSubmit()
+        {
+            model.Submit();
+        }
+
+        void IUIInputHandler.OnCancel()
+        {
+            model.Cancel();
         }
     }
 }

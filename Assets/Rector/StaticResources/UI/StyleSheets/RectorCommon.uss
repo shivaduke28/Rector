@@ -38,7 +38,6 @@
 .rector-label {
     color: var(--rector-text-color);
     background-color: var(--rector-text-background-color);
-    font-size: 18px;
     margin: 0;
     padding: 0;
     -unity-text-align: middle-center;

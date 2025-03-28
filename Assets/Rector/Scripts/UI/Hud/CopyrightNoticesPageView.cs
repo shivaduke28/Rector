@@ -6,19 +6,19 @@ using UnityEngine;
 
 namespace Rector.UI.Hud
 {
-    public sealed class CopyrightNoticesPageView
+    public sealed class CopyrightNoticesPageView : IUIInputHandler
     {
         readonly VisualElement root;
         readonly Label label;
-        readonly UIInput uiInput;
+        readonly UIInputAction uiInputAction;
         CopyrightNoticesPageModel model;
         readonly SerialDisposable inputDisposable = new();
 
-        public CopyrightNoticesPageView(VisualElement root, UIInput uiInput)
+        public CopyrightNoticesPageView(VisualElement root, UIInputAction uiInputAction)
         {
             this.root = root;
+            this.uiInputAction = uiInputAction;
             label = root.Q<Label>("copyright-notices-label");
-            this.uiInput = uiInput;
         }
 
         public IDisposable Bind(CopyrightNoticesPageModel model)
@@ -38,6 +38,7 @@ namespace Rector.UI.Hud
             root.style.display = DisplayStyle.None;
             inputDisposable.Disposable = null;
             label.text = "";
+            uiInputAction.Unregister(this);
         }
 
         async UniTaskVoid Show()
@@ -45,12 +46,7 @@ namespace Rector.UI.Hud
             root.style.display = DisplayStyle.Flex;
             label.text = await model.LoadCopyrightNoticesAsync();
             label.transform.position = new Vector3(0, 0, 0);
-
-            inputDisposable.Disposable = new CompositeDisposable(
-                uiInput.Cancel.Subscribe(_ => model.Cancel()),
-                uiInput.Navigate.Where(i => i.y != 0)
-                    .Subscribe(input => MoveLabel(input.y))
-            );
+            uiInputAction.Register(this);
         }
 
         void MoveLabel(float y)
@@ -59,6 +55,23 @@ namespace Rector.UI.Hud
             pos.y += y * 10;
             pos.y = Mathf.Clamp(pos.y, root.resolvedStyle.height - label.resolvedStyle.height, 0f);
             label.transform.position = pos;
+        }
+
+        void IUIInputHandler.OnNavigate(Vector2 value)
+        {
+            if (value.y != 0)
+            {
+                MoveLabel(value.y);
+            }
+        }
+
+        void IUIInputHandler.OnSubmit()
+        {
+        }
+
+        void IUIInputHandler.OnCancel()
+        {
+            model.Cancel();
         }
     }
 }

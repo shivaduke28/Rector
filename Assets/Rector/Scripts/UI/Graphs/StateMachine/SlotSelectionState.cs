@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.StateMachine
 {
-    public sealed class SlotSelectionState : IGraphPageState
+    public sealed class SlotSelectionState : GraphPageState
     {
         readonly GraphPage graphPage;
 
@@ -14,7 +14,7 @@ namespace Rector.UI.Graphs.StateMachine
             this.graphPage = graphPage;
         }
 
-        public void Navigate(Vector2 value)
+        public override void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
             if (value.x != 0)
@@ -68,21 +68,21 @@ namespace Rector.UI.Graphs.StateMachine
         }
 
 
-        public void Cancel()
+        public override void Cancel()
         {
-            if (graphPage.State.Value != GraphPageState.SlotSelection) throw new InvalidOperationException($"state is not {GraphPageState.SlotSelection}");
+            if (graphPage.State.Value != Graphs.GraphPageState.SlotSelection) throw new InvalidOperationException($"state is not {Graphs.GraphPageState.SlotSelection}");
             graphPage.SelectSlot(null);
-            graphPage.State.Value = GraphPageState.NodeSelection;
+            graphPage.State.Value = Graphs.GraphPageState.NodeSelection;
         }
 
-        public void Submit()
+        public override void Submit()
         {
             graphPage.TargetSlot.Value = null;
             graphPage.TargetNode.Value = graphPage.SelectedNode.Value;
-            graphPage.State.Value = GraphPageState.TargetNodeSelection;
+            graphPage.State.Value = Graphs.GraphPageState.TargetNodeSelection;
         }
 
-        public void Action1()
+        public override void Action()
         {
             // ちょっと難しすぎるかも
             switch (graphPage.SelectedSlot.Value)
@@ -96,46 +96,38 @@ namespace Rector.UI.Graphs.StateMachine
             }
         }
 
-        public void Action2()
+        public override void RemoveEdge(HoldState state)
         {
-            // do nothing
-        }
-
-        public void SubmitHoldStart()
-        {
-            if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
+            switch (state)
             {
-                graphPage.ShowHoldNextTo(selectedNodeView);
+                case HoldState.Start:
+                {
+                    if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
+                    {
+                        graphPage.ShowHoldNextTo(selectedNodeView);
+                    }
+                    break;
+                }
+                case HoldState.Cancel:
+                    graphPage.HideHold();
+                    break;
+                case HoldState.Perform:
+                {
+                    graphPage.HideHold();
+                    if (graphPage.SelectedSlot.Value is { } selectedSlot)
+                    {
+                        graphPage.Graph.RemoveEdgesFrom(selectedSlot);
+                    }
+
+                    break;
+
+                }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
 
-        public void SubmitHoldCancel()
-        {
-            graphPage.HideHold();
-        }
-
-        public void SubmitHold()
-        {
-            graphPage.HideHold();
-            if (graphPage.SelectedSlot.Value is { } selectedSlot)
-            {
-                graphPage.Graph.RemoveEdgesFrom(selectedSlot);
-            }
-        }
-
-        public void Action2HoldStart()
-        {
-        }
-
-        public void Action2HoldCancel()
-        {
-        }
-
-        public void Action2Hold()
-        {
-        }
-
-        public void ToggleMute()
+        public override void Mute()
         {
             if (graphPage.SelectedNode.Value is { } selectedNode)
             {
