@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using R3;
-using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
-using Rector.UI.LayeredGraphDrawing;
 
 namespace Rector.UI.Graphs
 {
@@ -13,7 +11,7 @@ namespace Rector.UI.Graphs
     {
         public readonly OutputSlotView Output;
         public readonly InputSlotView Input;
-        public List<DummyNode> DummyNodes { get; } = new();
+        public List<Vector2> BendPoints { get; } = new();
 
         public Edge Edge { get; }
         readonly IDisposable disposable;
@@ -51,9 +49,9 @@ namespace Rector.UI.Graphs
             var startPoint = parent.WorldToLocal(Output.ConnectorPosition);
             var endPoint = parent.WorldToLocal(Input.ConnectorPosition);
 
-            foreach (var dummy in DummyNodes)
+            foreach (var bendPoint in BendPoints)
             {
-                var dummyPoint = dummy.Position + new Vector2(0, 15f);
+                var dummyPoint = bendPoint + new Vector2(0, 15f);
                 DrawLine(startPoint, dummyPoint, painter);
                 startPoint = dummyPoint;
             }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using R3;
+using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
-namespace Rector.UI.Graphs
+namespace Rector.UI.LayeredGraphDrawing
 {
     public static class EdgeConnector
     {
