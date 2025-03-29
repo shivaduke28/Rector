@@ -180,5 +180,48 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
         }
+
+        public bool ValidateLoop(OutputSlot output, InputSlot input)
+        {
+            if (output.NodeId.Equals(input.NodeId)) return false;
+
+            var outputNode = output.NodeId;
+            var inputNode = input.NodeId;
+
+            if (TryGetNode(outputNode, out var layeredOutputNode) && TryGetNode(inputNode, out var layeredInputNode))
+            {
+                // input→outputにパスがある場合はloopになるので弾く
+                if (CheckRecursively(layeredInputNode, layeredOutputNode))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Nodes not found when validating loop.");
+                return false;
+            }
+        }
+
+        // fromからtoに向かうedgeがあるかどうかを再起的に調べる
+        bool CheckRecursively(LayeredNode from, LayeredNode to)
+        {
+            if (from == to) return true;
+
+            foreach (var edge in from.EdgesToChild)
+            {
+                var childId = edge.EdgeView.Edge.InputSlot.NodeId;
+                if (childId == to.Id) return true;
+
+                if (TryGetNode(childId, out var childNode) && CheckRecursively(childNode, to))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

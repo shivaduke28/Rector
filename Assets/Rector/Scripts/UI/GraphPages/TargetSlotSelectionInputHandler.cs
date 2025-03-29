@@ -55,16 +55,20 @@ namespace Rector.UI.GraphPages
             var edgeId = new EdgeId(output, input);
             if (!graphPage.Graph.RemoveEdge(edgeId))
             {
-                if (EdgeConnector.TryConnect(graphPage.SelectedSlot.Value, graphPage.TargetSlot.Value, out var newEdge))
+                if (!EdgeConnector.CanConnect(output, input)) return;
+
+                if (!graphPage.Graph.ValidateLoop(output, input))
+                {
+                    RectorLogger.LoopDetected(output.NodeId, input.NodeId);
+                    return;
+                }
+
+                if (EdgeConnector.TryConnect(output, input, out var newEdge))
                 {
                     graphPage.Graph.AddEdge(newEdge);
-                    graphPage.Sort();
                 }
             }
-            else
-            {
-                graphPage.Sort();
-            }
+            graphPage.Sort();
         }
 
         static bool ToOutputAndInput(ISlot slot1, ISlot slot2, out OutputSlot output, out InputSlot input)

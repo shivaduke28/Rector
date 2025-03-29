@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using R3;
-using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
-namespace Rector.UI.LayeredGraphDrawing
+namespace Rector.UI.Graphs
 {
     // FIXME: 型ベースの接続可能性とグラフ構造による接続可能性は別の話なのでこのクラスはGraphsに移動してcycleの検知を別のクラスとして作る
     public static class EdgeConnector
