@@ -6,6 +6,7 @@ namespace Rector.UI.Graphs.Nodes
 {
     public sealed class VfxNode : Node, IInitializable, IDisposable
     {
+        public static string Category => NodeCategoryV2.Vfx;
         readonly VfxNodeBehaviour behaviour;
         readonly BoolInput activeInput = new("Active", false);
         IDisposable disposable;

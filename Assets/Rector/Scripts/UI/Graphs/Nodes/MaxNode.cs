@@ -7,6 +7,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class MaxNode : Node
     {
         public const string NodeName = "Max";
+        public static string Category => NodeCategoryV2.Math;
+
         readonly FloatInput x = new("x", 0f, float.NegativeInfinity, float.PositiveInfinity);
         readonly FloatInput y = new("y", 0f, float.NegativeInfinity, float.PositiveInfinity);
 

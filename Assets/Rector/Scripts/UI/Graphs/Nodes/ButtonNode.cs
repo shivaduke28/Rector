@@ -5,6 +5,8 @@ namespace Rector.UI.Graphs.Nodes
 {
     public sealed class ButtonNode : Node
     {
+        public static string Category => NodeCategoryV2.Event;
+
         public const string NodeName = "Button";
         readonly Subject<Unit> onClick = new();
         public ButtonNode(NodeId id) : base(id, "Button")

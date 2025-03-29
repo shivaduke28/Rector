@@ -4,6 +4,7 @@ namespace Rector.UI.Graphs.Nodes
 {
     public sealed class BehaviourNode : Node
     {
+        public static string Category => NodeCategoryV2.Scene;
         public BehaviourNode(NodeId id, NodeBehaviour nodeBehaviour) : base(id, nodeBehaviour.Name)
         {
             var inputs = nodeBehaviour.GetInputs();

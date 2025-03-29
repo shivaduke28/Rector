@@ -6,6 +6,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class LevelNode : SourceNode
     {
         public const string NodeName = "Level";
+        public static string Category => NodeCategoryV2.Event;
         public LevelNode(NodeId id, AudioMixerModel audioMixerModel) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]

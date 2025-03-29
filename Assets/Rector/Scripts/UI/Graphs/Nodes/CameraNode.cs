@@ -6,12 +6,12 @@ namespace Rector.UI.Graphs.Nodes
 {
     public sealed class CameraNode : Node
     {
+        public static string Category => NodeCategoryV2.Camera;
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots => Array.Empty<OutputSlot>();
 
         readonly CameraBehaviour cameraBehaviour;
         IDisposable disposable;
-        public ReadOnlyReactiveProperty<bool> IsActive => cameraBehaviour.IsActive;
 
 
         public CameraNode(NodeId id, CameraBehaviour cameraBehaviour) : base(id, cameraBehaviour.Name)

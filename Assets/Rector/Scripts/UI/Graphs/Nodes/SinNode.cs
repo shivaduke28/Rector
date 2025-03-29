@@ -7,6 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class SinNode : Node
     {
         public const string NodeName = "Sin";
+        public static string Category => NodeCategoryV2.Math;
 
         public SinNode(NodeId id) : base(id, NodeName)
         {

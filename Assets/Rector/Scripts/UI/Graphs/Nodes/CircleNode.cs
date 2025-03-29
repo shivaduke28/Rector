@@ -7,6 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class CircleNode : Node
     {
         public const string NodeName = "Circle";
+        public static string Category => NodeCategoryV2.Math;
 
         // normalized
         readonly FloatInput theta = new("t", 0, -1f, 1f);

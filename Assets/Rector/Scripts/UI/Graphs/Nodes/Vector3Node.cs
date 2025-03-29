@@ -7,6 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Vector3Node : Node
     {
         public const string NodeName = "Vector3";
+        public static string Category => NodeCategoryV2.Math;
 
         public Vector3Node(NodeId id) : base(id, NodeName)
         {

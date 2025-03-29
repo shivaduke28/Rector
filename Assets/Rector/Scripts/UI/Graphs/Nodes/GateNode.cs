@@ -5,6 +5,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class GateNode : SourceNode
     {
         public const string NodeName = "Gate";
+        public static string Category => NodeCategoryV2.Operator;
         readonly Subject<Unit> subject = new();
 
         public GateNode(NodeId id) : base(id, NodeName)

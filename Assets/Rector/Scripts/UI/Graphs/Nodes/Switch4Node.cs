@@ -6,6 +6,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Switch4Node : Node
     {
         public const string NodeName = "Switch 4";
+        public static string Category => NodeCategoryV2.Operator;
         readonly ReactiveProperty<int> sequence = new(0);
 
         public Switch4Node(NodeId id) : base(id, NodeName)

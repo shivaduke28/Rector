@@ -8,6 +8,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class TimeNode : Node
     {
         public const string NodeName = "Time";
+        public static string Category => NodeCategoryV2.Event;
 
         public TimeNode(NodeId id) : base(id, NodeName)
         {
