@@ -79,6 +79,12 @@ namespace Rector
             LogInternal($"[CAMERA/CHANGE] name='{cameraName}'");
         }
 
+        public static void LoopDetected(NodeId outputNodeId, NodeId inputNodeId)
+        {
+            // エラー用のstyleあてたい
+            LogInternal($"[EDGE/ERROR] Loop detected. src={outputNodeId} dst={inputNodeId}");
+        }
+
         static string TimeString()
         {
             var time = Time.realtimeSinceStartup;
@@ -92,5 +98,6 @@ namespace Rector
         {
             LogSubject.OnNext($"[{TimeString()}] {message}");
         }
+
     }
 }
