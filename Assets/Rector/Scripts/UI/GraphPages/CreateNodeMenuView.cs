@@ -52,6 +52,8 @@ namespace Rector.UI.GraphPages
                     var category = this.model.CategoryIndex;
                     subList.style.marginTop = 18 * category;
 
+                    // FIXME: そこそこアロケーションがあるので重い場合はキャッシュするとよい
+                    // NodeTemplateRepo側がDirtyな場合だけShow時に初期化すればよいはず
                     foreach (var buttonState in this.model.GetItems(category))
                     {
                         var button = new RectorButton();
