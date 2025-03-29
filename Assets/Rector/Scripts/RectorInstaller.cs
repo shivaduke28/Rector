@@ -4,6 +4,7 @@ using System.Threading;
 using Rector.Audio;
 using Rector.Cameras;
 using Rector.UI;
+using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
 using Rector.UI.Hud;
 using Rector.Vfx;
@@ -58,7 +59,8 @@ namespace Rector
             var uiInputAction = Register(new UIInputAction(rectorInput));
             var graphInputAction = Register(new GraphInputAction(rectorInput));
 
-            var hudView = hudContainer.GetHudView(uiInputAction, graphInputAction, nodeTemplateRepository);
+            var hudRoot = hudContainer.Root;
+            var hudView = new HudView(hudRoot, uiInputAction, graphInputAction, nodeTemplateRepository);
             var graphPage = Register(hudView.GraphPage);
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, sceneLoader));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));

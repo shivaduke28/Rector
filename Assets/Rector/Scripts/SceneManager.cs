@@ -5,8 +5,9 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
 using Rector.Nodes;
+using Rector.UI;
 using Rector.UI.Graphs;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Nodes;
 using UnityEngine.SceneManagement;
 
 namespace Rector
@@ -74,10 +75,19 @@ namespace Rector
                 var nodeBehaviours = rootObject.GetComponentsInChildren<NodeBehaviour>().OrderBy(b => b.name);
                 foreach (var nodeBehaviour in nodeBehaviours)
                 {
-                    var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => new BehaviourNode(id, nodeBehaviour));
+                    var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
                     nodeTemplateRepository.Add(template);
                     registeredNodeTemplates.Add(template.Id);
                 }
+            }
+
+            return;
+
+            static NodeView Create(Node node)
+            {
+                var ve = VisualElementFactory.Instance.CreateNode();
+                var nodeView = new NodeView(ve, node);
+                return nodeView;
             }
         }
 

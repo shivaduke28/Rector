@@ -3,24 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using R3;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs
 {
+    public interface IBendPoint
+    {
+        Vector2 Position { get; }
+    }
+
     public sealed class EdgeView : VisualElement, IDisposable
     {
-        readonly OutputSlotView output;
-        readonly InputSlotView input;
-        public List<DummyNode> DummyNodes { get; } = new();
+        public readonly OutputSlotView Output;
+        public readonly InputSlotView Input;
+        public List<IBendPoint> BendPoints { get; } = new();
 
         public Edge Edge { get; }
         readonly IDisposable disposable;
 
         public EdgeView(OutputSlotView output, InputSlotView input, Edge edge)
         {
-            this.output = output;
-            this.input = input;
-            this.Edge = edge;
+            Output = output;
+            Input = input;
+            Edge = edge;
             generateVisualContent += OnGenerateVisualContent;
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
@@ -46,12 +51,12 @@ namespace Rector.UI.Graphs
             painter.lineWidth = 1f;
             painter.BeginPath();
 
-            var startPoint = parent.WorldToLocal(output.ConnectorPosition);
-            var endPoint = parent.WorldToLocal(input.ConnectorPosition);
+            var startPoint = parent.WorldToLocal(Output.ConnectorPosition);
+            var endPoint = parent.WorldToLocal(Input.ConnectorPosition);
 
-            foreach (var dummy in DummyNodes)
+            foreach (var bendPoint in BendPoints)
             {
-                var dummyPoint = dummy.Position + new Vector2(0, 15f);
+                var dummyPoint = bendPoint.Position + new Vector2(0, 15f);
                 DrawLine(startPoint, dummyPoint, painter);
                 startPoint = dummyPoint;
             }

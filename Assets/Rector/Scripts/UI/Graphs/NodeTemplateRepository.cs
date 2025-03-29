@@ -1,48 +1,32 @@
-﻿using System;
 using System.Collections.Generic;
-using Rector.UI.Nodes;
 
 namespace Rector.UI.Graphs
 {
     public sealed class NodeTemplateRepository
     {
-        readonly Dictionary<NodeTemplateId, NodeTemplate> templates = new();
-        readonly Dictionary<Type, NodeTemplate> typeToTemplate = new();
+        readonly Dictionary<NodeTemplateId, NodeTemplate> factories = new();
+        readonly Dictionary<string, List<NodeTemplate>> categoryNodeSet = new();
+        public IReadOnlyDictionary<string, List<NodeTemplate>> CategoryNodeSet => categoryNodeSet;
 
-        public void Add(NodeTemplate template)
+        public void Add(NodeTemplate factory)
         {
-            templates.Add(template.Id, template);
-            typeToTemplate.TryAdd(template.Type, template);
-        }
-
-        public bool TryGet(NodeTemplateId id, out NodeTemplate template)
-        {
-            return templates.TryGetValue(id, out template);
-        }
-
-        public bool TryCreate<T>(out Node node) where T : Node
-        {
-            if (typeToTemplate.TryGetValue(typeof(T), out var template))
+            factories.Add(factory.Id, factory);
+            if (!categoryNodeSet.TryGetValue(factory.Category, out var list))
             {
-                node = (T)template.Factory(NodeId.Generate());
-                return true;
+                list = new List<NodeTemplate>();
+                categoryNodeSet.Add(factory.Category, list);
             }
-
-            node = null;
-            return false;
+            list.Add(factory);
         }
 
         public IEnumerable<NodeTemplate> GetAll()
         {
-            return templates.Values;
+            return factories.Values;
         }
 
         public void Remove(NodeTemplateId id)
         {
-            if (templates.Remove(id, out var template))
-            {
-                typeToTemplate.Remove(template.Type);
-            }
+            factories.Remove(id);
         }
     }
 }
