@@ -26,7 +26,7 @@ namespace Rector.UI.GraphPages
             }
             else
             {
-                var first = graphPage.Graph.Layers.FirstOrDefault()?.FirstOrDefault();
+                var first = graphPage.Graph.Layers.FirstOrDefault(l => l.Count > 0)?.FirstOrDefault();
                 if (first is LayeredNode layeredNode)
                 {
                     graphPage.SelectNode(layeredNode.NodeView.Node);
