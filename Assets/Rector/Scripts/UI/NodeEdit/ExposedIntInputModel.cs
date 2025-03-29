@@ -1,6 +1,5 @@
 using R3;
-using Rector.UI.Graphs.StateMachine;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Nodes;
 using UnityEngine;
 
 namespace Rector.UI.NodeEdit

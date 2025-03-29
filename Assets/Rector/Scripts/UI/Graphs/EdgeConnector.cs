@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using R3;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Nodes;
 using UnityEngine;
 
 namespace Rector.UI.Graphs

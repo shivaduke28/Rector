@@ -4,6 +4,7 @@ using System.Threading;
 using Rector.Audio;
 using Rector.Cameras;
 using Rector.UI;
+using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
 using Rector.UI.Hud;
 using Rector.Vfx;

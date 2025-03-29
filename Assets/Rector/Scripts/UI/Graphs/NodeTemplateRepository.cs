@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Nodes;
 
 namespace Rector.UI.Graphs
 {

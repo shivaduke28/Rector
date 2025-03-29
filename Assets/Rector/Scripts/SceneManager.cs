@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 using R3;
 using Rector.Nodes;
 using Rector.UI.Graphs;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Nodes;
 using UnityEngine.SceneManagement;
 
 namespace Rector

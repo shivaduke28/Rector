@@ -1,5 +1,5 @@
 ﻿using System;
-using Rector.UI.Nodes;
+using Rector.UI.Graphs.Nodes;
 using UnityEngine.Assertions;
 
 namespace Rector.UI.Graphs

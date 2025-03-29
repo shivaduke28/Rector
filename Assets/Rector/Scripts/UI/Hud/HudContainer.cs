@@ -1,4 +1,5 @@
-﻿using Rector.UI.Graphs;
+﻿using Rector.UI.GraphPages;
+using Rector.UI.Graphs;
 using UnityEngine;
 using UnityEngine.UIElements;
 
