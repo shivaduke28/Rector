@@ -1,6 +1,4 @@
-﻿using Rector.UI.GraphPages;
-using Rector.UI.Graphs;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Rector.UI.Hud
@@ -9,11 +7,6 @@ namespace Rector.UI.Hud
     {
         [SerializeField] UIDocument uiDocument;
 
-        HudView view;
-
-        public HudView GetHudView(UIInputAction uiInputAction, GraphInputAction graphInputAction, NodeTemplateRepository nodeTemplateRepository)
-        {
-            return view ??= new HudView(uiDocument.rootVisualElement, uiInputAction, graphInputAction, nodeTemplateRepository);
-        }
+        public VisualElement Root => uiDocument.rootVisualElement;
     }
 }

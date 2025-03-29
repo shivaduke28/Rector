@@ -9,7 +9,6 @@ using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 using UnityEngine.UIElements;
-using NodeViewFactory = Rector.UI.Graphs.Nodes.NodeViewFactory;
 
 namespace Rector.UI.GraphPages
 {
@@ -49,7 +48,6 @@ namespace Rector.UI.GraphPages
         readonly HoldGuideView holdGuideView = new();
         readonly NodeParameterView nodeParameterView;
         readonly NodeParameterModel nodeParameterModel;
-        readonly NodeViewFactory nodeViewFactory = new();
 
         readonly GraphContentTransformer graphContentTransformer;
         readonly GraphSorter graphSorter = new();
@@ -65,7 +63,7 @@ namespace Rector.UI.GraphPages
 
         public GraphPage(VisualElement container,
             GraphInputAction graphInputAction,
-            NodeTemplateRepository nodeTemplateRepository)
+            NodeTemplateRepositoryV2 nodeTemplateRepository)
         {
             this.graphInputAction = graphInputAction;
 
@@ -78,7 +76,7 @@ namespace Rector.UI.GraphPages
             nodeParameterView = new NodeParameterView(root.Q<VisualElement>(NodeParameterView.RootName));
             nodeParameterModel = new NodeParameterModel(this);
             createNodeMenuView = new CreateNodeMenuView(root.Q<VisualElement>(CreateNodeMenuView.RootName));
-            createNodeMenuModel = new CreateNodeMenuModel(nodeTemplateRepository, Graph,
+            createNodeMenuModel = new CreateNodeMenuModel(this, nodeTemplateRepository,
                 () => State.Value = GraphPageState.NodeSelection);
             graphContent.Add(holdGuideView);
             graphContentTransformer = new GraphContentTransformer(graphMask, graphContent, graphInputAction);
@@ -107,7 +105,6 @@ namespace Rector.UI.GraphPages
         void IInitializable.Initialize()
         {
             isVisible.Subscribe(x => root.style.display = x ? DisplayStyle.Flex : DisplayStyle.None).AddTo(disposable);
-            Graph.OnNodeAdded.Subscribe(OnNodeAdded).AddTo(disposable);
             Graph.OnNodeRemoved.Subscribe(node => OnNodeRemoved(node.Id)).AddTo(disposable);
             Graph.OnEdgeAdded.Subscribe(OnEdgeAdded).AddTo(disposable);
             Graph.OnEdgeRemoved.Subscribe(OnEdgeRemoved).AddTo(disposable);
@@ -276,31 +273,6 @@ namespace Rector.UI.GraphPages
         }
 
 
-        void OnNodeAdded(Node node)
-        {
-            var nodeView = nodeViewFactory.Create(node);
-            nodeView.AddTo(nodeRoot);
-            NodeViews.Add(node.Id, nodeView);
-
-            if (Layers.Count > 0)
-            {
-                var layer = Layers[0];
-                if (layer.Count > 0)
-                {
-                    var last = layer.Last();
-                    if (last.Node.OutputSlots.All(s => s.ConnectedCount == 0))
-                    {
-                        var position = last.Position + new Vector2(last.Width + 20f, 0);
-                        nodeView.Position = position;
-                        nodeView.IndexInLayer = last.IndexInLayer + 1;
-                    }
-                }
-            }
-
-            Sort();
-            RectorLogger.CreateNode(node);
-        }
-
         void OnNodeRemoved(NodeId id)
         {
             if (NodeViews.Remove(id, out var nodeView))
@@ -381,6 +353,31 @@ namespace Rector.UI.GraphPages
             LayerCount.Value = result.LayerCount;
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
+        }
+
+        public void AddNode(NodeView nodeView)
+        {
+            Graph.Add(nodeView.Node);
+            nodeView.AddTo(nodeRoot);
+            NodeViews.Add(nodeView.Node.Id, nodeView);
+
+            if (Layers.Count > 0)
+            {
+                var layer = Layers[0];
+                if (layer.Count > 0)
+                {
+                    var last = layer.Last();
+                    if (last.Node.OutputSlots.All(s => s.ConnectedCount == 0))
+                    {
+                        var position = last.Position + new Vector2(last.Width + 20f, 0);
+                        nodeView.Position = position;
+                        nodeView.IndexInLayer = last.IndexInLayer + 1;
+                    }
+                }
+            }
+
+            Sort();
+            RectorLogger.CreateNode(nodeView.Node);
         }
 
         void IDisposable.Dispose()

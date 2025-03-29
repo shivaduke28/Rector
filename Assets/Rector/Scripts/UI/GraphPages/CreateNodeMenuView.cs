@@ -14,6 +14,7 @@ namespace Rector.UI.GraphPages
 
         CreateNodeMenuModel model;
 
+        readonly CompositeDisposable visibleDisposable = new();
         CompositeDisposable subListDisposable;
 
         public CreateNodeMenuView(VisualElement root)
@@ -28,37 +29,60 @@ namespace Rector.UI.GraphPages
             this.model = model;
             var disposable = new CompositeDisposable();
             subListDisposable = new CompositeDisposable();
-            foreach (var buttonState in this.model.CategoryButtons)
+
+            this.model.Visible.Subscribe(x =>
             {
-                var button = new RectorButton();
-                button.Bind(buttonState).AddTo(disposable);
-                mainList.Add(button);
-            }
+                if (x)
+                    Show();
+                else
+                    Hide();
+            }).AddTo(disposable);
 
-            this.model.Visible.Subscribe(x => root.style.visibility = x
-                ? Visibility.Visible
-                : Visibility.Hidden).AddTo(disposable);
-            this.model.State.Subscribe(state => subList.style.visibility = state == CreateNodeMenuModel.ViewState.Main
-                ? Visibility.Hidden
-                : Visibility.Visible).AddTo(disposable);
-
-            this.model.Category.Subscribe(category =>
+            this.model.State.Subscribe(state =>
             {
-                subList.Clear();
-                subListDisposable.Clear();
-                subList.style.marginTop = 18 * (int)category;
-
-                foreach (var buttonState in this.model.GetItems(category))
+                if (state == CreateNodeMenuModel.ViewState.Main)
                 {
-                    var button = new RectorButton();
-                    button.Bind(buttonState).AddTo(subListDisposable);
-                    subList.Add(button);
+                    subList.style.display = DisplayStyle.None;
                 }
+                else
+                {
+                    subList.style.display = DisplayStyle.Flex;
+                    subList.Clear();
+                    subListDisposable.Clear();
+                    var category = this.model.CategoryIndex;
+                    subList.style.marginTop = 18 * category;
 
+                    foreach (var buttonState in this.model.GetItems(category))
+                    {
+                        var button = new RectorButton();
+                        button.Bind(buttonState).AddTo(subListDisposable);
+                        subList.Add(button);
+                    }
+                }
             }).AddTo(disposable);
 
             subListDisposable.AddTo(disposable);
             return disposable;
+        }
+
+        void Show()
+        {
+            mainList.Clear();
+            visibleDisposable.Clear();
+            foreach (var buttonState in model.CategoryButtons)
+            {
+                var button = new RectorButton();
+                button.Bind(buttonState).AddTo(visibleDisposable);
+                mainList.Add(button);
+            }
+
+            root.style.display = DisplayStyle.Flex;
+        }
+
+        void Hide()
+        {
+            visibleDisposable.Clear();
+            root.style.display = DisplayStyle.None;
         }
 
         public void SetPosition(Vector2 position)

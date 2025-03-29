@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
 using Rector.Nodes;
+using Rector.UI;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
 using UnityEngine.SceneManagement;
@@ -15,7 +16,7 @@ namespace Rector
     {
         readonly SceneSettings sceneSettings;
         readonly LoadingView loadingView;
-        readonly NodeTemplateRepository nodeTemplateRepository;
+        readonly NodeTemplateRepositoryV2 nodeTemplateRepository;
         readonly CancellationTokenSource cts = new();
         readonly ReactiveProperty<string> currentScene = new("");
         public ReadOnlyReactiveProperty<string> CurrentScene => currentScene;
@@ -23,7 +24,7 @@ namespace Rector
         public string[] GetScenes() => sceneSettings.sceneNames;
         readonly HashSet<NodeTemplateId> registeredNodeTemplates = new();
 
-        public SceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepository nodeTemplateRepository)
+        public SceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepositoryV2 nodeTemplateRepository)
         {
             this.loadingView = loadingView;
             this.sceneSettings = sceneSettings;
@@ -74,10 +75,19 @@ namespace Rector
                 var nodeBehaviours = rootObject.GetComponentsInChildren<NodeBehaviour>().OrderBy(b => b.name);
                 foreach (var nodeBehaviour in nodeBehaviours)
                 {
-                    var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => new BehaviourNode(id, nodeBehaviour));
+                    var template = NodeTemplateV2.Create(NodeCategoryV2.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
                     nodeTemplateRepository.Add(template);
                     registeredNodeTemplates.Add(template.Id);
                 }
+            }
+
+            return;
+
+            static NodeView Create(Node node)
+            {
+                var ve = VisualElementFactory.Instance.CreateNode();
+                var nodeView = new NodeView(ve, node);
+                return nodeView;
             }
         }
 

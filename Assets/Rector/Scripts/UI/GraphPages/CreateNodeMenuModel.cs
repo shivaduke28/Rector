@@ -15,35 +15,25 @@ namespace Rector.UI.GraphPages
 
         public readonly ReactiveProperty<bool> Visible = new(false);
         public readonly ReactiveProperty<ViewState> State = new(ViewState.Main);
-        public readonly ReactiveProperty<NodeCategory> Category = new(NodeCategory.Vfx);
-        readonly NodeTemplateRepository nodeTemplateRepository;
-        readonly Graph graph;
+        readonly GraphPage graphPage;
+        readonly NodeTemplateRepositoryV2 nodeTemplateRepositoryV2;
         readonly Action onExit;
 
-        public readonly List<RectorButtonState> CategoryButtons;
-        readonly Dictionary<NodeCategory, List<RectorButtonState>> nodeButtons = new();
+        public readonly List<RectorButtonState> CategoryButtons = new();
+        readonly Dictionary<string, List<RectorButtonState>> nodeButtons = new();
+        readonly List<string> categories = new();
 
-        int index;
+        public int CategoryIndex { get; private set; }
         int subIndex;
 
-        public CreateNodeMenuModel(NodeTemplateRepository nodeTemplateRepository, Graph graph, Action onExit)
+        public CreateNodeMenuModel(GraphPage graphPage, NodeTemplateRepositoryV2 nodeTemplateRepositoryV2, Action onExit)
         {
-            this.nodeTemplateRepository = nodeTemplateRepository;
-            this.graph = graph;
+            this.graphPage = graphPage;
+            this.nodeTemplateRepositoryV2 = nodeTemplateRepositoryV2;
             this.onExit = onExit;
-            CategoryButtons = new List<RectorButtonState>
-            {
-                new("Vfx", () => ChangeCategory(NodeCategory.Vfx)),
-                new("Camera", () => ChangeCategory(NodeCategory.Camera)),
-                new("Event", () => ChangeCategory(NodeCategory.Event)),
-                new("Operator", () => ChangeCategory(NodeCategory.Operator)),
-                new("Math", () => ChangeCategory(NodeCategory.Math)),
-                new("Scene", () => ChangeCategory(NodeCategory.Scene)),
-                new("System", () => ChangeCategory(NodeCategory.System)),
-            };
         }
 
-        void ChangeCategory(NodeCategory category)
+        void ChangeCategory(string category)
         {
             if (State.Value == ViewState.Main)
             {
@@ -51,40 +41,56 @@ namespace Rector.UI.GraphPages
                 var items = GetItems(category);
                 if (items.Count == 0) return;
 
-                Category.Value = category;
+                CategoryIndex = categories.IndexOf(category);
                 State.Value = ViewState.Sub;
                 subIndex = 0;
                 items[subIndex].IsFocused.Value = true;
             }
         }
 
+        // 必要ならTemplateRepoのDirtyチェックをすることで無駄を削れる
         void LoadButtons()
         {
-            foreach (var buttons in nodeButtons.Values)
+            categories.Clear();
+            CategoryButtons.Clear();
+            var categoryNodeSet = nodeTemplateRepositoryV2.CategoryNodeSet;
+            foreach (var (category, nodeTemplates) in categoryNodeSet)
             {
-                buttons.Clear();
-            }
+                var categoryButton = new RectorButtonState(category, () => ChangeCategory(category));
+                CategoryButtons.Add(categoryButton);
+                categories.Add(category);
 
-            foreach (var template in nodeTemplateRepository.GetAll())
-            {
-                GetItems(template.Category).Add(new RectorButtonState(template.Name, () => graph.Add(template.Factory(NodeId.Generate()))));
+                if (nodeButtons.TryGetValue(category, out var buttons))
+                {
+                    buttons.Clear();
+                }
+                else
+                {
+                    buttons = new List<RectorButtonState>();
+                    nodeButtons.Add(category, buttons);
+                }
+
+                foreach (var nodeTemplate in nodeTemplates)
+                {
+                    var button = new RectorButtonState(nodeTemplate.Name, () => graphPage.AddNode(nodeTemplate.Factory(NodeId.Generate())));
+                    buttons.Add(button);
+                }
             }
         }
 
         public void Enter()
         {
-            // 必要ならTemplateRepoのDirtyチェックをすることで無駄を削れる
             LoadButtons();
-            Category.ForceNotify();
-            Visible.Value = true;
-            index = 0;
+            CategoryIndex = 0;
             subIndex = 0;
-            CategoryButtons[index].IsFocused.Value = true;
+            State.ForceNotify();
+            Visible.Value = true;
+            CategoryButtons[CategoryIndex].IsFocused.Value = true;
         }
 
         void Exit()
         {
-            CategoryButtons[index].IsFocused.Value = false;
+            CategoryButtons[CategoryIndex].IsFocused.Value = false;
             Visible.Value = false;
             onExit.Invoke();
         }
@@ -93,11 +99,11 @@ namespace Rector.UI.GraphPages
         {
             if (State.Value == ViewState.Main)
             {
-                CategoryButtons[index].OnClick.Invoke();
+                CategoryButtons[CategoryIndex].OnClick.Invoke();
             }
             else
             {
-                GetItems(Category.Value)[subIndex].OnClick.Invoke();
+                GetItems(CategoryIndex)[subIndex].OnClick.Invoke();
             }
         }
 
@@ -109,7 +115,7 @@ namespace Rector.UI.GraphPages
             }
             else
             {
-                GetItems(Category.Value)[subIndex].IsFocused.Value = false;
+                GetItems(CategoryIndex)[subIndex].IsFocused.Value = false;
                 subIndex = 0;
                 State.Value = ViewState.Main;
             }
@@ -119,20 +125,25 @@ namespace Rector.UI.GraphPages
         {
             if (State.Value == ViewState.Main)
             {
-                CategoryButtons[index].IsFocused.Value = false;
-                index = (index + (next ? 1 : -1) + CategoryButtons.Count) % CategoryButtons.Count;
-                CategoryButtons[index].IsFocused.Value = true;
+                CategoryButtons[CategoryIndex].IsFocused.Value = false;
+                CategoryIndex = (CategoryIndex + (next ? 1 : -1) + CategoryButtons.Count) % CategoryButtons.Count;
+                CategoryButtons[CategoryIndex].IsFocused.Value = true;
             }
             else
             {
-                GetItems(Category.Value)[subIndex].IsFocused.Value = false;
-                subIndex = (subIndex + (next ? 1 : -1) + GetItems(Category.Value).Count) %
-                           GetItems(Category.Value).Count;
-                GetItems(Category.Value)[subIndex].IsFocused.Value = true;
+                var items = GetItems(CategoryIndex);
+                items[subIndex].IsFocused.Value = false;
+                subIndex = (subIndex + (next ? 1 : -1) + items.Count) % items.Count;
+                items[subIndex].IsFocused.Value = true;
             }
         }
 
-        public List<RectorButtonState> GetItems(NodeCategory category)
+        public List<RectorButtonState> GetItems(int index)
+        {
+            return GetItems(categories[index]);
+        }
+
+        List<RectorButtonState> GetItems(string category)
         {
             if (!nodeButtons.TryGetValue(category, out var buttons))
             {

@@ -52,14 +52,15 @@ namespace Rector
             // camera
             var cameraManager = Register(new CameraManager(cinemachineBrain, cameraBehaviours));
 
-            var nodeTemplateRepository = Register(new NodeTemplateRepository());
+            var nodeTemplateRepository = Register(new NodeTemplateRepositoryV2());
             Register(nodeTemplateRepository);
             var sceneLoader = Register(new SceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository));
 
             var uiInputAction = Register(new UIInputAction(rectorInput));
             var graphInputAction = Register(new GraphInputAction(rectorInput));
 
-            var hudView = hudContainer.GetHudView(uiInputAction, graphInputAction, nodeTemplateRepository);
+            var hudRoot = hudContainer.Root;
+            var hudView = new HudView(hudRoot, uiInputAction, graphInputAction, nodeTemplateRepository);
             var graphPage = Register(hudView.GraphPage);
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, sceneLoader));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
@@ -74,7 +75,7 @@ namespace Rector
                 hudView.SystemPageView));
             var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
 
-            Register(new NodeTemplateRegisterer(
+            Register(new NodeTemplateRegistererV2(
                 nodeTemplateRepository,
                 vfxManager,
                 beatModel,

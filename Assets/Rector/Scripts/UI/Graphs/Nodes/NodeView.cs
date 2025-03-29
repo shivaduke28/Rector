@@ -14,14 +14,14 @@ namespace Rector.UI.Graphs.Nodes
         protected readonly VisualElement InputSlotList;
         protected readonly VisualElement OutputSlotList;
 
-        public Node Node { get; protected set; }
+        public Node Node { get; }
         public int LayerIndex;
         public int IndexInLayer;
         public Rect WorldBound => Root.worldBound;
         public float Width => Root.resolvedStyle.width;
         protected const string NodeSelectedClassName = "rector-node--selected";
-        public List<InputSlotView> InputSlotViews { get; } = new();
-        public List<OutputSlotView> OutputSlotViews { get; } = new();
+        public List<InputSlotView> InputSlotViews { get; }
+        public List<OutputSlotView> OutputSlotViews { get; }
 
         protected readonly CompositeDisposable Disposables = new();
 
@@ -31,19 +31,17 @@ namespace Rector.UI.Graphs.Nodes
             set => Root.transform.position = new Vector3(value.x, value.y, 0);
         }
 
-        public NodeView(VisualElement templateContainer)
+        public NodeView(VisualElement templateContainer, Node node)
         {
             Root = templateContainer.Q<VisualElement>("node");
             NameLabel = Root.Q<Label>("name-label");
             InputSlotList = Root.Q<VisualElement>("input-slot-list");
             OutputSlotList = Root.Q<VisualElement>("output-slot-list");
-        }
 
-        public virtual void Bind(Node node)
-        {
             Node = node;
             NameLabel.text = node.Name;
             node.Selected.Subscribe(x => Root.EnableInClassList(NodeSelectedClassName, x)).AddTo(Disposables);
+            InputSlotViews = new List<InputSlotView>(node.InputSlots.Length);
             foreach (var slot in node.InputSlots)
             {
                 var slotView = new InputSlotView(VisualElementFactory.Instance.CreateInputSlot());
@@ -52,6 +50,7 @@ namespace Rector.UI.Graphs.Nodes
                 InputSlotViews.Add(slotView);
             }
 
+            OutputSlotViews = new List<OutputSlotView>(node.OutputSlots.Length);
             foreach (var slot in node.OutputSlots)
             {
                 var slotView = new OutputSlotView(VisualElementFactory.Instance.CreateOutputSlot());

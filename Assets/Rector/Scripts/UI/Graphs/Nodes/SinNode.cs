@@ -34,6 +34,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class CosNode : Node
     {
         public const string NodeName = "Cos";
+        public static string Category => NodeCategoryV2.Math;
 
         public CosNode(NodeId id) : base(id, NodeName)
         {
