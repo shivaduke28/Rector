@@ -11,8 +11,8 @@ namespace Rector.UI.Graphs
 {
     public sealed class EdgeView : VisualElement, IDisposable
     {
-        readonly OutputSlotView output;
-        readonly InputSlotView input;
+        public readonly OutputSlotView Output;
+        public readonly InputSlotView Input;
         public List<DummyNode> DummyNodes { get; } = new();
 
         public Edge Edge { get; }
@@ -20,9 +20,9 @@ namespace Rector.UI.Graphs
 
         public EdgeView(OutputSlotView output, InputSlotView input, Edge edge)
         {
-            this.output = output;
-            this.input = input;
-            this.Edge = edge;
+            Output = output;
+            Input = input;
+            Edge = edge;
             generateVisualContent += OnGenerateVisualContent;
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
@@ -48,8 +48,8 @@ namespace Rector.UI.Graphs
             painter.lineWidth = 1f;
             painter.BeginPath();
 
-            var startPoint = parent.WorldToLocal(output.ConnectorPosition);
-            var endPoint = parent.WorldToLocal(input.ConnectorPosition);
+            var startPoint = parent.WorldToLocal(Output.ConnectorPosition);
+            var endPoint = parent.WorldToLocal(Input.ConnectorPosition);
 
             foreach (var dummy in DummyNodes)
             {

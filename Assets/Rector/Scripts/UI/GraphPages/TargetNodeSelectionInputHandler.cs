@@ -9,29 +9,27 @@ namespace Rector.UI.GraphPages
     public sealed class TargetNodeSelectionInputHandler : GraphPageInputHandler
     {
         readonly GraphPage graphPage;
+        readonly NodeNavigator navigator;
 
-        public TargetNodeSelectionInputHandler(GraphPage graphPage)
+        public TargetNodeSelectionInputHandler(GraphPage graphPage, NodeNavigator navigator)
         {
             this.graphPage = graphPage;
+            this.navigator = navigator;
         }
 
         public override void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
-            if (graphPage.NodeViews.TryGetValue(graphPage.TargetNode.Value.Id, out var targetNodeView))
+            if (graphPage.Graph.TryGetNode(graphPage.TargetNode.Value.Id, out var targetLayeredNode))
             {
-                var nextNodeView = NodeNavigator.SelectNextNode(targetNodeView, value, graphPage.Layers);
-                if (nextNodeView != null)
-                {
-                    graphPage.MoveGraphContentToNodeVisible(nextNodeView);
-                    graphPage.SelectTargetNode(nextNodeView.Node);
-                }
+                var nextNode = navigator.SelectNextNode(targetLayeredNode, value);
+                graphPage.SetTargetNode(nextNode.NodeView.Node);
             }
         }
 
         public override void Cancel()
         {
-            graphPage.SelectTargetNode(null);
+            graphPage.SetTargetNode(null);
             graphPage.State.Value = GraphPageState.SlotSelection;
         }
 
@@ -43,11 +41,11 @@ namespace Rector.UI.GraphPages
                 graphPage.State.Value = GraphPageState.TargetSlotSelection;
                 if (sourceSlot.Direction == SlotDirection.Output)
                 {
-                    graphPage.SelectTargetSlot(targetNode.InputSlots.FirstOrDefault(x => EdgeConnector.CanConnect(sourceSlot, x)));
+                    graphPage.SetTargetSlot(targetNode.InputSlots.FirstOrDefault(x => EdgeConnector.CanConnect(sourceSlot, x)));
                 }
                 else
                 {
-                    graphPage.SelectTargetSlot(targetNode.OutputSlots.FirstOrDefault(x => EdgeConnector.CanConnect(x, sourceSlot)));
+                    graphPage.SetTargetSlot(targetNode.OutputSlots.FirstOrDefault(x => EdgeConnector.CanConnect(x, sourceSlot)));
                 }
             }
         }

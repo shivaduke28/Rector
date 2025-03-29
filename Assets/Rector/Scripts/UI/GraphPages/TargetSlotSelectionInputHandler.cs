@@ -1,6 +1,5 @@
 ﻿using System;
 using Rector.UI.Graphs;
-using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
@@ -33,19 +32,19 @@ namespace Rector.UI.GraphPages
             {
                 var length = targetNode.InputSlots.Length;
                 var index = (targetSlot.Index + direction + length) % length;
-                graphPage.SelectTargetSlot(targetNode.InputSlots[index]);
+                graphPage.SetTargetSlot(targetNode.InputSlots[index]);
             }
             else
             {
                 var length = targetNode.OutputSlots.Length;
                 var index = (targetSlot.Index + direction + length) % length;
-                graphPage.SelectTargetSlot(targetNode.OutputSlots[index]);
+                graphPage.SetTargetSlot(targetNode.OutputSlots[index]);
             }
         }
 
         public override void Cancel()
         {
-            graphPage.SelectTargetSlot(null);
+            graphPage.SetTargetSlot(null);
             graphPage.State.Value = GraphPageState.TargetNodeSelection;
         }
 
@@ -53,15 +52,11 @@ namespace Rector.UI.GraphPages
         {
             if (!ToOutputAndInput(graphPage.SelectedSlot.Value, graphPage.TargetSlot.Value, out var output, out var input)) return;
             var edgeId = new EdgeId(output, input);
-            if (graphPage.Graph.TryGet(edgeId, out _))
-            {
-                graphPage.Graph.Remove(edgeId);
-            }
-            else
+            if (!graphPage.Graph.RemoveEdge(edgeId))
             {
                 if (EdgeConnector.TryConnect(graphPage.SelectedSlot.Value, graphPage.TargetSlot.Value, out var newEdge))
                 {
-                    graphPage.Graph.Add(newEdge);
+                    graphPage.Graph.AddEdge(newEdge);
                 }
             }
         }

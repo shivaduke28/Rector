@@ -1,31 +1,47 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Rector.UI.Graphs.Nodes;
+﻿using System.Linq;
+using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 
 namespace Rector.UI.GraphPages
 {
-    public static class NodeNavigator
+    public sealed class NodeNavigator
     {
-        public static NodeView SelectNextNode(NodeView current, Vector2 input, List<List<NodeView>> layers)
+        readonly LayeredGraph graph;
+
+        public NodeNavigator(LayeredGraph graph)
         {
+            this.graph = graph;
+        }
+
+        public LayeredNode SelectNextNode(LayeredNode current, Vector2 input)
+        {
+            var layers = graph.Layers;
             var direction = GetDirection(input);
             var currentLayer = layers[current.LayerIndex];
             var currentIndex = currentLayer.IndexOf(current);
             if (direction is Direction.Left or Direction.Right)
             {
-                var nextIndex = currentIndex + (direction == Direction.Right ? 1 : -1);
-                nextIndex = (nextIndex + currentLayer.Count) % currentLayer.Count;
-                return currentLayer[nextIndex];
+                while (true)
+                {
+                    var nextIndex = currentIndex + (direction == Direction.Right ? 1 : -1);
+                    nextIndex = (nextIndex + currentLayer.Count) % currentLayer.Count;
+                    var next = currentLayer[nextIndex];
+                    if (next is LayeredNode layeredNode)
+                    {
+                        return layeredNode;
+                    }
+                }
             }
             else
             {
                 var nextLayerIndex = current.LayerIndex + (direction == Direction.Up ? -1 : 1);
                 nextLayerIndex = (nextLayerIndex + layers.Count) % layers.Count;
                 var nextLayer = layers[nextLayerIndex];
-                return nextLayer.OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x)).First();
+                // FIXME: 富豪的
+                return nextLayer.Where(x => !x.IsDummy).Cast<LayeredNode>().OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x)).First();
             }
         }
+
 
         enum Direction
         {

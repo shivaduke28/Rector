@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 
 namespace Rector.UI.GraphPages
@@ -7,30 +8,28 @@ namespace Rector.UI.GraphPages
     public sealed class NodeSelectionInputHandler : GraphPageInputHandler
     {
         readonly GraphPage graphPage;
+        readonly NodeNavigator nodeNavigator;
 
-        public NodeSelectionInputHandler(GraphPage graphPage)
+        public NodeSelectionInputHandler(GraphPage graphPage, NodeNavigator nodeNavigator)
         {
             this.graphPage = graphPage;
+            this.nodeNavigator = nodeNavigator;
         }
 
         public override void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
-            if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
+            if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.Graph.TryGetNode(selectedNode.Id, out var selectedNodeView))
             {
-                var nextNodeView = NodeNavigator.SelectNextNode(selectedNodeView, value, graphPage.Layers);
-                if (nextNodeView != null)
-                {
-                    graphPage.MoveGraphContentToNodeVisible(nextNodeView);
-                    graphPage.SelectNode(nextNodeView.Node);
-                }
+                var nextNodeView = nodeNavigator.SelectNextNode(selectedNodeView, value);
+                graphPage.SelectNode(nextNodeView.NodeView.Node);
             }
             else
             {
-                var first = graphPage.Layers.FirstOrDefault()?.FirstOrDefault()?.Node;
-                if (first != null)
+                var first = graphPage.Graph.Layers.FirstOrDefault()?.FirstOrDefault();
+                if (first is LayeredNode layeredNode)
                 {
-                    graphPage.SelectNode(first);
+                    graphPage.SelectNode(layeredNode.NodeView.Node);
                 }
             }
         }
@@ -60,11 +59,7 @@ namespace Rector.UI.GraphPages
             {
                 case HoldState.Start:
                 {
-                    if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
-                    {
-                        graphPage.ShowHoldNextTo(selectedNodeView);
-                    }
-
+                    graphPage.ShowHoldNextToSelected();
                     break;
                 }
                 case HoldState.Cancel:
@@ -90,11 +85,7 @@ namespace Rector.UI.GraphPages
             switch (state)
             {
                 case HoldState.Start:
-                    if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
-                    {
-                        graphPage.ShowHoldNextTo(selectedNodeView);
-                    }
-
+                    graphPage.ShowHoldNextToSelected();
                     break;
                 case HoldState.Cancel:
                     graphPage.HideHold();

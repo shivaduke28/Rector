@@ -15,8 +15,8 @@ namespace Rector.UI.Graphs.Nodes
         protected readonly VisualElement OutputSlotList;
 
         public Node Node { get; }
-        public int LayerIndex;
-        public int IndexInLayer;
+        [Obsolete] public int LayerIndex;
+        [Obsolete] public int IndexInLayer;
         public Rect WorldBound => Root.worldBound;
         public float Width => Root.resolvedStyle.width;
         protected const string NodeSelectedClassName = "rector-node--selected";

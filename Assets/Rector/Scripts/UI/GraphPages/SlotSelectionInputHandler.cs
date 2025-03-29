@@ -103,10 +103,7 @@ namespace Rector.UI.GraphPages
             {
                 case HoldState.Start:
                 {
-                    if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
-                    {
-                        graphPage.ShowHoldNextTo(selectedNodeView);
-                    }
+                    graphPage.ShowHoldNextToSelected();
                     break;
                 }
                 case HoldState.Cancel:

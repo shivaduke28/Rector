@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using R3;
 using Rector.UI.GraphPages.NodeParameters;
 using Rector.UI.Graphs;
@@ -18,6 +17,7 @@ namespace Rector.UI.GraphPages
         public readonly ReactiveProperty<GraphPageState> State = new(GraphPageState.NodeSelection);
         GraphPageState lastState;
 
+        // ReactivePropertyやめられそう
         public readonly ReactiveProperty<Node> SelectedNode = new();
         public readonly ReactiveProperty<ISlot> SelectedSlot = new();
         public readonly ReactiveProperty<Node> TargetNode = new();
@@ -26,21 +26,16 @@ namespace Rector.UI.GraphPages
         public Observable<Unit> OpenScenePage => graphInputAction.OpenScene.Where(_ => State.Value == GraphPageState.NodeSelection);
         public Observable<Unit> OpenSystemPage => graphInputAction.OpenSystem.Where(_ => State.Value == GraphPageState.NodeSelection);
 
-        public readonly Graph Graph = new();
         readonly Dictionary<GraphPageState, GraphPageInputHandler> stateMap = new();
 
         GraphPageInputHandler CurrentInputHandler => stateMap[State.Value];
 
         const string RootName = "graph-page";
         readonly VisualElement root;
-        readonly VisualElement graphMask;
-        readonly VisualElement graphContent;
-        readonly VisualElement nodeRoot;
-        readonly VisualElement edgeRoot;
+
         readonly GraphInputAction graphInputAction;
-        public readonly List<List<NodeView>> Layers = new();
-        public readonly Dictionary<NodeId, NodeView> NodeViews = new();
-        readonly Dictionary<EdgeId, EdgeView> edgeViews = new();
+
+        public readonly LayeredGraph Graph;
 
         readonly CreateNodeMenuModel createNodeMenuModel;
         readonly CreateNodeMenuView createNodeMenuView;
@@ -69,22 +64,26 @@ namespace Rector.UI.GraphPages
 
             // VisualElements
             root = container.Q<VisualElement>(RootName);
-            graphMask = root.Q<VisualElement>("graph-mask");
-            graphContent = graphMask.Q<VisualElement>("graph-content");
-            nodeRoot = graphContent.Q<VisualElement>("node-root");
-            edgeRoot = graphContent.Q<VisualElement>("edge-root");
+            var graphMask1 = root.Q<VisualElement>("graph-mask");
+            var graphContent1 = graphMask1.Q<VisualElement>("graph-content");
+            var nodeRoot1 = graphContent1.Q<VisualElement>("node-root");
+            var edgeRoot1 = graphContent1.Q<VisualElement>("edge-root");
             nodeParameterView = new NodeParameterView(root.Q<VisualElement>(NodeParameterView.RootName));
             nodeParameterModel = new NodeParameterModel(this);
             createNodeMenuView = new CreateNodeMenuView(root.Q<VisualElement>(CreateNodeMenuView.RootName));
             createNodeMenuModel = new CreateNodeMenuModel(this, nodeTemplateRepository,
                 () => State.Value = GraphPageState.NodeSelection);
-            graphContent.Add(holdGuideView);
-            graphContentTransformer = new GraphContentTransformer(graphMask, graphContent, graphInputAction);
+            graphContent1.Add(holdGuideView);
+            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction);
+
+            Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
+
 
             // state machine
-            stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionInputHandler(this));
+            var nodeNavigator = new NodeNavigator(Graph);
+            stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.SlotSelection, new SlotSelectionInputHandler(this));
-            stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this));
+            stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.NodeCreation, new NodeCreationInputHandler(createNodeMenuView));
             stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(nodeParameterView));
@@ -105,9 +104,6 @@ namespace Rector.UI.GraphPages
         void IInitializable.Initialize()
         {
             isVisible.Subscribe(x => root.style.display = x ? DisplayStyle.Flex : DisplayStyle.None).AddTo(disposable);
-            Graph.OnNodeRemoved.Subscribe(node => OnNodeRemoved(node.Id)).AddTo(disposable);
-            Graph.OnEdgeAdded.Subscribe(OnEdgeAdded).AddTo(disposable);
-            Graph.OnEdgeRemoved.Subscribe(OnEdgeRemoved).AddTo(disposable);
 
             createNodeMenuView.Bind(createNodeMenuModel).AddTo(disposable);
             graphContentTransformer.Initialize();
@@ -118,8 +114,7 @@ namespace Rector.UI.GraphPages
                 {
                     createNodeMenuModel.Enter();
                     var position = new Vector2(60, 30);
-                    if (SelectedNode.Value is { } selectedNode &&
-                        NodeViews.TryGetValue(selectedNode.Id, out var selectedNodeView))
+                    if (SelectedNode.Value is { } selectedNode && Graph.TryGetNode(selectedNode.Id, out var selectedNodeView))
                     {
                         position = selectedNodeView.Position + new Vector2(selectedNodeView.Width + 20, 40);
                     }
@@ -179,7 +174,7 @@ namespace Rector.UI.GraphPages
             SelectedSlot.Value = slot;
         }
 
-        public void SelectTargetNode(Node node)
+        public void SetTargetNode(Node node)
         {
             if (TargetNode.Value is { } old && old != SelectedNode.Value)
             {
@@ -194,7 +189,7 @@ namespace Rector.UI.GraphPages
             TargetNode.Value = node;
         }
 
-        public void SelectTargetSlot(ISlot slot)
+        public void SetTargetSlot(ISlot slot)
         {
             if (TargetSlot.Value is { } old)
             {
@@ -210,50 +205,13 @@ namespace Rector.UI.GraphPages
         }
 
 
-        public void MoveGraphContentToNodeVisible(NodeView nodeView)
+        public void ShowHoldNextToSelected()
         {
-            var nodeWorldBound = nodeView.WorldBound;
-            var graphMaskWorldBound = graphMask.worldBound;
-
-            var offset = nodeWorldBound.center - graphMaskWorldBound.center;
-            var offsetSign = new Vector2(Mathf.Sign(offset.x), Mathf.Sign(offset.y));
-
-            const float cornerOffsetX = 60f;
-            const float cornerOffsetY = 30f;
-            var nodeWorldCorner = nodeWorldBound.center
-                                  + new Vector2(
-                                      (nodeWorldBound.width * 0.5f + cornerOffsetX) * offsetSign.x,
-                                      (nodeWorldBound.height * 0.5f + cornerOffsetY) * offsetSign.y);
-            var maskWorldCorner = graphMaskWorldBound.center +
-                                  new Vector2(
-                                      graphMaskWorldBound.width * 0.5f * offsetSign.x,
-                                      graphMaskWorldBound.height * 0.5f * offsetSign.y);
-
-            if (graphMaskWorldBound.Contains(nodeWorldCorner))
+            if (SelectedNode.Value is { } selectedNode && Graph.TryGetNode(selectedNode.Id, out var selectedLayeredNode))
             {
-                return;
+                holdGuideModel.Position.Value = selectedLayeredNode.Position - new Vector2(30, 0);
+                holdGuideModel.Visible.Value = true;
             }
-
-            var diff = nodeWorldCorner - maskWorldCorner;
-            var graphContentPosition = graphContent.transform.position;
-
-            if (Mathf.Approximately(Mathf.Sign(diff.x), offsetSign.x))
-            {
-                graphContentPosition.x -= diff.x;
-            }
-
-            if (Mathf.Approximately(Mathf.Sign(diff.y), offsetSign.y))
-            {
-                graphContentPosition.y -= diff.y;
-            }
-
-            graphContent.transform.position = graphContentPosition;
-        }
-
-        public void ShowHoldNextTo(NodeView nodeView)
-        {
-            holdGuideModel.Position.Value = nodeView.Position - new Vector2(30, 0);
-            holdGuideModel.Visible.Value = true;
         }
 
         public void HideHold()
@@ -265,63 +223,15 @@ namespace Rector.UI.GraphPages
         {
             if (SelectedNode.Value is { } selectedNode)
             {
-                Graph.Remove(selectedNode.Id);
+                Graph.RemoveNode(selectedNode.Id);
                 SelectSlot(null);
                 SelectNode(null);
+                Sort();
                 State.Value = GraphPageState.NodeSelection;
             }
         }
 
-
-        void OnNodeRemoved(NodeId id)
-        {
-            if (NodeViews.Remove(id, out var nodeView))
-            {
-                nodeView.RemoveFrom(nodeRoot);
-                nodeView.Dispose();
-
-                RectorLogger.DeleteNode(nodeView.Node);
-            }
-
-            Sort();
-        }
-
-        void OnEdgeAdded(Edge edge)
-        {
-            var input = edge.InputSlot;
-            var output = edge.OutputSlot;
-            if (NodeViews.TryGetValue(input.NodeId, out var inputNodeView) &&
-                NodeViews.TryGetValue(output.NodeId, out var outputNodeView))
-            {
-                var inputSlotView = inputNodeView.InputSlotViews[input.Index];
-                var outputSlotView = outputNodeView.OutputSlotViews[output.Index];
-                var edgeView = new EdgeView(outputSlotView, inputSlotView, edge);
-                edgeRoot.Add(edgeView);
-                edgeViews.Add(edge.Id, edgeView);
-
-                RectorLogger.CreateEdge(edge, outputNodeView.Node, inputNodeView.Node);
-            }
-
-            Sort();
-        }
-
-        void OnEdgeRemoved(EdgeId id)
-        {
-            if (edgeViews.Remove(id, out var edgeView))
-            {
-                edgeRoot.Remove(edgeView);
-                edgeView.Dispose();
-
-                if (NodeViews.TryGetValue(id.OutputNodeId, out var output) && NodeViews.TryGetValue(id.InputNodeId, out var input))
-                {
-                    RectorLogger.DeleteEdge(edgeView.Edge, output.Node, input.Node);
-                }
-            }
-
-            Sort();
-        }
-
-        void Sort()
+        public void Sort()
         {
             shouldSort = true;
         }
@@ -348,36 +258,11 @@ namespace Rector.UI.GraphPages
                 layer.Sort((x, y) => x.IndexInLayer.CompareTo(y.IndexInLayer));
             }
 
-            NodeCount.Value = NodeViews.Count;
-            EdgeCount.Value = edgeViews.Count;
+            NodeCount.Value = Graph.NodeCount;
+            EdgeCount.Value = Graph.EdgeCount;
             LayerCount.Value = result.LayerCount;
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
-        }
-
-        public void AddNode(NodeView nodeView)
-        {
-            Graph.Add(nodeView.Node);
-            nodeView.AddTo(nodeRoot);
-            NodeViews.Add(nodeView.Node.Id, nodeView);
-
-            if (Layers.Count > 0)
-            {
-                var layer = Layers[0];
-                if (layer.Count > 0)
-                {
-                    var last = layer.Last();
-                    if (last.Node.OutputSlots.All(s => s.ConnectedCount == 0))
-                    {
-                        var position = last.Position + new Vector2(last.Width + 20f, 0);
-                        nodeView.Position = position;
-                        nodeView.IndexInLayer = last.IndexInLayer + 1;
-                    }
-                }
-            }
-
-            Sort();
-            RectorLogger.CreateNode(nodeView.Node);
         }
 
         void IDisposable.Dispose()
