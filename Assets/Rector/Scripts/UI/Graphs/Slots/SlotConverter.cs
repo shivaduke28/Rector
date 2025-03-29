@@ -2,7 +2,7 @@ using R3;
 using Rector.Nodes;
 using UnityEngine;
 
-namespace Rector.UI.Graphs.Nodes
+namespace Rector.UI.Graphs.Slots
 {
     public static class SlotConverter
     {

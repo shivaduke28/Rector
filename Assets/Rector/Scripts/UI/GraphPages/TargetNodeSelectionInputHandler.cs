@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
+using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
 namespace Rector.UI.GraphPages

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using R3;
 using Rector.UI.Graphs.Nodes;
+using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 
 namespace Rector.UI.Graphs

@@ -3,7 +3,7 @@ using R3;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Rector.UI.Graphs.Nodes
+namespace Rector.UI.Graphs.Slots
 {
     public sealed class InputSlotView
     {

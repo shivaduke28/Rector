@@ -5,9 +5,11 @@ using R3;
 using Rector.UI.GraphPages.NodeParameters;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
+using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 using UnityEngine.UIElements;
+using NodeViewFactory = Rector.UI.Graphs.Nodes.NodeViewFactory;
 
 namespace Rector.UI.GraphPages
 {

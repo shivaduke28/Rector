@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using R3;
 using Rector.UI.Graphs.Nodes;
+using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs
 {

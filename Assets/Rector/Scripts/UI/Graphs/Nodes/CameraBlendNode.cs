@@ -1,5 +1,6 @@
 ﻿using System;
 using Rector.Cameras;
+using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {

@@ -1,5 +1,6 @@
 ﻿using R3;
 using Rector.Audio;
+using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {

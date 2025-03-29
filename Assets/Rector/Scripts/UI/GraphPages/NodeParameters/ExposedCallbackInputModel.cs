@@ -1,5 +1,6 @@
 using R3;
 using Rector.UI.Graphs.Nodes;
+using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.GraphPages.NodeParameters
 {

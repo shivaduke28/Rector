@@ -1,6 +1,6 @@
 ﻿using R3;
 using Rector.Audio;
-using UnityEngine.UIElements;
+using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
@@ -31,22 +31,6 @@ namespace Rector.UI.Graphs.Nodes
                 new ObservableOutputSlot<bool>(id, 3, "3", beatModel.BeatProperty.Where(_ => IsActive.Value).Select(x => x is 2).DistinctUntilChanged(), IsMuted),
                 new ObservableOutputSlot<bool>(id, 4, "4", beatModel.BeatProperty.Where(_ => IsActive.Value).Select(x => x is 3).DistinctUntilChanged(), IsMuted)
             };
-        }
-    }
-
-    public sealed class BeatNodeView : NodeView
-    {
-        public BeatNodeView(VisualElement templateContainer) : base(templateContainer)
-        {
-        }
-
-        public override void Bind(Node node)
-        {
-            base.Bind(node);
-            if (node is BeatNode beatNode)
-            {
-                beatNode.Bpm.Subscribe(bpm => NameLabel.text = $"BPM {bpm:F0}").AddTo(Disposables);
-            }
         }
     }
 }
