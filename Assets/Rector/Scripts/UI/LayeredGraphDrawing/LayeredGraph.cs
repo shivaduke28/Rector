@@ -84,10 +84,12 @@ namespace Rector.UI.LayeredGraphDrawing
 
         public void RemoveNode(NodeId id)
         {
-            if (nodes.Remove(id, out var n) && n is LayeredNode layeredNode)
+            if (nodes.TryGetValue(id, out var n) && n is LayeredNode layeredNode)
             {
                 RemoveEdgesFrom(layeredNode.NodeView.Node);
 
+                // NOTE: remove from nodes **after** removing edges
+                nodes.Remove(id);
                 Layers[layeredNode.Layer].Remove(layeredNode);
                 layeredNode.NodeView.RemoveFrom(nodeRoot);
                 layeredNode.NodeView.Dispose();
