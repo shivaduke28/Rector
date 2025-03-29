@@ -19,7 +19,7 @@ namespace Rector.UI.LayeredGraphDrawing
             EdgeView.BendPoints.Clear();
             foreach (var dummyNode in DummyNodes)
             {
-                EdgeView.BendPoints.Add(dummyNode.Position);
+                EdgeView.BendPoints.Add(dummyNode);
             }
             EdgeView.Repaint();
         }

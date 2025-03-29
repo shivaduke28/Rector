@@ -7,11 +7,16 @@ using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs
 {
+    public interface IBendPoint
+    {
+        Vector2 Position { get; }
+    }
+
     public sealed class EdgeView : VisualElement, IDisposable
     {
         public readonly OutputSlotView Output;
         public readonly InputSlotView Input;
-        public List<Vector2> BendPoints { get; } = new();
+        public List<IBendPoint> BendPoints { get; } = new();
 
         public Edge Edge { get; }
         readonly IDisposable disposable;
@@ -51,7 +56,7 @@ namespace Rector.UI.Graphs
 
             foreach (var bendPoint in BendPoints)
             {
-                var dummyPoint = bendPoint + new Vector2(0, 15f);
+                var dummyPoint = bendPoint.Position + new Vector2(0, 15f);
                 DrawLine(startPoint, dummyPoint, painter);
                 startPoint = dummyPoint;
             }

@@ -34,6 +34,11 @@ namespace Rector.UI.LayeredGraphDrawing
         {
             unsortedNodes.Clear();
 
+            foreach(var edge in graph.Edges.Values)
+            {
+                edge.DummyNodes.Clear();
+            }
+
             foreach (var prevLayer in graph.Layers)
             {
                 foreach (var node in prevLayer)

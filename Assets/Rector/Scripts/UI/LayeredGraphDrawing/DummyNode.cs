@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rector.UI.LayeredGraphDrawing
 {
-    public sealed class DummyNode : ILayeredNode
+    public sealed class DummyNode : ILayeredNode, IBendPoint
     {
         // 多分poolするように変更する
         public NodeId Id { get; }
