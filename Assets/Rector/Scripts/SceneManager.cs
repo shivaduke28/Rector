@@ -16,7 +16,7 @@ namespace Rector
     {
         readonly SceneSettings sceneSettings;
         readonly LoadingView loadingView;
-        readonly NodeTemplateRepositoryV2 nodeTemplateRepository;
+        readonly NodeTemplateRepository nodeTemplateRepository;
         readonly CancellationTokenSource cts = new();
         readonly ReactiveProperty<string> currentScene = new("");
         public ReadOnlyReactiveProperty<string> CurrentScene => currentScene;
@@ -24,7 +24,7 @@ namespace Rector
         public string[] GetScenes() => sceneSettings.sceneNames;
         readonly HashSet<NodeTemplateId> registeredNodeTemplates = new();
 
-        public SceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepositoryV2 nodeTemplateRepository)
+        public SceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepository nodeTemplateRepository)
         {
             this.loadingView = loadingView;
             this.sceneSettings = sceneSettings;
@@ -75,7 +75,7 @@ namespace Rector
                 var nodeBehaviours = rootObject.GetComponentsInChildren<NodeBehaviour>().OrderBy(b => b.name);
                 foreach (var nodeBehaviour in nodeBehaviours)
                 {
-                    var template = NodeTemplateV2.Create(NodeCategoryV2.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
+                    var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
                     nodeTemplateRepository.Add(template);
                     registeredNodeTemplates.Add(template.Id);
                 }

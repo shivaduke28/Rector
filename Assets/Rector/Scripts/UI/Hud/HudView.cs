@@ -29,7 +29,7 @@ namespace Rector.UI.Hud
         public ButtonListPageView DisplaySettingsPageView { get; }
         public CopyrightNoticesPageView CopyrightNoticesPageView { get; }
 
-        public HudView(VisualElement root, UIInputAction uiInputAction, GraphInputAction graphInputAction, NodeTemplateRepositoryV2 nodeTemplateRepository)
+        public HudView(VisualElement root, UIInputAction uiInputAction, GraphInputAction graphInputAction, NodeTemplateRepository nodeTemplateRepository)
         {
             var footer = root.Q<VisualElement>("footer");
             versionLabel = root.Q<Label>("version-label");

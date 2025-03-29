@@ -10,7 +10,7 @@ namespace Rector.UI.Graphs.Nodes
     public class HudStyleNode : Node, IInitializable, IDisposable
     {
         public const string NodeName = "HUD Style";
-        public static string Category => NodeCategoryV2.System;
+        public static string Category => NodeCategory.System;
         readonly HudModel hudModel;
         readonly CompositeDisposable disposable = new(2);
 

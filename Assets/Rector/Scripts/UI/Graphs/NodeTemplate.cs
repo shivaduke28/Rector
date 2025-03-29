@@ -1,39 +1,26 @@
-﻿using System;
+using System;
 using Rector.UI.Graphs.Nodes;
 
 namespace Rector.UI.Graphs
 {
-    public enum NodeCategory
-    {
-        Vfx,
-        Camera,
-        Event,
-        Operator,
-        Math,
-        Scene,
-        System,
-    }
-
     public sealed class NodeTemplate
     {
         public readonly NodeTemplateId Id;
-        public readonly NodeCategory Category;
+        public readonly string Category;
         public readonly string Name;
-        public readonly Func<NodeId, Node> Factory;
-        public readonly Type Type;
+        public readonly Func<NodeId, NodeView> Factory;
 
-        NodeTemplate(NodeTemplateId id, NodeCategory category, string name, Func<NodeId, Node> factory, Type type)
+        NodeTemplate(NodeTemplateId id, string category, string name, Func<NodeId, NodeView> factory)
         {
             Id = id;
             Category = category;
             Name = name;
             Factory = factory;
-            Type = type;
         }
 
-        public static NodeTemplate Create<T>(NodeCategory category, string name, Func<NodeId, T> factory) where T : Node
+        public static NodeTemplate Create(string category, string name, Func<NodeId, NodeView> factory)
         {
-            return new NodeTemplate(NodeTemplateId.Generate(), category, name, factory, typeof(T));
+            return new NodeTemplate(NodeTemplateId.Generate(), category, name, factory);
         }
     }
 }

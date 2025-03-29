@@ -52,7 +52,7 @@ namespace Rector
             // camera
             var cameraManager = Register(new CameraManager(cinemachineBrain, cameraBehaviours));
 
-            var nodeTemplateRepository = Register(new NodeTemplateRepositoryV2());
+            var nodeTemplateRepository = Register(new NodeTemplateRepository());
             Register(nodeTemplateRepository);
             var sceneLoader = Register(new SceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository));
 
@@ -75,7 +75,7 @@ namespace Rector
                 hudView.SystemPageView));
             var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
 
-            Register(new NodeTemplateRegistererV2(
+            Register(new NodeTemplateRegisterer(
                 nodeTemplateRepository,
                 vfxManager,
                 beatModel,

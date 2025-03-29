@@ -2,24 +2,24 @@ using System.Collections.Generic;
 
 namespace Rector.UI.Graphs
 {
-    public sealed class NodeTemplateRepositoryV2
+    public sealed class NodeTemplateRepository
     {
-        readonly Dictionary<NodeTemplateId, NodeTemplateV2> factories = new();
-        readonly Dictionary<string, List<NodeTemplateV2>> categoryNodeSet = new();
-        public IReadOnlyDictionary<string, List<NodeTemplateV2>> CategoryNodeSet => categoryNodeSet;
+        readonly Dictionary<NodeTemplateId, NodeTemplate> factories = new();
+        readonly Dictionary<string, List<NodeTemplate>> categoryNodeSet = new();
+        public IReadOnlyDictionary<string, List<NodeTemplate>> CategoryNodeSet => categoryNodeSet;
 
-        public void Add(NodeTemplateV2 factory)
+        public void Add(NodeTemplate factory)
         {
             factories.Add(factory.Id, factory);
             if (!categoryNodeSet.TryGetValue(factory.Category, out var list))
             {
-                list = new List<NodeTemplateV2>();
+                list = new List<NodeTemplate>();
                 categoryNodeSet.Add(factory.Category, list);
             }
             list.Add(factory);
         }
 
-        public IEnumerable<NodeTemplateV2> GetAll()
+        public IEnumerable<NodeTemplate> GetAll()
         {
             return factories.Values;
         }

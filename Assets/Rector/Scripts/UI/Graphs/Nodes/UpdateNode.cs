@@ -6,7 +6,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class UpdateNode : SourceNode
     {
         public const string NodeName = "Update";
-        public static string Category => NodeCategoryV2.Event;
+        public static string Category => NodeCategory.Event;
 
         public UpdateNode(NodeId id) : base(id, NodeName)
         {

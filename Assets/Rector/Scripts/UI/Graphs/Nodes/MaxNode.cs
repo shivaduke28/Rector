@@ -8,7 +8,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class MaxNode : Node
     {
         public const string NodeName = "Max";
-        public static string Category => NodeCategoryV2.Math;
+        public static string Category => NodeCategory.Math;
 
         readonly FloatInput x = new("x", 0f, float.NegativeInfinity, float.PositiveInfinity);
         readonly FloatInput y = new("y", 0f, float.NegativeInfinity, float.PositiveInfinity);
@@ -35,7 +35,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class MinNode : Node
     {
         public const string NodeName = "Min";
-        public static string Category => NodeCategoryV2.Math;
+        public static string Category => NodeCategory.Math;
 
         readonly FloatInput x = new("x", 0f, float.NegativeInfinity, float.PositiveInfinity);
         readonly FloatInput y = new("y", 0f, float.NegativeInfinity, float.PositiveInfinity);
@@ -64,7 +64,7 @@ namespace Rector.UI.Graphs.Nodes
     {
         const float Min = 0.01f;
         public const string NodeName = "Mod";
-        public static string Category => NodeCategoryV2.Math;
+        public static string Category => NodeCategory.Math;
 
         readonly FloatInput x = new("x", 0f, float.NegativeInfinity, float.PositiveInfinity);
         readonly FloatInput y = new("y", 1f, Min, float.PositiveInfinity);

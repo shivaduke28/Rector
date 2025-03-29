@@ -63,7 +63,7 @@ namespace Rector.UI.GraphPages
 
         public GraphPage(VisualElement container,
             GraphInputAction graphInputAction,
-            NodeTemplateRepositoryV2 nodeTemplateRepository)
+            NodeTemplateRepository nodeTemplateRepository)
         {
             this.graphInputAction = graphInputAction;
 

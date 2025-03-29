@@ -1,6 +1,6 @@
 namespace Rector.UI.Graphs
 {
-    public static class NodeCategoryV2
+    public static class NodeCategory
     {
         public const string Vfx = "Vfx";
         public const string Camera = "Camera";

@@ -16,7 +16,7 @@ namespace Rector.UI.GraphPages
         public readonly ReactiveProperty<bool> Visible = new(false);
         public readonly ReactiveProperty<ViewState> State = new(ViewState.Main);
         readonly GraphPage graphPage;
-        readonly NodeTemplateRepositoryV2 nodeTemplateRepositoryV2;
+        readonly NodeTemplateRepository nodeTemplateRepository;
         readonly Action onExit;
 
         public readonly List<RectorButtonState> CategoryButtons = new();
@@ -26,10 +26,10 @@ namespace Rector.UI.GraphPages
         public int CategoryIndex { get; private set; }
         int subIndex;
 
-        public CreateNodeMenuModel(GraphPage graphPage, NodeTemplateRepositoryV2 nodeTemplateRepositoryV2, Action onExit)
+        public CreateNodeMenuModel(GraphPage graphPage, NodeTemplateRepository nodeTemplateRepository, Action onExit)
         {
             this.graphPage = graphPage;
-            this.nodeTemplateRepositoryV2 = nodeTemplateRepositoryV2;
+            this.nodeTemplateRepository = nodeTemplateRepository;
             this.onExit = onExit;
         }
 
@@ -53,7 +53,7 @@ namespace Rector.UI.GraphPages
         {
             categories.Clear();
             CategoryButtons.Clear();
-            var categoryNodeSet = nodeTemplateRepositoryV2.CategoryNodeSet;
+            var categoryNodeSet = nodeTemplateRepository.CategoryNodeSet;
             foreach (var (category, nodeTemplates) in categoryNodeSet)
             {
                 var categoryButton = new RectorButtonState(category, () => ChangeCategory(category));
