@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.GraphPages
 {
-    public sealed class CreateNodeMenuView : GraphPageInputHandler
+    public sealed class CreateNodeMenuView
     {
         public const string RootName = "create-node-menu";
         readonly VisualElement root;
@@ -66,7 +66,7 @@ namespace Rector.UI.GraphPages
             root.transform.position = position;
         }
 
-        public override void Navigate(Vector2 value)
+        public void Navigate(Vector2 value)
         {
             if (value.y != 0)
             {
@@ -74,8 +74,8 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public override void Cancel() => model.Cancel();
+        public void Cancel() => model.Cancel();
 
-        public override void Submit() => model.Submit();
+        public void Submit() => model.Submit();
     }
 }
