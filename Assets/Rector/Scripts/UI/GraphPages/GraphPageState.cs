@@ -7,6 +7,6 @@
         TargetNodeSelection,
         TargetSlotSelection,
         NodeCreation,
-        NodeDetail,
+        NodeParameter,
     }
 }

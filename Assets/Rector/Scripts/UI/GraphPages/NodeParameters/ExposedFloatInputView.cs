@@ -1,9 +1,8 @@
 ﻿using System;
 using R3;
-using Rector.UI.GraphPages;
 using UnityEngine.UIElements;
 
-namespace Rector.UI.NodeEdit
+namespace Rector.UI.GraphPages.NodeParameters
 {
     public sealed class ExposedFloatInputView
     {

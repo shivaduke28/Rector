@@ -2,7 +2,7 @@ using System;
 using R3;
 using UnityEngine.UIElements;
 
-namespace Rector.UI.NodeEdit
+namespace Rector.UI.GraphPages.NodeParameters
 {
     public sealed class ExposedCallbackInputView
     {

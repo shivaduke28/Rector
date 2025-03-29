@@ -1,7 +1,7 @@
 using R3;
 using Rector.UI.Graphs.Nodes;
 
-namespace Rector.UI.NodeEdit
+namespace Rector.UI.GraphPages.NodeParameters
 {
     public sealed class ExposedCallbackInputModel : IExposedInputModel
     {

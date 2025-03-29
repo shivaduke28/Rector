@@ -124,7 +124,7 @@ namespace Rector.UI.GraphPages
         {
             if (graphPage.SelectedNode.Value is not null)
             {
-                graphPage.State.Value = GraphPageState.NodeDetail;
+                graphPage.State.Value = GraphPageState.NodeParameter;
             }
         }
     }

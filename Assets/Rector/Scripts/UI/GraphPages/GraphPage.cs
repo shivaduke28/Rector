@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using R3;
+using Rector.UI.GraphPages.NodeParameters;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.LayeredGraphDrawing;
@@ -44,8 +45,8 @@ namespace Rector.UI.GraphPages
         readonly CreateNodeMenuView createNodeMenuView;
         readonly HoldGuideModel holdGuideModel = new();
         readonly HoldGuideView holdGuideView = new();
-        readonly NodeDetailView nodeDetailView;
-        readonly NodeDetailModel nodeDetailModel;
+        readonly NodeParameterView nodeParameterView;
+        readonly NodeParameterModel nodeParameterModel;
         readonly NodeViewFactory nodeViewFactory = new();
 
         readonly GraphContentTransformer graphContentTransformer;
@@ -72,8 +73,8 @@ namespace Rector.UI.GraphPages
             graphContent = graphMask.Q<VisualElement>("graph-content");
             nodeRoot = graphContent.Q<VisualElement>("node-root");
             edgeRoot = graphContent.Q<VisualElement>("edge-root");
-            nodeDetailView = new NodeDetailView(root.Q<VisualElement>(NodeDetailView.RootName));
-            nodeDetailModel = new NodeDetailModel(this);
+            nodeParameterView = new NodeParameterView(root.Q<VisualElement>(NodeParameterView.RootName));
+            nodeParameterModel = new NodeParameterModel(this);
             createNodeMenuView = new CreateNodeMenuView(root.Q<VisualElement>(CreateNodeMenuView.RootName));
             createNodeMenuModel = new CreateNodeMenuModel(nodeTemplateRepository, Graph,
                 () => State.Value = GraphPageState.NodeSelection);
@@ -86,7 +87,7 @@ namespace Rector.UI.GraphPages
             stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this));
             stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.NodeCreation, new NodeCreationInputHandler(createNodeMenuView));
-            stateMap.Add(GraphPageState.NodeDetail, nodeDetailView);
+            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(nodeParameterView));
         }
 
         public void Enter()
@@ -126,8 +127,8 @@ namespace Rector.UI.GraphPages
 
                     createNodeMenuView.SetPosition(position);
                 }).AddTo(disposable);
-            State.Where(x => x == GraphPageState.NodeDetail)
-                .Subscribe(_ => nodeDetailModel.Enter()).AddTo(disposable);
+            State.Where(x => x == GraphPageState.NodeParameter)
+                .Subscribe(_ => nodeParameterModel.Enter()).AddTo(disposable);
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
@@ -141,7 +142,7 @@ namespace Rector.UI.GraphPages
             graphInputAction.RemoveEdge.Subscribe(x => CurrentInputHandler.RemoveEdge(x)).AddTo(disposable);
 
             holdGuideView.Bind(holdGuideModel).AddTo(disposable);
-            nodeDetailView.Bind(nodeDetailModel).AddTo(disposable);
+            nodeParameterView.Bind(nodeParameterModel).AddTo(disposable);
 
             // SortでNodeViewのWidthを使用するので1F待機する
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate)

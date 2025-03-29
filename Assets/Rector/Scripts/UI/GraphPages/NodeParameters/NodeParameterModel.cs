@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using R3;
 using Rector.UI.Graphs.Nodes;
-using Rector.UI.NodeEdit;
 
-namespace Rector.UI.GraphPages
+namespace Rector.UI.GraphPages.NodeParameters
 {
     public enum SliderStepType
     {
@@ -12,7 +11,7 @@ namespace Rector.UI.GraphPages
         Times100,
     }
 
-    public sealed class NodeDetailModel
+    public sealed class NodeParameterModel
     {
         public Node Node => page.SelectedNode.Value;
         readonly GraphPage page;
@@ -21,7 +20,7 @@ namespace Rector.UI.GraphPages
         readonly ReactiveProperty<SliderStepType> stepType = new(SliderStepType.Times1);
         int index = 0;
 
-        public NodeDetailModel(GraphPage page)
+        public NodeParameterModel(GraphPage page)
         {
             this.page = page;
         }

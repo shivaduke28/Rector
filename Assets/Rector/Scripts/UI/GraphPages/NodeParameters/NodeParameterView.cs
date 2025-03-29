@@ -1,12 +1,11 @@
 ﻿using System;
 using R3;
-using Rector.UI.NodeEdit;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Rector.UI.GraphPages
+namespace Rector.UI.GraphPages.NodeParameters
 {
-    public sealed class NodeDetailView : GraphPageInputHandler
+    public sealed class NodeParameterView
     {
         public const string RootName = "node-detail";
         readonly VisualElement root;
@@ -14,16 +13,16 @@ namespace Rector.UI.GraphPages
         readonly VisualElement propertyRoot;
         readonly SerialDisposable nodeDisposable = new();
 
-        NodeDetailModel model;
+        NodeParameterModel model;
 
-        public NodeDetailView(VisualElement root)
+        public NodeParameterView(VisualElement root)
         {
             this.root = root;
             nameLabel = root.Q<Label>("name-label");
             propertyRoot = root.Q<VisualElement>("property-root");
         }
 
-        public IDisposable Bind(NodeDetailModel state)
+        public IDisposable Bind(NodeParameterModel state)
         {
             model = state;
             return new CompositeDisposable(
@@ -96,7 +95,7 @@ namespace Rector.UI.GraphPages
         }
 
 
-        public override void Navigate(Vector2 value)
+        public void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
             if (Mathf.Abs(value.x) > Mathf.Abs(value.y))
@@ -116,8 +115,8 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public override void Action() => model.DoAction();
+        public void Action() => model.DoAction();
 
-        public override void CloseNodeParameter() => model.Close();
+        public void CloseNodeParameter() => model.Close();
     }
 }

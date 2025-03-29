@@ -2,7 +2,7 @@ using R3;
 using Rector.UI.Graphs.Nodes;
 using UnityEngine;
 
-namespace Rector.UI.NodeEdit
+namespace Rector.UI.GraphPages.NodeParameters
 {
     public sealed class ExposedIntInputModel : IExposedInputModel
     {
