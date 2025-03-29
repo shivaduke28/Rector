@@ -45,7 +45,7 @@ namespace Rector.UI.GraphPages
         readonly NodeParameterModel nodeParameterModel;
 
         readonly GraphContentTransformer graphContentTransformer;
-        readonly GraphSorter graphSorter = new();
+        readonly GraphSorter graphSorter;
 
         readonly CompositeDisposable disposable = new();
 
@@ -77,6 +77,7 @@ namespace Rector.UI.GraphPages
             graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
+            graphSorter = new GraphSorter(Graph);
 
 
             // state machine
@@ -241,22 +242,7 @@ namespace Rector.UI.GraphPages
         void SortInternal()
         {
             shouldSort = false;
-            var result = graphSorter.Sort(NodeViews.Values, edgeViews.Values);
-            Layers.Clear();
-            foreach (var nodeView in NodeViews.Values)
-            {
-                while (Layers.Count <= nodeView.LayerIndex)
-                {
-                    Layers.Add(new List<NodeView>());
-                }
-
-                Layers[nodeView.LayerIndex].Add(nodeView);
-            }
-
-            foreach (var layer in Layers)
-            {
-                layer.Sort((x, y) => x.IndexInLayer.CompareTo(y.IndexInLayer));
-            }
+            var result = graphSorter.Sort();
 
             NodeCount.Value = Graph.NodeCount;
             EdgeCount.Value = Graph.EdgeCount;

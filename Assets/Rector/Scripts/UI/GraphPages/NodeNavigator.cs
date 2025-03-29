@@ -17,28 +17,38 @@ namespace Rector.UI.GraphPages
         {
             var layers = graph.Layers;
             var direction = GetDirection(input);
-            var currentLayer = layers[current.LayerIndex];
-            var currentIndex = currentLayer.IndexOf(current);
+            var currentLayerIndex = current.Layer;
+            var currentLayer = layers[currentLayerIndex];
+            var currentIndexInLayer = currentLayer.IndexOf(current);
             if (direction is Direction.Left or Direction.Right)
             {
                 while (true)
                 {
-                    var nextIndex = currentIndex + (direction == Direction.Right ? 1 : -1);
+                    var nextIndex = currentIndexInLayer + (direction == Direction.Right ? 1 : -1);
                     nextIndex = (nextIndex + currentLayer.Count) % currentLayer.Count;
                     var next = currentLayer[nextIndex];
                     if (next is LayeredNode layeredNode)
                     {
                         return layeredNode;
                     }
+                    currentIndexInLayer = nextIndex;
                 }
             }
             else
             {
-                var nextLayerIndex = current.LayerIndex + (direction == Direction.Up ? -1 : 1);
-                nextLayerIndex = (nextLayerIndex + layers.Count) % layers.Count;
-                var nextLayer = layers[nextLayerIndex];
-                // FIXME: 富豪的
-                return nextLayer.Where(x => !x.IsDummy).Cast<LayeredNode>().OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x)).First();
+                while (true)
+                {
+                    var nextLayerIndex = currentLayerIndex + (direction == Direction.Up ? -1 : 1);
+                    nextLayerIndex = (nextLayerIndex + layers.Count) % layers.Count;
+                    var nextLayer = layers[nextLayerIndex];
+
+                    // NOTE: 0番目のレイヤーは空の場合がある
+                    if (nextLayer.Count != 0)
+                    {
+                        return nextLayer.Where(x => !x.IsDummy).Cast<LayeredNode>().OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x)).First();
+                    }
+                    currentLayerIndex = nextLayerIndex;
+                }
             }
         }
 

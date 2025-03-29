@@ -10,11 +10,11 @@ namespace Rector.UI.LayeredGraphDrawing
     public sealed class LayeredGraph
     {
         public readonly List<List<ILayeredNode>> Layers = new();
-        public readonly Dictionary<NodeId, ILayeredNode> Nodes = new();
+        readonly Dictionary<NodeId, ILayeredNode> nodes = new();
         public readonly Dictionary<EdgeId, LayeredEdge> Edges = new();
+        readonly List<LayeredEdge> tempEdges = new();
 
-        public int NodeCount => Nodes.Count;
-        public int LayerCount => Layers.Count;
+        public int NodeCount => nodes.Count;
         public int EdgeCount => Edges.Count;
 
         readonly VisualElement nodeRoot;
@@ -30,12 +30,12 @@ namespace Rector.UI.LayeredGraphDrawing
         public void AddNode(NodeView nodeView)
         {
             var layeredNode = new LayeredNode(nodeView);
-            if (Nodes.TryAdd(layeredNode.Id, layeredNode))
+            if (nodes.TryAdd(layeredNode.Id, layeredNode))
             {
                 var layer = Layers[0];
                 layer.Add(layeredNode);
-                layeredNode.LayerIndex = 0;
-                layeredNode.IndexInLayer = layer.Count - 1;
+                layeredNode.Layer = 0;
+                layeredNode.Index = layer.Count - 1;
 
                 nodeView.AddTo(nodeRoot);
 
@@ -50,12 +50,13 @@ namespace Rector.UI.LayeredGraphDrawing
 
         public void AddEdge(Edge edge)
         {
-            if (TryGetNode(edge.OutputSlot.NodeId, out var outputNode) && TryGetNode(edge.OutputSlot.NodeId, out var inputNode))
+            if (TryGetNode(edge.OutputSlot.NodeId, out var outputNode) && TryGetNode(edge.InputSlot.NodeId, out var inputNode))
             {
                 var edgeView = new EdgeView(outputNode.NodeView.OutputSlotViews[edge.OutputSlot.Index], inputNode.NodeView.InputSlotViews[edge.InputSlot.Index], edge);
                 var layeredEdge = new LayeredEdge(edgeView);
                 if (Edges.TryAdd(layeredEdge.Id, layeredEdge))
                 {
+                    edgeView.Repaint();
                     edgeRoot.Add(edgeView);
                     outputNode.EdgesToChild.Add(layeredEdge);
                     inputNode.EdgesToParent.Add(layeredEdge);
@@ -66,7 +67,7 @@ namespace Rector.UI.LayeredGraphDrawing
 
         public bool TryGetNode(NodeId id, out LayeredNode node)
         {
-            if (Nodes.TryGetValue(id, out var n) && n is LayeredNode layeredNode)
+            if (nodes.TryGetValue(id, out var n) && n is LayeredNode layeredNode)
             {
                 node = layeredNode;
                 if (layeredNode.NodeView.Node is IDisposable disposable)
@@ -83,22 +84,11 @@ namespace Rector.UI.LayeredGraphDrawing
 
         public void RemoveNode(NodeId id)
         {
-            if (Nodes.Remove(id, out var n) && n is LayeredNode layeredNode)
+            if (nodes.Remove(id, out var n) && n is LayeredNode layeredNode)
             {
-                foreach (var edge in layeredNode.EdgesToParent)
-                {
-                    Edges.Remove(edge.Id);
-                    edge.EdgeView.Dispose();
-                }
+                RemoveEdgesFrom(layeredNode.NodeView.Node);
 
-                foreach (var edge in layeredNode.EdgesToChild)
-                {
-                    Edges.Remove(edge.Id);
-                    edge.EdgeView.Dispose();
-                }
-
-
-                Layers[layeredNode.LayerIndex].Remove(layeredNode);
+                Layers[layeredNode.Layer].Remove(layeredNode);
                 layeredNode.NodeView.RemoveFrom(nodeRoot);
                 layeredNode.NodeView.Dispose();
 
@@ -118,7 +108,7 @@ namespace Rector.UI.LayeredGraphDrawing
                 layeredEdge.EdgeView.Dispose();
 
                 var edge = layeredEdge.EdgeView.Edge;
-                if (TryGetNode(edge.OutputSlot.NodeId, out var outputNode) && TryGetNode(edge.OutputSlot.NodeId, out var inputNode))
+                if (TryGetNode(edge.OutputSlot.NodeId, out var outputNode) && TryGetNode(edge.InputSlot.NodeId, out var inputNode))
                 {
                     RectorLogger.DeleteEdge(edge, outputNode.NodeView.Node, inputNode.NodeView.Node);
 
@@ -136,22 +126,17 @@ namespace Rector.UI.LayeredGraphDrawing
         {
             if (TryGetNode(selectedNode.Id, out var node))
             {
-                while (node.EdgesToParent.Count > 0)
-                {
-                    var edge = node.EdgesToParent[0];
-                    RemoveEdge(edge.Id);
-                }
+                tempEdges.Clear();
+                tempEdges.AddRange(node.EdgesToParent);
+                tempEdges.AddRange(node.EdgesToChild);
 
-                while (node.EdgesToChild.Count > 0)
+                foreach (var edge in tempEdges)
                 {
-                    var edge = node.EdgesToChild[0];
                     RemoveEdge(edge.Id);
                 }
             }
         }
 
-
-        readonly List<LayeredEdge> tempEdges = new();
 
         public void RemoveEdgesFrom(ISlot slot)
         {

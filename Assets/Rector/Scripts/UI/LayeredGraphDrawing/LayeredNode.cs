@@ -9,7 +9,7 @@ namespace Rector.UI.LayeredGraphDrawing
     {
         public NodeId Id { get; }
         public bool IsDummy => false;
-        public float Width => 10f;
+        public float Width => NodeView.Width;
 
         public Vector2 Position
         {
@@ -17,8 +17,8 @@ namespace Rector.UI.LayeredGraphDrawing
             set => NodeView.Position = value;
         }
 
-        public int LayerIndex { get; set; }
-        public int IndexInLayer { get; set; }
+        public int Layer { get; set; }
+        public int Index { get; set; }
         public int InputSlotCount { get; }
         public int OutputSlotCount { get; }
 

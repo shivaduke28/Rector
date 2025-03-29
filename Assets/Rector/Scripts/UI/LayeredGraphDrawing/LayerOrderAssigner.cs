@@ -5,32 +5,30 @@ namespace Rector.UI.LayeredGraphDrawing
 {
     public static class LayerOrderAssigner
     {
-        static readonly Comparison<SortableNode> ParentComparison = (a, b) =>
+        static readonly Comparison<ILayeredNode> ParentComparison = (a, b) =>
         {
             var aCenter = GetBaryCenter(a, true);
             var bCenter = GetBaryCenter(b, true);
             return BaryCenter.Compare(aCenter, bCenter);
         };
 
-        static readonly Comparison<SortableNode> ChildComparison = (a, b) =>
+        static readonly Comparison<ILayeredNode> ChildComparison = (a, b) =>
         {
             var aCenter = GetBaryCenter(a, false);
             var bCenter = GetBaryCenter(b, false);
             return BaryCenter.Compare(aCenter, bCenter);
         };
 
-        static BaryCenter GetBaryCenter(SortableNode node, bool useParent)
+        static BaryCenter GetBaryCenter(ILayeredNode node, bool useParent)
         {
             var neighbors = useParent ? node.Parents : node.Children;
-            var nodeCenter = 0f;
             var slotCenter = 0f;
             var count = 0;
             var slotLeftMost = float.MaxValue;
             foreach (var (neighbor, slotIndex) in neighbors)
             {
                 var i = neighbor.Index;
-                nodeCenter += i;
-                var slotPos = i + slotIndex / (float)(useParent ? neighbor.OutputCount : neighbor.InputCount);
+                var slotPos = i + slotIndex / (float)(useParent ? neighbor.OutputSlotCount  : neighbor.InputSlotCount);
                 slotCenter += slotPos;
                 slotLeftMost = Math.Min(slotLeftMost, slotPos);
                 count++;
@@ -38,17 +36,17 @@ namespace Rector.UI.LayeredGraphDrawing
 
             if (count == 0)
             {
-                return new BaryCenter(node.Index, node.Index, node.IsDummy, node.Index, slotLeftMost);
+                return new BaryCenter(node.Index, slotLeftMost);
             }
 
-            return new BaryCenter(nodeCenter / count, slotCenter / count, node.IsDummy, node.Index, slotLeftMost);
+            return new BaryCenter(slotCenter / count, slotLeftMost);
         }
 
         /// <summary>
         /// レイヤーの順番を決定する
         /// SortNode.Indexに値が入っている前提のコードになっているのに注意
         /// </summary>
-        public static void AssignOrdering(List<List<SortableNode>> layers)
+        public static void AssignOrdering(List<List<ILayeredNode>> layers)
         {
             // 何回か繰り返すとよいらしいので２往復させる
             SortByParent(layers);
@@ -59,7 +57,7 @@ namespace Rector.UI.LayeredGraphDrawing
 
             return;
 
-            static void SortByParent(List<List<SortableNode>> layers)
+            static void SortByParent(List<List<ILayeredNode>> layers)
             {
                 // Debug.Log("--------------SortByParent-----------------");
                 foreach (var layer in layers)
@@ -78,7 +76,7 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            static void SortByChild(List<List<SortableNode>> layers)
+            static void SortByChild(List<List<ILayeredNode>> layers)
             {
                 // Debug.Log("--------------SortByChild-----------------");
                 for (var l = layers.Count - 1; l >= 0; l--)
@@ -102,24 +100,12 @@ namespace Rector.UI.LayeredGraphDrawing
 
         readonly struct BaryCenter
         {
-            // 繋がっているnodeの重心
-            readonly float node;
+            readonly float slot;
+            readonly float leftMost;
 
-            // 繋がっているslotの重心
-            public readonly float slot;
-
-            readonly bool isDummy;
-
-            // 自信のindex（値が同じだった場合に使う）
-            readonly int index;
-            public readonly float leftMost;
-
-            public BaryCenter(float node, float slot, bool isDummy, int index, float leftMost)
+            public BaryCenter(float slot, float leftMost)
             {
-                this.node = node;
                 this.slot = slot;
-                this.isDummy = isDummy;
-                this.index = index;
                 this.leftMost = leftMost;
             }
 
@@ -132,21 +118,6 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
 
                 return a.leftMost.CompareTo(b.leftMost);
-                // var n = a.node.CompareTo(b.node);
-                // if (n != 0)
-                // {
-                //     return n;
-                // }
-                //
-                // // genuine同士やdummy同士の場合はslotの重心を見る
-                // if (a.isDummy == b.isDummy)
-                // {
-                //     var s = a.slot.CompareTo(b.slot);
-                //     return s != 0 ? s : a.index.CompareTo(b.index);
-                // }
-                //
-                // // genuineとdummyの場合はslotの重心を見ずにdummyを前におく
-                // return (a.isDummy ? 0 : 1) - (b.isDummy ? 0 : 1);
             }
         }
     }

@@ -1,15 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Rector.UI.Graphs;
-using Rector.UI.Graphs.Nodes;
 using UnityEngine;
 
 namespace Rector.UI.LayeredGraphDrawing
 {
     public sealed class GraphSorter
     {
-        readonly List<NodeView> unsortedNodes = new();
-        readonly List<EdgeView> edges = new();
+        readonly List<LayeredNode> unsortedNodes = new();
+        readonly Stack<DummyNode> dummyNodePool = new();
+        readonly LayeredGraph graph;
+
+        public GraphSorter(LayeredGraph graph)
+        {
+            this.graph = graph;
+        }
 
         public readonly struct SortResult
         {
@@ -25,22 +30,29 @@ namespace Rector.UI.LayeredGraphDrawing
             }
         }
 
-        public SortResult Sort(IEnumerable<NodeView> nodeViews, IEnumerable<EdgeView> edgeViews)
+        public SortResult Sort()
         {
-            // FIXME: 新規作成したノードが配列に置かれるように生成時にIndexInLayerを指定して、ここでソートしている
-            // 富豪的なので負荷に問題がでたら修正する
             unsortedNodes.Clear();
-            unsortedNodes.AddRange(nodeViews.OrderBy(x => x.LayerIndex * 100 + x.IndexInLayer));
-            edges.Clear();
-            edges.AddRange(edgeViews);
 
-            foreach (var edge in edges)
+            foreach (var prevLayer in graph.Layers)
             {
-                edge.DummyNodes.Clear();
+                foreach (var node in prevLayer)
+                {
+                    node.Parents.Clear();
+                    node.Children.Clear();
+                    if (node is LayeredNode layeredNode)
+                    {
+                        unsortedNodes.Add(layeredNode);
+                    }
+                    else if (node is DummyNode dummyNode)
+                    {
+                        dummyNodePool.Push(dummyNode);
+                    }
+                }
             }
 
             // step1: layerを作る
-            var (layers, layeredNodes) = ConstructLayers(unsortedNodes, edges);
+            var (layers, layeredNodes) = ConstructLayers(unsortedNodes);
 
             // step2: layer ごとに並び替え
             LayerOrderAssigner.AssignOrdering(layers);
@@ -66,9 +78,10 @@ namespace Rector.UI.LayeredGraphDrawing
                 position.y += 80;
             }
 
-            foreach (var edge in edges)
+            // commit dummy node positions to edges
+            foreach (var edge in graph.Edges.Values)
             {
-                edge.Repaint();
+                edge.Commit();
             }
 
             // for (var i = 0; i < layers.Count; i++)
@@ -82,6 +95,12 @@ namespace Rector.UI.LayeredGraphDrawing
             //     }
             // }
 
+            graph.Layers.Clear();
+            foreach (var layer in layers)
+            {
+                graph.Layers.Add(layer);
+            }
+
             return new SortResult(layers.Sum(layer => layer.Count(y => y.IsDummy)), layers.Count, markedEdges.Count);
         }
 
@@ -90,8 +109,8 @@ namespace Rector.UI.LayeredGraphDrawing
         /// https://arxiv.org/abs/2008.01252 をそのまま実装した
         /// </summary>
         static Dictionary<NodeId, float> HorizontalCompaction(
-            List<List<SortableNode>> layers,
-            Dictionary<NodeId, SortableNode> layeredNodes,
+            List<List<ILayeredNode>> layers,
+            Dictionary<NodeId, ILayeredNode> layeredNodes,
             Dictionary<NodeId, NodeId> root,
             Dictionary<NodeId, NodeId> align)
         {
@@ -160,7 +179,7 @@ namespace Rector.UI.LayeredGraphDrawing
 
             // block内のnodeのxとsinkを決める
             // blockとsinkが共通のblockがある場合は先にそれを計算する（ので再起処理になってる）
-            void PlaceBlock(SortableNode rootNode)
+            void PlaceBlock(ILayeredNode rootNode)
             {
                 if (x.TryAdd(rootNode.Id, 0f))
                 {
@@ -170,7 +189,7 @@ namespace Rector.UI.LayeredGraphDrawing
                         if (nodeInBlock.Index > 0)
                         {
                             // 左にあるノード
-                            var pred = layers[nodeInBlock.LayerIndex][nodeInBlock.Index - 1];
+                            var pred = layers[nodeInBlock.Layer][nodeInBlock.Index - 1];
                             var rootOfPred = layeredNodes[root[pred.Id]];
                             PlaceBlock(rootOfPred);
                             if (sink[rootNode.Id] == rootNode.Id) sink[rootNode.Id] = sink[rootOfPred.Id];
@@ -207,7 +226,7 @@ namespace Rector.UI.LayeredGraphDrawing
         /// v2 = align[v1]
         /// </summary>
         static (Dictionary<NodeId, NodeId> root, Dictionary<NodeId, NodeId> align) CalculateVerticalAlignment(
-            List<List<SortableNode>> layers,
+            List<List<ILayeredNode>> layers,
             HashSet<(NodeId up, NodeId down)> markedEdges)
         {
             var root = new Dictionary<NodeId, NodeId>();
@@ -223,7 +242,7 @@ namespace Rector.UI.LayeredGraphDrawing
             }
 
 
-            var temp = new List<SortableNode>();
+            var temp = new List<ILayeredNode>();
             foreach (var layer in layers)
             {
                 var prevParentIndex = -1;
@@ -234,7 +253,7 @@ namespace Rector.UI.LayeredGraphDrawing
                     temp.Clear();
                     temp.AddRange(child.Parents.Select(x => x.Node).OrderBy(x => x.Index));
 
-                    // 親の中点が２つある場合は両方のalignを自分にするï
+                    // 親の中点が２つある場合は両方のalignを自分にする
                     var d = child.Parents.Count - 1;
                     int m0;
                     int m1;
@@ -274,7 +293,7 @@ namespace Rector.UI.LayeredGraphDrawing
         /// </summary>
         /// <param name="layers"></param>
         /// <returns></returns>
-        static HashSet<(NodeId up, NodeId down)> MarkType1ConflictEdges(List<List<SortableNode>> layers)
+        static HashSet<(NodeId up, NodeId down)> MarkType1ConflictEdges(List<List<ILayeredNode>> layers)
         {
             var markedEdges = new HashSet<(NodeId up, NodeId down)>();
             for (var layerIndex = 1; layerIndex < layers.Count - 1; layerIndex++)
@@ -287,7 +306,7 @@ namespace Rector.UI.LayeredGraphDrawing
                 {
                     var innerChild = layerChild[innerChildIndex];
                     var isInner = false;
-                    SortableNode innerParent = null;
+                    ILayeredNode innerParent = null;
                     if (innerChild.IsDummy)
                     {
                         var parent = innerChild.Parents[0].Node;
@@ -329,28 +348,28 @@ namespace Rector.UI.LayeredGraphDrawing
             return markedEdges;
         }
 
-        static (List<List<SortableNode>>, Dictionary<NodeId, SortableNode>) ConstructLayers(List<NodeView> unsortedNodes,
-            List<EdgeView> edges)
+        (List<List<ILayeredNode>> layers, Dictionary<NodeId, ILayeredNode> nodeSet) ConstructLayers(List<LayeredNode> unsortedNodes)
         {
-            var layers = new List<List<SortableNode>>();
-            var layeredNodes = new Dictionary<NodeId, SortableNode>();
+            // TODO: pool list
+            var layers = new List<List<ILayeredNode>>();
+            var layeredNodes = new Dictionary<NodeId, ILayeredNode>();
 
-            var islands = new List<SortableNode>();
-            var sources = new List<SortableNode>();
+            var islands = new List<ILayeredNode>();
+            var sources = new List<ILayeredNode>();
 
 
             // step1: island
             for (var i = 0; i < unsortedNodes.Count;)
             {
                 var node = unsortedNodes[i];
-                var hasInput = node.Node.InputSlots.Any(x => x.ConnectedCount > 0);
-                var hasOutput = node.Node.OutputSlots.Any(x => x.ConnectedCount > 0);
+                var hasInput = node.EdgesToParent.Count > 0;
+                var hasOutput = node.EdgesToChild.Count > 0;
                 if (!hasInput && !hasOutput)
                 {
-                    var genuineNode = new GenuineNode(node, 0);
-                    islands.Add(genuineNode);
-                    genuineNode.Index = islands.Count - 1;
-                    layeredNodes.Add(node.Node.Id, genuineNode);
+                    islands.Add(node);
+                    node.Layer = 0;
+                    node.Index = islands.Count - 1;
+                    layeredNodes.Add(node.Id, node);
                     unsortedNodes.RemoveAt(i);
                 }
                 else
@@ -359,23 +378,20 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            if (islands.Count > 0)
-            {
-                layers.Add(islands);
-            }
+            layers.Add(islands);
 
             // source
             var sourceIndex = layers.Count;
             for (var i = 0; i < unsortedNodes.Count;)
             {
                 var node = unsortedNodes[i];
-                var hasInput = node.Node.InputSlots.Any(x => x.ConnectedCount > 0);
+                var hasInput = node.EdgesToParent.Count > 0;
                 if (!hasInput)
                 {
-                    var genuineNode = new GenuineNode(node, sourceIndex);
-                    sources.Add(genuineNode);
-                    genuineNode.Index = sources.Count - 1;
-                    layeredNodes.Add(node.Node.Id, genuineNode);
+                    sources.Add(node);
+                    node.Layer = sourceIndex;
+                    node.Index = sources.Count - 1;
+                    layeredNodes.Add(node.Id, node);
                     unsortedNodes.RemoveAt(i);
                 }
                 else
@@ -394,33 +410,37 @@ namespace Rector.UI.LayeredGraphDrawing
             {
                 var found = false;
                 var layerIndex = layers.Count;
-                var layer = new List<SortableNode>();
+                var layer = new List<ILayeredNode>();
                 for (var i = 0; i < unsortedNodes.Count;)
                 {
                     var node = unsortedNodes[i];
-                    var edgesToNode = edges.Where(e => e.Edge.InputSlot.NodeId == node.Node.Id).ToArray();
+                    var edgesToNode = node.EdgesToParent;
                     // 全ての親がiよりも上のレイヤーなら追加してよい
-                    if (edgesToNode.All(e => layeredNodes.TryGetValue(e.Edge.OutputSlot.NodeId, out var parent)
-                                             && parent.LayerIndex < layerIndex))
+                    if (edgesToNode.All(e => layeredNodes.TryGetValue(e.EdgeView.Edge.OutputSlot.NodeId, out var parent)
+                                             && parent.Layer < layerIndex))
                     {
-                        var genuineNode = new GenuineNode(node, layerIndex);
                         // Debug.Log($"layer:{layerIndex}, {node.Name}");
-                        layer.Add(genuineNode);
-                        genuineNode.Index = layer.Count - 1;
-                        layeredNodes.Add(node.Node.Id, genuineNode);
+                        node.Layer = layerIndex;
+                        layer.Add(node);
+                        node.Index = layer.Count - 1;
+                        layeredNodes.Add(node.Id, node);
                         unsortedNodes.RemoveAt(i);
 
                         // dummy nodeを上から順に追加する
                         foreach (var edge in edgesToNode)
                         {
-                            var outputNode = layeredNodes[edge.Edge.OutputSlot.NodeId];
-                            var outputLayerIndex = outputNode.LayerIndex;
+                            var outputNode = layeredNodes[edge.EdgeView.Edge.OutputSlot.NodeId];
+                            var outputLayerIndex = outputNode.Layer;
 
                             var parent = outputNode;
-                            var parentSlotIndex = edge.Edge.OutputSlot.Index;
+                            var parentSlotIndex = edge.EdgeView.Edge.OutputSlot.Index;
                             for (var j = outputLayerIndex + 1; j < layerIndex; j++)
                             {
-                                var dummyNode = new DummyNode(NodeId.Generate(), j, edge.Edge.Id);
+                                // TODO: pool dummy node
+                                var dummyNode = new DummyNode(NodeId.Generate())
+                                {
+                                    Layer = j
+                                };
                                 layers[j].Add(dummyNode);
                                 dummyNode.Index = layers[j].Count - 1;
                                 layeredNodes.Add(dummyNode.Id, dummyNode);
@@ -432,8 +452,8 @@ namespace Rector.UI.LayeredGraphDrawing
                                 parentSlotIndex = 0;
                             }
 
-                            genuineNode.Parents.Add((parent, parentSlotIndex));
-                            parent.Children.Add((genuineNode, edge.Edge.InputSlot.Index));
+                            node.Parents.Add((parent, parentSlotIndex));
+                            parent.Children.Add((node, edge.EdgeView.Edge.InputSlot.Index));
                         }
 
                         found = true;
@@ -454,71 +474,6 @@ namespace Rector.UI.LayeredGraphDrawing
             }
 
             return (layers, layeredNodes);
-        }
-
-
-        public sealed class GenuineNode : SortableNode
-        {
-            readonly NodeView node;
-            public override float Width => node.Width;
-            public override string Name => node.Node.Name;
-
-            public override int Index
-            {
-                get => node.IndexInLayer;
-                set => node.IndexInLayer = value;
-            }
-
-            public GenuineNode(NodeView node, int layerIndex) : base(node.Node.Id, layerIndex,
-                node.Node.InputSlots.Length, node.Node.OutputSlots.Length)
-            {
-                this.node = node;
-                this.node.LayerIndex = layerIndex;
-            }
-
-            public override Vector2 Position
-            {
-                get => node.Position;
-                set => node.Position = value;
-            }
-        }
-    }
-
-    public sealed class DummyNode : SortableNode
-    {
-        public override string Name => "Dummy";
-        public override bool IsDummy => true;
-        public readonly EdgeId EdgeId;
-        public override Vector2 Position { get; set; }
-        public override float Width => 10f;
-
-        public DummyNode(NodeId id, int layerIndex, EdgeId edgeId) : base(id, layerIndex, 1, 1)
-        {
-            EdgeId = edgeId;
-        }
-    }
-
-
-    public abstract class SortableNode
-    {
-        public abstract string Name { get; }
-        public virtual bool IsDummy => false;
-        public readonly NodeId Id;
-        public readonly int LayerIndex;
-        public readonly List<(SortableNode Node, int SlotIndex)> Parents = new(0);
-        public readonly List<(SortableNode Node, int SlotIndex)> Children = new(0);
-        public readonly int InputCount;
-        public readonly int OutputCount;
-        public abstract Vector2 Position { get; set; }
-        public virtual int Index { get; set; }
-        public abstract float Width { get; }
-
-        protected SortableNode(NodeId id, int layerIndex, int inputCount, int outputCount)
-        {
-            Id = id;
-            LayerIndex = layerIndex;
-            InputCount = inputCount;
-            OutputCount = outputCount;
         }
     }
 }

@@ -6,17 +6,34 @@ namespace Rector.UI.LayeredGraphDrawing
 {
     public interface ILayeredNode
     {
+        // static
         NodeId Id { get; }
-        bool IsDummy { get; }
-        float Width { get; }
-        Vector2 Position { get; set; }
-        int LayerIndex { get; set; }
-        int IndexInLayer { get; set; }
+
+        // static
         int InputSlotCount { get; }
+
+        // static
         int OutputSlotCount { get; }
 
-        // ソート中に値を入れる
+        // static
+        bool IsDummy { get; }
+
+        // nealy static
+        float Width { get; }
+
+        // dynamic
+        Vector2 Position { get; set; }
+
+        // dynamic
+        int Layer { get; set; }
+
+        // dynamic
+        int Index { get; set; }
+
+        // dynamic
         List<(ILayeredNode Node, int SlotIndex)> Parents { get; }
+
+        // dynamic
         List<(ILayeredNode Node, int SlotIndex)> Children { get; }
     }
 }

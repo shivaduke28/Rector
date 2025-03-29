@@ -71,6 +71,7 @@ namespace Rector.UI.GraphPages
                     if (graphPage.SelectedNode.Value is { } selectedNode)
                     {
                         graphPage.Graph.RemoveEdgesFrom(selectedNode);
+                        graphPage.Sort();
                     }
 
                     break;

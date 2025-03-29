@@ -58,7 +58,12 @@ namespace Rector.UI.GraphPages
                 if (EdgeConnector.TryConnect(graphPage.SelectedSlot.Value, graphPage.TargetSlot.Value, out var newEdge))
                 {
                     graphPage.Graph.AddEdge(newEdge);
+                    graphPage.Sort();
                 }
+            }
+            else
+            {
+                graphPage.Sort();
             }
         }
 
