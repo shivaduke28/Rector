@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Rector.UI.LayeredGraphDrawing
@@ -70,11 +71,6 @@ namespace Rector.UI.LayeredGraphDrawing
             if (nodes.TryGetValue(id, out var n) && n is LayeredNode layeredNode)
             {
                 node = layeredNode;
-                if (layeredNode.NodeView.Node is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-
                 return true;
             }
 
@@ -94,14 +90,19 @@ namespace Rector.UI.LayeredGraphDrawing
                 layeredNode.NodeView.RemoveFrom(nodeRoot);
                 layeredNode.NodeView.Dispose();
 
+                if (layeredNode.NodeView.Node is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+
                 RectorLogger.DeleteNode(layeredNode.NodeView.Node);
             }
         }
 
         /// <remarks>
+        /// Nodeを削除するときは先にこれを呼ぶこと
         /// LayeredNodeのEdgesToChild, EdgesToParentからRemoveするのでforeachの中で呼ぶと例外が出る
         /// </remarks>
-        /// <param name="id"></param>
         public bool RemoveEdge(EdgeId id)
         {
             if (Edges.Remove(id, out var layeredEdge))
@@ -116,6 +117,10 @@ namespace Rector.UI.LayeredGraphDrawing
 
                     outputNode.EdgesToChild.Remove(layeredEdge);
                     inputNode.EdgesToParent.Remove(layeredEdge);
+                }
+                else
+                {
+                    Debug.LogError("Nodes not found when removing edge.");
                 }
 
                 return true;
