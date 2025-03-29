@@ -8,7 +8,6 @@ namespace Rector.UI.LayeredGraphDrawing
     public sealed class GraphSorter
     {
         readonly List<LayeredNode> unsortedNodes = new();
-        readonly Stack<DummyNode> dummyNodePool = new();
         readonly LayeredGraph graph;
 
         public GraphSorter(LayeredGraph graph)
@@ -48,10 +47,6 @@ namespace Rector.UI.LayeredGraphDrawing
                     if (node is LayeredNode layeredNode)
                     {
                         unsortedNodes.Add(layeredNode);
-                    }
-                    else if (node is DummyNode dummyNode)
-                    {
-                        dummyNodePool.Push(dummyNode);
                     }
                 }
             }
