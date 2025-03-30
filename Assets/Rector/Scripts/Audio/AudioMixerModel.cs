@@ -14,20 +14,11 @@ namespace Rector.Audio
         readonly ReactiveProperty<float> levelMid = new(0f);
         readonly ReactiveProperty<float> levelHigh = new(0f);
 
-        // db
-        public ReactiveProperty<float> Gain { get; } = new(12f);
-
         // normalize levels
         public ReadOnlyReactiveProperty<float> Level => level;
         public ReadOnlyReactiveProperty<float> LevelLow => levelLow;
         public ReadOnlyReactiveProperty<float> LevelMid => levelMid;
         public ReadOnlyReactiveProperty<float> LevelHigh => levelHigh;
-
-        public ReactiveProperty<float> EqLow { get; } = new(1f);
-
-        public ReactiveProperty<float> EqMid { get; } = new(1f);
-
-        public ReactiveProperty<float> EqHigh { get; } = new(1f);
 
         public ReactiveProperty<float> ThLow { get; } = new(1f);
 
