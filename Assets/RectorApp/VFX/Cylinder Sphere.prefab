@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 2236897481742318350}
   - component: {fileID: 1875676942902024135}
   - component: {fileID: 4108377784678761968}
+  - component: {fileID: 6611089577990048687}
+  - component: {fileID: 6950764358883748529}
   m_Layer: 0
   m_Name: Cylinder Sphere
   m_TagString: Untagged
@@ -57,7 +59,10 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: 3, z: 0}
+        m_Name: _Center
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -137,21 +142,13 @@ MonoBehaviour:
     defaultValue: 0
   events: []
   properties:
-  - rid: 8375393097419849821
-  - rid: 8375393097419849822
-  - rid: 8375393097419849823
-  - rid: 8375393097419849824
+  - rid: 8375393097419849834
+  - rid: 8375393097419849835
+  - rid: 8375393097419849836
   references:
     version: 2
     RefIds:
-    - rid: 8375393097419849821
-      type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
-      data:
-        name: Center
-        value:
-          value: {x: 0, y: 3, z: 0}
-        defaultValue: {x: 0, y: 3, z: 0}
-    - rid: 8375393097419849822
+    - rid: 8375393097419849834
       type: {class: IntInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Count
@@ -160,7 +157,7 @@ MonoBehaviour:
         defaultValue: 10
         minValue: 0
         maxValue: 100
-    - rid: 8375393097419849823
+    - rid: 8375393097419849835
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Intensity
@@ -169,7 +166,7 @@ MonoBehaviour:
         defaultValue: 0.6
         minValue: 0
         maxValue: 8
-    - rid: 8375393097419849824
+    - rid: 8375393097419849836
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Radius
@@ -195,6 +192,38 @@ MonoBehaviour:
   - {fileID: 1258437806950492668}
   - {fileID: 8061114578023614250}
   vfxInputSlot: {fileID: 1875676942902024135}
+--- !u!114 &6611089577990048687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516289662380637546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 6950764358883748529}
+  m_VisualEffect: {fileID: 9178744722350525722}
+--- !u!114 &6950764358883748529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516289662380637546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 0
+  m_Property:
+    m_Name: _Center
+  Target: {fileID: 9111723014515794727}
 --- !u!1 &6939822975744010579
 GameObject:
   m_ObjectHideFlags: 0

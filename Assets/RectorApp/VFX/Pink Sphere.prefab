@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 639900878867684154}
   - component: {fileID: 6647030918937890913}
   - component: {fileID: 5890325442845807954}
+  - component: {fileID: 7648569014551836608}
+  - component: {fileID: 7911740591989699658}
   m_Layer: 0
   m_Name: Pink Sphere
   m_TagString: Untagged
@@ -57,7 +59,10 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: 3.56, z: 0}
+        m_Name: _Target
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -136,18 +141,10 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  properties:
-  - rid: 8375393097419849825
+  properties: []
   references:
     version: 2
-    RefIds:
-    - rid: 8375393097419849825
-      type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
-      data:
-        name: Target
-        value:
-          value: {x: 0, y: 0, z: 0}
-        defaultValue: {x: 0, y: 0, z: 0}
+    RefIds: []
 --- !u!114 &5890325442845807954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,6 +162,38 @@ MonoBehaviour:
   - {fileID: 7895426182111330291}
   - {fileID: 5995369115752541142}
   vfxInputSlot: {fileID: 6647030918937890913}
+--- !u!114 &7648569014551836608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4990303096629944724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 7911740591989699658}
+  m_VisualEffect: {fileID: 3076113859729685954}
+--- !u!114 &7911740591989699658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4990303096629944724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 0
+  m_Property:
+    m_Name: _Target
+  Target: {fileID: 2360105403721844723}
 --- !u!1 &6228020684918025864
 GameObject:
   m_ObjectHideFlags: 0
