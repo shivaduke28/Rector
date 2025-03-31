@@ -16,7 +16,7 @@ namespace Rector.Vfx
         [SerializeField] VisualEffect visualEffect;
         [SerializeField] BoolInput activeInput = new("Active", false);
         [SerializeField] string[] events;
-        [SerializeReference] IInput[] properties;
+        [SerializeReference, SelectableSerializeReference] IInput[] properties;
 
         IInput[] inputs;
 
