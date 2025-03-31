@@ -5,6 +5,7 @@ using UnityEngine;
 namespace Rector.Editor
 {
     [CustomEditor(typeof(VfxInputSlotBehaviour))]
+    [CanEditMultipleObjects]
     public class VfxInputBehaviourEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
@@ -12,20 +13,16 @@ namespace Rector.Editor
             base.OnInspectorGUI();
 
             // FIXME: VFXGraphのエディタを開かないとうまく反映できない
-            if (GUILayout.Button("Reset Properties"))
+            if (GUILayout.Button("Reset Properties and Events"))
             {
-                var vfxView = (VfxInputSlotBehaviour) target;
-                var props = VfxAssetReader.GetPropertyInputs(vfxView.VisualEffect);
-                vfxView.ResetProperties(props);
-                EditorUtility.SetDirty(vfxView);
-            }
-
-            // FIXME: VFXGraphのエディタを開かないとうまく反映できない
-            if (GUILayout.Button("Reset Events"))
-            {
-                var vfxView = (VfxInputSlotBehaviour) target;
-                vfxView.ResetEvents(VfxAssetReader.GetEventNames(vfxView.VisualEffect));
-                EditorUtility.SetDirty(vfxView);
+                foreach (var t in targets)
+                {
+                    var vfxView = (VfxInputSlotBehaviour)t;
+                    var props = VfxAssetReader.GetPropertyInputs(vfxView.VisualEffect);
+                    vfxView.ResetProperties(props);
+                    vfxView.ResetEvents(VfxAssetReader.GetEventNames(vfxView.VisualEffect));
+                    EditorUtility.SetDirty(vfxView);
+                }
             }
         }
     }
