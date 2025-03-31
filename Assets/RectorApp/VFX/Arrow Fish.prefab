@@ -135,20 +135,14 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375393094409388101
-    reinit: 0
-  - input:
-      rid: 8375393094409388102
-    reinit: 0
-  - input:
-      rid: 8375393094409388103
-    reinit: 0
+  properties:
+  - rid: 8375393097419849813
+  - rid: 8375393097419849814
+  - rid: 8375393097419849815
   references:
     version: 2
     RefIds:
-    - rid: 8375393094409388101
+    - rid: 8375393097419849813
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Intensity
@@ -157,7 +151,7 @@ MonoBehaviour:
         defaultValue: 32
         minValue: 0
         maxValue: 64
-    - rid: 8375393094409388102
+    - rid: 8375393097419849814
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: SpawnRate
@@ -166,7 +160,7 @@ MonoBehaviour:
         defaultValue: 5
         minValue: 0
         maxValue: 32
-    - rid: 8375393094409388103
+    - rid: 8375393097419849815
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Speed

@@ -135,14 +135,12 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375393094409388118
-    reinit: 0
+  properties:
+  - rid: 8375393097419849828
   references:
     version: 2
     RefIds:
-    - rid: 8375393094409388118
+    - rid: 8375393097419849828
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: SpawnRate

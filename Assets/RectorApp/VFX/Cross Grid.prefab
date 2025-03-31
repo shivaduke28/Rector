@@ -135,7 +135,7 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs: []
+  properties: []
   references:
     version: 2
     RefIds: []

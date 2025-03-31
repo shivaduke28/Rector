@@ -135,14 +135,12 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375393094409388104
-    reinit: 0
+  properties:
+  - rid: 8375393097419849816
   references:
     version: 2
     RefIds:
-    - rid: 8375393094409388104
+    - rid: 8375393097419849816
       type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Angle

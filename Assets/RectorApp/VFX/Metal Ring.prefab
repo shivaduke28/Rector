@@ -135,10 +135,10 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events:
+  - S
   - L
   - M
-  - S
-  propertyInputs: []
+  properties: []
   references:
     version: 2
     RefIds: []

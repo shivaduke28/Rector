@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 5525917792864079699}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -76,6 +76,8 @@ GameObject:
   - component: {fileID: 5311212678923135535}
   - component: {fileID: 8416515057407661693}
   - component: {fileID: 8549564959209217536}
+  - component: {fileID: 8312157823665751902}
+  - component: {fileID: 6806275308808874307}
   m_Layer: 0
   m_Name: Cube Wave
   m_TagString: Untagged
@@ -199,26 +201,15 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375393094409388105
-    reinit: 0
-  - input:
-      rid: 8375393094409388106
-    reinit: 0
-  - input:
-      rid: 8375393094409388107
-    reinit: 0
-  - input:
-      rid: 8375393094409388108
-    reinit: 0
-  - input:
-      rid: 8375393094409388109
-    reinit: 0
+  properties:
+  - rid: 8375393097419849817
+  - rid: 8375393097419849818
+  - rid: 8375393097419849819
+  - rid: 8375393097419849820
   references:
     version: 2
     RefIds:
-    - rid: 8375393094409388105
+    - rid: 8375393097419849817
       type: {class: IntInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Count
@@ -227,14 +218,7 @@ MonoBehaviour:
         defaultValue: 16
         minValue: 1
         maxValue: 16
-    - rid: 8375393094409388106
-      type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
-      data:
-        name: Position
-        value:
-          value: {x: 0, y: 3, z: 0}
-        defaultValue: {x: 0, y: 3, z: 0}
-    - rid: 8375393094409388107
+    - rid: 8375393097419849818
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Scale
@@ -243,7 +227,7 @@ MonoBehaviour:
         defaultValue: 2
         minValue: 1
         maxValue: 8
-    - rid: 8375393094409388108
+    - rid: 8375393097419849819
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Size
@@ -252,7 +236,7 @@ MonoBehaviour:
         defaultValue: 1
         minValue: 0
         maxValue: 1
-    - rid: 8375393094409388109
+    - rid: 8375393097419849820
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Speed
@@ -278,3 +262,35 @@ MonoBehaviour:
   - {fileID: 9202545598117814673}
   - {fileID: 4831095143488441197}
   vfxInputSlot: {fileID: 8416515057407661693}
+--- !u!114 &8312157823665751902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8225909253412846301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 0
+  m_Bindings:
+  - {fileID: 6806275308808874307}
+  m_VisualEffect: {fileID: 5488202194648697371}
+--- !u!114 &6806275308808874307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8225909253412846301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 1
+  m_Property:
+    m_Name: _Position
+  Target: {fileID: 8032251408575636696}

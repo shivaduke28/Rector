@@ -136,17 +136,13 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375393094409388115
-    reinit: 0
-  - input:
-      rid: 8375393094409388116
-    reinit: 0
+  properties:
+  - rid: 8375393097419849826
+  - rid: 8375393097419849827
   references:
     version: 2
     RefIds:
-    - rid: 8375393094409388115
+    - rid: 8375393097419849826
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Height
@@ -155,7 +151,7 @@ MonoBehaviour:
         defaultValue: 10
         minValue: 0
         maxValue: 36
-    - rid: 8375393094409388116
+    - rid: 8375393097419849827
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Radius

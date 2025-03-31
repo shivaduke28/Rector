@@ -136,7 +136,7 @@ MonoBehaviour:
     defaultValue: 0
   events:
   - Spawn
-  propertyInputs: []
+  properties: []
   references:
     version: 2
     RefIds: []

@@ -139,47 +139,37 @@ MonoBehaviour:
       value: 0
     defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375393094409388119
-    reinit: 0
-  - input:
-      rid: 8375393094409388120
-    reinit: 0
-  - input:
-      rid: 8375393094409388121
-    reinit: 0
-  - input:
-      rid: 8375393094409388122
-    reinit: 0
-  - input:
-      rid: 8375393094409388123
-    reinit: 0
+  properties:
+  - rid: 8375393097419849829
+  - rid: 8375393097419849830
+  - rid: 8375393097419849831
+  - rid: 8375393097419849832
+  - rid: 8375393097419849833
   references:
     version: 2
     RefIds:
-    - rid: 8375393094409388119
+    - rid: 8375393097419849829
       type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Angle
         value:
           value: {x: 0, y: 0, z: 0}
         defaultValue: {x: 0, y: 0, z: 0}
-    - rid: 8375393094409388120
+    - rid: 8375393097419849830
       type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Center
         value:
           value: {x: 0, y: 2, z: 0}
         defaultValue: {x: 0, y: 2, z: 0}
-    - rid: 8375393094409388121
+    - rid: 8375393097419849831
       type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: HSV
         value:
           value: {x: 0, y: 0, z: 1}
         defaultValue: {x: 0, y: 0, z: 1}
-    - rid: 8375393094409388122
+    - rid: 8375393097419849832
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Scale
@@ -188,7 +178,7 @@ MonoBehaviour:
         defaultValue: 0.9
         minValue: 0
         maxValue: 1
-    - rid: 8375393094409388123
+    - rid: 8375393097419849833
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Size
