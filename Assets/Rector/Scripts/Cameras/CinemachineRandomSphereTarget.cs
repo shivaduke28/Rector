@@ -17,6 +17,12 @@ namespace Rector.Cameras
 
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
+            #if UNITY_EDITOR
+            if (Application.isPlaying == false)
+            {
+                return;
+            }
+            #endif
             if (IsValid && curState.HasLookAt())
             {
                 t += Time.deltaTime;
