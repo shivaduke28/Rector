@@ -66,7 +66,7 @@ namespace Rector.UI.LayeredGraphDrawing
             // Alg. 3: Horizontal compaction
             var x = HorizontalCompaction(layers, layeredNodes, root, align);
 
-            var position = new Vector2(60, 30);
+            var position = Vector2.zero;
             foreach (var layer in layers)
             {
                 if (layer.Count == 0) continue;

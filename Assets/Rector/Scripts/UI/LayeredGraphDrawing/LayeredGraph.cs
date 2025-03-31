@@ -82,7 +82,7 @@ namespace Rector.UI.LayeredGraphDrawing
         {
             if (nodes.TryGetValue(id, out var n) && n is LayeredNode layeredNode)
             {
-                RemoveEdgesFrom(layeredNode.NodeView.Node);
+                RemoveEdgesFrom(layeredNode);
 
                 // NOTE: remove from nodes **after** removing edges
                 nodes.Remove(id);
@@ -102,6 +102,7 @@ namespace Rector.UI.LayeredGraphDrawing
         /// <remarks>
         /// Nodeを削除するときは先にこれを呼ぶこと
         /// LayeredNodeのEdgesToChild, EdgesToParentからRemoveするのでforeachの中で呼ぶと例外が出る
+        /// ILayeredNode.Parent/Childrenを編集しないことに注意
         /// </remarks>
         public bool RemoveEdge(EdgeId id)
         {
@@ -130,9 +131,8 @@ namespace Rector.UI.LayeredGraphDrawing
             return false;
         }
 
-        public void RemoveEdgesFrom(Node selectedNode)
+        public void RemoveEdgesFrom(LayeredNode node)
         {
-            if (TryGetNode(selectedNode.Id, out var node))
             {
                 tempEdges.Clear();
                 tempEdges.AddRange(node.EdgesToParent);

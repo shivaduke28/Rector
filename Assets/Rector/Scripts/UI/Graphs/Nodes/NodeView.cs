@@ -25,8 +25,14 @@ namespace Rector.UI.Graphs.Nodes
         public Vector2 Position
         {
             get => Root.transform.position;
-            set => Root.transform.position = new Vector3(value.x, value.y, 0);
+            set
+            {
+                TargetPosition = value;
+                Root.transform.position = new Vector3(value.x, value.y, 0);
+            }
         }
+
+        public Vector2 TargetPosition { get; private set; }
 
         public NodeView(VisualElement templateContainer, Node node)
         {

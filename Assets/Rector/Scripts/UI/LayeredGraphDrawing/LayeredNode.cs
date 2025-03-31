@@ -17,6 +17,8 @@ namespace Rector.UI.LayeredGraphDrawing
             set => NodeView.Position = value;
         }
 
+        public Vector2 TargetPosition => NodeView.TargetPosition;
+
         public int Layer { get; set; }
         public int Index { get; set; }
         public int InputSlotCount { get; }
@@ -26,7 +28,16 @@ namespace Rector.UI.LayeredGraphDrawing
         public List<(ILayeredNode Node, int SlotIndex)> Parents { get; } = new(16);
         public List<(ILayeredNode Node, int SlotIndex)> Children { get; } = new(16);
 
+        /// <summary>
+        /// Dummy Nodeを加味しないEdgeの配列
+        /// この値を元にSortを行うのでEdgeのAdd/Remove時に編集すること
+        /// </summary>
         public List<LayeredEdge> EdgesToParent { get; } = new(16);
+
+        /// <summary>
+        /// Dummy Nodeを加味しないEdgeの配列
+        /// この値を元にSortを行うのでEdgeのAdd/Remove時に編集すること
+        /// </summary>
         public List<LayeredEdge> EdgesToChild { get; } = new(16);
 
         public NodeView NodeView { get; }

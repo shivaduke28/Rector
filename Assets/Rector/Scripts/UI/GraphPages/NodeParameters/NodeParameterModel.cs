@@ -14,7 +14,7 @@ namespace Rector.UI.GraphPages.NodeParameters
 
     public sealed class NodeParameterModel
     {
-        public Node Node => page.SelectedNode.Value;
+        public Node Node => page.SelectedNode?.NodeView.Node;
         readonly GraphPage page;
         public readonly ReactiveProperty<bool> IsVisible = new(false);
         public readonly List<IExposedInputModel> ExposedInputs = new();

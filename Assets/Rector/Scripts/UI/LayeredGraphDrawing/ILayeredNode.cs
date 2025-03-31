@@ -30,10 +30,16 @@ namespace Rector.UI.LayeredGraphDrawing
         // dynamic
         int Index { get; set; }
 
-        // dynamic
+        /// <summary>
+        /// Dummy Nodeを加味した親の配列 (Short Edge)
+        /// ソート中に値を入れる
+        /// </summary>
         List<(ILayeredNode Node, int SlotIndex)> Parents { get; }
 
-        // dynamic
+        /// <summary>
+        /// Dummy Nodeを加味した子の配列 (Short Edge)
+        /// ソート中に値を入れる
+        /// </summary>
         List<(ILayeredNode Node, int SlotIndex)> Children { get; }
     }
 }

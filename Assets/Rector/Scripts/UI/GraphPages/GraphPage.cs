@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using R3;
 using Rector.UI.GraphPages.NodeParameters;
 using Rector.UI.Graphs;
-using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+#nullable enable
 
 namespace Rector.UI.GraphPages
 {
@@ -15,13 +16,11 @@ namespace Rector.UI.GraphPages
     {
         readonly ReactiveProperty<bool> isVisible = new(false);
         public readonly ReactiveProperty<GraphPageState> State = new(GraphPageState.NodeSelection);
-        GraphPageState lastState;
 
-        // ReactivePropertyやめられそう
-        public readonly ReactiveProperty<Node> SelectedNode = new();
-        public readonly ReactiveProperty<ISlot> SelectedSlot = new();
-        public readonly ReactiveProperty<Node> TargetNode = new();
-        public readonly ReactiveProperty<ISlot> TargetSlot = new();
+        public LayeredNode? SelectedNode;
+        public ISlot? SelectedSlot;
+        public LayeredNode? TargetNode;
+        public ISlot? TargetSlot;
 
         public Observable<Unit> OpenScenePage => graphInputAction.OpenScene.Where(_ => State.Value == GraphPageState.NodeSelection);
         public Observable<Unit> OpenSystemPage => graphInputAction.OpenSystem.Where(_ => State.Value == GraphPageState.NodeSelection);
@@ -115,7 +114,7 @@ namespace Rector.UI.GraphPages
                 {
                     createNodeMenuModel.Enter();
                     var position = new Vector2(60, 30);
-                    if (SelectedNode.Value is { } selectedNode && Graph.TryGetNode(selectedNode.Id, out var selectedNodeView))
+                    if (SelectedNode is not null && Graph.TryGetNode(SelectedNode.Id, out var selectedNodeView))
                     {
                         position = selectedNodeView.Position + new Vector2(selectedNodeView.Width + 20, 40);
                     }
@@ -146,24 +145,25 @@ namespace Rector.UI.GraphPages
                 .Subscribe(_ => SortInternal()).AddTo(disposable);
         }
 
-        public void SelectNode(Node node)
+        public void SelectNode(LayeredNode? node)
         {
-            if (SelectedNode.Value is { } old)
+            if (SelectedNode is { } old)
             {
-                old.Selected.Value = false;
+                old.NodeView.Node.Selected.Value = false;
             }
 
             if (node != null)
             {
-                node.Selected.Value = true;
+                node.NodeView.Node.Selected.Value = true;
+                graphContentTransformer.MoveContentToMakeNodeVisible(node);
             }
 
-            SelectedNode.Value = node;
+            SelectedNode = node;
         }
 
-        public void SelectSlot(ISlot slot)
+        public void SelectSlot(ISlot? slot)
         {
-            if (SelectedSlot.Value is { } old)
+            if (SelectedSlot is { } old)
             {
                 old.Selected.Value = false;
             }
@@ -173,27 +173,32 @@ namespace Rector.UI.GraphPages
                 slot.Selected.Value = true;
             }
 
-            SelectedSlot.Value = slot;
+            SelectedSlot = slot;
         }
 
-        public void SetTargetNode(Node node)
+        public void SetTargetNode(LayeredNode? node)
         {
-            if (TargetNode.Value is { } old && old != SelectedNode.Value)
+            if (TargetNode is { } old && old != SelectedNode)
             {
-                old.Selected.Value = false;
+                old.NodeView.Node.Selected.Value = false;
             }
 
             if (node != null)
             {
-                node.Selected.Value = true;
+                node.NodeView.Node.Selected.Value = true;
+                graphContentTransformer.MoveContentToMakeNodeVisible(node);
+            }
+            else if (SelectedNode is not null)
+            {
+                graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
             }
 
-            TargetNode.Value = node;
+            TargetNode = node;
         }
 
-        public void SetTargetSlot(ISlot slot)
+        public void SetTargetSlot(ISlot? slot)
         {
-            if (TargetSlot.Value is { } old)
+            if (TargetSlot is { } old)
             {
                 old.Selected.Value = false;
             }
@@ -203,13 +208,13 @@ namespace Rector.UI.GraphPages
                 slot.Selected.Value = true;
             }
 
-            TargetSlot.Value = slot;
+            TargetSlot = slot;
         }
 
 
         public void ShowHoldNextToSelected()
         {
-            if (SelectedNode.Value is { } selectedNode && Graph.TryGetNode(selectedNode.Id, out var selectedLayeredNode))
+            if (SelectedNode is not null && Graph.TryGetNode(SelectedNode.Id, out var selectedLayeredNode))
             {
                 holdGuideModel.Position.Value = selectedLayeredNode.Position - new Vector2(30, 0);
                 holdGuideModel.Visible.Value = true;
@@ -223,9 +228,9 @@ namespace Rector.UI.GraphPages
 
         public void RemoveSelectedNode()
         {
-            if (SelectedNode.Value is { } selectedNode)
+            if (SelectedNode is not null)
             {
-                Graph.RemoveNode(selectedNode.Id);
+                Graph.RemoveNode(SelectedNode.Id);
                 SelectSlot(null);
                 SelectNode(null);
                 Sort();
@@ -250,6 +255,32 @@ namespace Rector.UI.GraphPages
             LayerCount.Value = result.LayerCount;
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
+
+            switch (State.Value)
+            {
+                case GraphPageState.NodeSelection:
+                case GraphPageState.SlotSelection:
+                case GraphPageState.NodeParameter:
+                case GraphPageState.NodeCreation:
+                    if (SelectedNode is not null)
+                    {
+                        graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
+                    }
+                    break;
+                case GraphPageState.TargetNodeSelection:
+                case GraphPageState.TargetSlotSelection:
+                    if (TargetNode is not null)
+                    {
+                        graphContentTransformer.MoveContentToMakeNodeVisible(TargetNode);
+                    }
+                    else if (SelectedNode is not null)
+                    {
+                        graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         void IDisposable.Dispose()
