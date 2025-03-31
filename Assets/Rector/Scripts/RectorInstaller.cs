@@ -54,7 +54,7 @@ namespace Rector
 
             var nodeTemplateRepository = Register(new NodeTemplateRepository());
             Register(nodeTemplateRepository);
-            var sceneLoader = Register(new SceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository));
+            var sceneLoader = Register(new BGSceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository));
 
             var uiInputAction = Register(new UIInputAction(rectorInput));
             var graphInputAction = Register(new GraphInputAction(rectorInput));

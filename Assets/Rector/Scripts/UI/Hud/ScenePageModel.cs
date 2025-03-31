@@ -7,7 +7,7 @@ namespace Rector.UI.Hud
     public sealed class ScenePageModel : IInitializable, IDisposable, IButtonListPageModel
     {
         readonly ButtonListPageView view;
-        readonly SceneManager sceneManager;
+        readonly BGSceneManager bgSceneManager;
         readonly ReactiveProperty<bool> isVisible = new(false);
         readonly List<RectorButtonState> buttons = new();
         readonly CompositeDisposable disposable = new();
@@ -15,19 +15,19 @@ namespace Rector.UI.Hud
 
         int index;
 
-        public ScenePageModel(ButtonListPageView view, SceneManager sceneManager)
+        public ScenePageModel(ButtonListPageView view, BGSceneManager bgSceneManager)
         {
             this.view = view;
-            this.sceneManager = sceneManager;
+            this.bgSceneManager = bgSceneManager;
         }
 
         void IInitializable.Initialize()
         {
-            foreach (var scene in sceneManager.GetScenes())
+            foreach (var scene in bgSceneManager.GetScenes())
             {
-                var button = new RectorButtonState(scene, () => sceneManager.Load(scene));
+                var button = new RectorButtonState(scene, () => bgSceneManager.Load(scene));
                 buttons.Add(button);
-                sceneManager.CurrentScene.Subscribe(x => button.IsHighlighted.Value = x == scene).AddTo(disposable);
+                bgSceneManager.CurrentScene.Subscribe(x => button.IsHighlighted.Value = x == scene).AddTo(disposable);
             }
 
             view.Bind(this).AddTo(disposable);

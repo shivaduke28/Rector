@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
-using Rector.NodeBehaviours;
 using Rector.UI;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
@@ -12,7 +10,7 @@ using UnityEngine.SceneManagement;
 
 namespace Rector
 {
-    public sealed class SceneManager : IDisposable
+    public sealed class BGSceneManager : IDisposable
     {
         readonly SceneSettings sceneSettings;
         readonly LoadingView loadingView;
@@ -24,7 +22,7 @@ namespace Rector
         public string[] GetScenes() => sceneSettings.sceneNames;
         readonly HashSet<NodeTemplateId> registeredNodeTemplates = new();
 
-        public SceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepository nodeTemplateRepository)
+        public BGSceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepository nodeTemplateRepository)
         {
             this.loadingView = loadingView;
             this.sceneSettings = sceneSettings;
@@ -44,14 +42,14 @@ namespace Rector
                 UnregisterNodeTemplates();
                 var current = currentScene.Value;
                 currentScene.Value = "";
-                await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(current).ToUniTask(cancellationToken: token);
+                await SceneManager.UnloadSceneAsync(current).ToUniTask(cancellationToken: token);
                 loadingView.SetActive(true);
             }
 
-            await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive).ToUniTask(cancellationToken: token);
+            await SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive).ToUniTask(cancellationToken: token);
             currentScene.Value = sceneName;
             // set loaded scene active to apply Skybox and Fog.
-            UnityEngine.SceneManagement.SceneManager.SetActiveScene(UnityEngine.SceneManagement.SceneManager.GetSceneByName(sceneName));
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
             loadingView.SetActive(false);
 
             RegisterNodeTemplates();
@@ -69,15 +67,18 @@ namespace Rector
 
         void RegisterNodeTemplates()
         {
-            var rootObjects = UnityEngine.SceneManagement.SceneManager.GetSceneByName(currentScene.Value).GetRootGameObjects();
+            var rootObjects = SceneManager.GetSceneByName(currentScene.Value).GetRootGameObjects();
             foreach (var rootObject in rootObjects)
             {
-                var nodeBehaviours = rootObject.GetComponentsInChildren<NodeBehaviour>().OrderBy(b => b.name);
-                foreach (var nodeBehaviour in nodeBehaviours)
+                var bgScenes = rootObject.GetComponentsInChildren<BGScene>();
+                foreach (var bgScene in bgScenes)
                 {
-                    var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
-                    nodeTemplateRepository.Add(template);
-                    registeredNodeTemplates.Add(template.Id);
+                    foreach (var nodeBehaviour in bgScene.NodeBehaviours)
+                    {
+                        var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
+                        nodeTemplateRepository.Add(template);
+                        registeredNodeTemplates.Add(template.Id);
+                    }
                 }
             }
 
