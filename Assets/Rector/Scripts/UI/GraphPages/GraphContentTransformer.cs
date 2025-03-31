@@ -47,6 +47,7 @@ namespace Rector.UI.GraphPages
         {
             DisableAnimation();
             currentScale = 1f;
+            offset = Vector2.zero;
             content.transform.position = Vector3.zero;
             content.transform.scale = Vector3.one;
         }
@@ -104,14 +105,9 @@ namespace Rector.UI.GraphPages
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
-            var maskBound = mask.worldBound;
-            var maskWidth = maskBound.width;
-            var maskHeight = maskBound.height;
-
             // left-top
             var nodePosition = node.TargetPosition * currentScale;
-
-            content.transform.position = new Vector3(maskWidth * 0.5f - nodePosition.x - 40f + offset.x, maskHeight * 0.5f - nodePosition.y - 10f + offset.y, 0f);
+            content.transform.position = new Vector3(-nodePosition.x + offset.x, -nodePosition.y + offset.y, 0f);
         }
 
         public void Dispose()
