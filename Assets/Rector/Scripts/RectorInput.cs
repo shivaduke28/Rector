@@ -126,7 +126,7 @@ namespace Rector
                     ""id"": ""8787988b-3bad-481b-a26f-629841b89e58"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Tap"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
