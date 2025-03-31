@@ -19,6 +19,9 @@ namespace Rector.Editor
             var exposedProperties = new List<VFXExposedProperty>();
             asset.GetExposedProperties(exposedProperties);
 
+            // "_"で始まるプロパティは除外する
+            exposedProperties.RemoveAll(x => x.name.StartsWith("_"));
+
             // .vfxにシリアライズされた値
             var serializableVfxParameterInfos = ReadParameterInfo(asset);
 
@@ -98,6 +101,12 @@ namespace Rector.Editor
             {
                 if (doc is { MonoBehaviour: { EventName: { } eventName } } && !string.IsNullOrEmpty(eventName))
                 {
+                    if (eventName == "OnPlay" || eventName == "OnStop")
+                    {
+                        Debug.Log($"{eventName} is ignored.");
+                        continue;
+                    }
+
                     eventNames.Add(eventName);
                 }
             }

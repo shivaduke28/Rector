@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace Rector.Vfx
 {
-    [RequireComponent(typeof(VfxInputSlot))]
+    [AddComponentMenu("Rector/VFX Node Behaviour")]
+    [RequireComponent(typeof(VfxInputSlotBehaviour))]
     public class VfxNodeBehaviour : NodeBehaviour
     {
-        [SerializeField] VfxInputSlot vfxInputSlot;
+        [SerializeField] VfxInputSlotBehaviour vfxInputSlot;
 
         public void ToggleActive()
         {
@@ -17,7 +18,7 @@ namespace Rector.Vfx
         public override void RetrieveComponents()
         {
             base.RetrieveComponents();
-            vfxInputSlot = GetComponent<VfxInputSlot>();
+            vfxInputSlot = GetComponent<VfxInputSlotBehaviour>();
             if (vfxInputSlot != null)
             {
                 var list = slotBehaviours.ToList();
