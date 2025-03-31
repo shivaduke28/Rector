@@ -354,7 +354,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 314a99884c1f4c3fb4602c9e209e89de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotBehaviours: []
+  slotBehaviours:
+  - {fileID: 752678206}
+  - {fileID: 752678207}
+  - {fileID: 752678209}
 --- !u!114 &752678209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,7 +762,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 314a99884c1f4c3fb4602c9e209e89de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotBehaviours: []
+  slotBehaviours:
+  - {fileID: 1860841797}
 --- !u!1 &1922343823
 GameObject:
   m_ObjectHideFlags: 0
