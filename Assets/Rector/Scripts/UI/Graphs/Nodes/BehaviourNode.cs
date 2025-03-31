@@ -1,3 +1,4 @@
+using System;
 using Rector.NodeBehaviours;
 using Rector.UI.Graphs.Slots;
 
@@ -5,9 +6,15 @@ namespace Rector.UI.Graphs.Nodes
 {
     public sealed class BehaviourNode : Node
     {
-        public static string Category => NodeCategory.Scene;
-        public BehaviourNode(NodeId id, NodeBehaviour nodeBehaviour) : base(id, nodeBehaviour.Name)
+        public BehaviourNode(NodeId id, NodeBehaviour nodeBehaviour) : base(id, nodeBehaviour == null ? "Destroyed" : nodeBehaviour.Name)
         {
+            if (nodeBehaviour == null)
+            {
+                InputSlots = Array.Empty<InputSlot>();
+                OutputSlots = Array.Empty<OutputSlot>();
+                return;
+            }
+
             var inputs = nodeBehaviour.GetInputs();
             var outputs = nodeBehaviour.GetOutputs();
 

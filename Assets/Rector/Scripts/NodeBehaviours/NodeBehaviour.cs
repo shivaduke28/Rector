@@ -1,5 +1,6 @@
 using System.Linq;
 using Rector.SlotBehaviours;
+using Rector.UI.Graphs;
 using UnityEngine;
 
 namespace Rector.NodeBehaviours
@@ -11,6 +12,8 @@ namespace Rector.NodeBehaviours
 
         IInput[] inputs;
         IOutput[] outputs;
+
+        public virtual string Category => NodeCategory.Scene;
 
         public virtual IInput[] GetInputs() => inputs ??= slotBehaviours.SelectMany(c => c.GetInputs()).ToArray();
         public virtual IOutput[] GetOutputs() => outputs ??= slotBehaviours.SelectMany(c => c.GetOutputs()).ToArray();
