@@ -1,5 +1,6 @@
 using Rector.NodeBehaviours;
 using Rector.UI.Graphs.Slots;
+using Rector.Vfx;
 
 namespace Rector.UI.Graphs.Nodes
 {

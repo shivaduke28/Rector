@@ -130,22 +130,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 9178744722350525722}
+  activeInput:
+    name: Active
+    value:
+      value: 0
+    defaultValue: 0
   events: []
   propertyInputs:
   - input:
-      rid: 8375392794136543569
+      rid: 8375393094409388110
     reinit: 0
   - input:
-      rid: 8375392794136543570
+      rid: 8375393094409388111
     reinit: 0
   - input:
-      rid: 8375392794136543571
+      rid: 8375393094409388112
+    reinit: 0
+  - input:
+      rid: 8375393094409388113
     reinit: 0
   references:
     version: 2
     RefIds:
-    - rid: 8375392794136543569
-      type: {class: IntInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393094409388110
+      type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
+      data:
+        name: Center
+        value:
+          value: {x: 0, y: 3, z: 0}
+        defaultValue: {x: 0, y: 3, z: 0}
+    - rid: 8375393094409388111
+      type: {class: IntInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Count
         value:
@@ -153,8 +168,8 @@ MonoBehaviour:
         defaultValue: 10
         minValue: 0
         maxValue: 100
-    - rid: 8375392794136543570
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393094409388112
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Intensity
         value:
@@ -162,8 +177,8 @@ MonoBehaviour:
         defaultValue: 0.6
         minValue: 0
         maxValue: 8
-    - rid: 8375392794136543571
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393094409388113
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Radius
         value:
@@ -183,11 +198,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxInputBehaviour: {fileID: 1875676942902024135}
-  inputBehaviours:
+  slotBehaviours:
+  - {fileID: 1875676942902024135}
   - {fileID: 1258437806950492668}
-  outputBehaviours:
   - {fileID: 8061114578023614250}
+  vfxInputSlot: {fileID: 1875676942902024135}
 --- !u!1 &6939822975744010579
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,7 +248,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640cbd9151a1404b8d721c35d2373660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualEffect: {fileID: 9178744722350525722}
   input:
     name: Center
     value:

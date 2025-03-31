@@ -1,9 +1,11 @@
 using Rector.NodeBehaviours;
 using UnityEngine;
 
-namespace Rector.NodeComponents
+namespace Rector.SlotBehaviours
 {
-    public sealed class CrtInputBehaviour : InputBehaviour
+    // NOTE: Texture型をサポートしたらOutputもはやして良い
+    [AddComponentMenu("Rector/CRT Input Slot")]
+    public sealed class CrtInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CustomRenderTexture crt;
 

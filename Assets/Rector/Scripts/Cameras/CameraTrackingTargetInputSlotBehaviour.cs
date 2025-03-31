@@ -1,12 +1,14 @@
 using R3;
 using Rector.NodeBehaviours;
+using Rector.SlotBehaviours;
 using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Rector.Cameras
 {
+    [AddComponentMenu("Rector/Camera Tracking Target Input Slot")]
     [RequireComponent(typeof(CinemachineCamera))]
-    public sealed class CameraTrackingTargetInputBehaviour : InputBehaviour
+    public sealed class CameraTrackingTargetInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CinemachineCamera cinemachineCamera;
         [SerializeField] TransformInput trackingTarget;

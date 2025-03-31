@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640cbd9151a1404b8d721c35d2373660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualEffect: {fileID: 5488202194648697371}
   input:
     name: Position
     value:
@@ -194,25 +193,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 5488202194648697371}
+  activeInput:
+    name: Active
+    value:
+      value: 0
+    defaultValue: 0
   events: []
   propertyInputs:
   - input:
-      rid: 8375392794136543563
-    reinit: 1
+      rid: 8375393094409388105
+    reinit: 0
   - input:
-      rid: 8375392794136543565
-    reinit: 1
+      rid: 8375393094409388106
+    reinit: 0
   - input:
-      rid: 8375392794136543566
-    reinit: 1
+      rid: 8375393094409388107
+    reinit: 0
   - input:
-      rid: 8375392794136543567
+      rid: 8375393094409388108
+    reinit: 0
+  - input:
+      rid: 8375393094409388109
     reinit: 0
   references:
     version: 2
     RefIds:
-    - rid: 8375392794136543563
-      type: {class: IntInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393094409388105
+      type: {class: IntInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Count
         value:
@@ -220,17 +227,24 @@ MonoBehaviour:
         defaultValue: 16
         minValue: 1
         maxValue: 16
-    - rid: 8375392794136543565
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393094409388106
+      type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
+      data:
+        name: Position
+        value:
+          value: {x: 0, y: 3, z: 0}
+        defaultValue: {x: 0, y: 3, z: 0}
+    - rid: 8375393094409388107
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Scale
         value:
           value: 2
         defaultValue: 2
-        minValue: 0.1
-        maxValue: 16
-    - rid: 8375392794136543566
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+        minValue: 1
+        maxValue: 8
+    - rid: 8375393094409388108
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Size
         value:
@@ -238,8 +252,8 @@ MonoBehaviour:
         defaultValue: 1
         minValue: 0
         maxValue: 1
-    - rid: 8375392794136543567
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393094409388109
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Speed
         value:
@@ -259,8 +273,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxInputBehaviour: {fileID: 8416515057407661693}
-  inputBehaviours:
+  slotBehaviours:
+  - {fileID: 8416515057407661693}
   - {fileID: 9202545598117814673}
-  outputBehaviours:
   - {fileID: 4831095143488441197}
+  vfxInputSlot: {fileID: 8416515057407661693}

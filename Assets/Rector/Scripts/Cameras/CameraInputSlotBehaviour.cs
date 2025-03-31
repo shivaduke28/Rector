@@ -1,28 +1,30 @@
-using System.Linq;
 using R3;
 using Rector.NodeBehaviours;
+using Rector.SlotBehaviours;
 using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Rector.Cameras
 {
+    [AddComponentMenu("Rector/Camera Input Slot")]
     [RequireComponent(typeof(CinemachineCamera))]
-    public sealed class CameraBehaviour : MonoBehaviour
+    public sealed class CameraInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CinemachineCamera cinemachineCamera;
-        [SerializeField] InputBehaviour[] inputBehaviours;
 
         [SerializeField] BoolInput activeInput = new("Active", false);
         [SerializeField] FloatInput dutchInput = new("Dutch", 0, -180, 180);
 
-        public ReactiveProperty<bool> IsActive => activeInput.Value;
-        public string Name => name;
+        IInput[] inputs;
+        public BoolInput ActiveInput => activeInput;
 
-        public IInput[] GetInputs()
+        public override IInput[] GetInputs()
         {
-            return inputBehaviours.SelectMany(x => x.GetInputs())
-                .Prepend(dutchInput)
-                .Prepend(activeInput).ToArray();
+            return inputs ??= new IInput[]
+            {
+                dutchInput,
+                activeInput
+            };
         }
 
         void Start()
@@ -52,7 +54,6 @@ namespace Rector.Cameras
         void Reset()
         {
             cinemachineCamera = GetComponent<CinemachineCamera>();
-            inputBehaviours = GetComponentsInChildren<InputBehaviour>();
             dutchInput.Value.Value = cinemachineCamera.Lens.Dutch;
         }
     }

@@ -11,14 +11,14 @@ namespace Rector.UI.Graphs.Nodes
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots => Array.Empty<OutputSlot>();
 
-        readonly CameraBehaviour cameraBehaviour;
+        readonly CameraNodeBehaviour cameraNodeBehaviour;
         IDisposable disposable;
 
 
-        public CameraNode(NodeId id, CameraBehaviour cameraBehaviour) : base(id, cameraBehaviour.Name)
+        public CameraNode(NodeId id, CameraNodeBehaviour cameraNodeBehaviour) : base(id, cameraNodeBehaviour.Name)
         {
-            this.cameraBehaviour = cameraBehaviour;
-            var inputs = cameraBehaviour.GetInputs();
+            this.cameraNodeBehaviour = cameraNodeBehaviour;
+            var inputs = cameraNodeBehaviour.GetInputs();
             InputSlots = new InputSlot[inputs.Length];
             for (var i = 0; i < InputSlots.Length; i++)
             {
@@ -29,7 +29,7 @@ namespace Rector.UI.Graphs.Nodes
 
         public override void DoAction()
         {
-            cameraBehaviour.IsActive.Value = true;
+            cameraNodeBehaviour.IsActive.Value = true;
         }
     }
 }

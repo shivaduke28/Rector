@@ -1,22 +1,30 @@
 using System.Linq;
+using Rector.SlotBehaviours;
 using UnityEngine;
 
 namespace Rector.NodeBehaviours
 {
+    [AddComponentMenu("Rector/Node Behaviour")]
     public class NodeBehaviour : MonoBehaviour
     {
-        [SerializeField] InputBehaviour[] inputBehaviours;
-        [SerializeField] OutputBehaviour[] outputBehaviours;
+        [SerializeField] protected SlotBehaviour[] slotBehaviours;
 
-        public virtual IInput[] GetInputs() => inputBehaviours.SelectMany(input => input.GetInputs()).ToArray();
-        public virtual IOutput[] GetOutputs() => outputBehaviours.SelectMany(output => output.GetOutputs()).ToArray();
+        IInput[] inputs;
+        IOutput[] outputs;
+
+        public virtual IInput[] GetInputs() => inputs ??= slotBehaviours.SelectMany(c => c.GetInputs()).ToArray();
+        public virtual IOutput[] GetOutputs() => outputs ??= slotBehaviours.SelectMany(c => c.GetOutputs()).ToArray();
 
         public string Name => name;
 
         void Reset()
         {
-            inputBehaviours = GetComponentsInChildren<InputBehaviour>();
-            outputBehaviours = GetComponentsInChildren<OutputBehaviour>();
+            RetrieveComponents();
+        }
+
+        public virtual void RetrieveComponents()
+        {
+            slotBehaviours = GetComponentsInChildren<SlotBehaviour>();
         }
     }
 }

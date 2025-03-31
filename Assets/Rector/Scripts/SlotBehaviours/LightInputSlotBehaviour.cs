@@ -2,10 +2,11 @@ using R3;
 using Rector.NodeBehaviours;
 using UnityEngine;
 
-namespace Rector.NodeComponents
+namespace Rector.SlotBehaviours
 {
+    [AddComponentMenu("Rector/Light Input Slot")]
     [RequireComponent(typeof(Light))]
-    public sealed class LightInputBehaviour : InputBehaviour
+    public sealed class LightInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] new Light light;
         [SerializeField] FloatInput intensity;

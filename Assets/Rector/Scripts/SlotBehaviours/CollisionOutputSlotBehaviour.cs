@@ -1,10 +1,12 @@
 using R3;
 using R3.Triggers;
 using Rector.NodeBehaviours;
+using UnityEngine;
 
-namespace Rector.NodeComponents
+namespace Rector.SlotBehaviours
 {
-    public sealed class CollisionOutputBehaviour : OutputBehaviour
+    [AddComponentMenu("Rector/Collision Output Slot")]
+    public sealed class CollisionOutputSlotBehaviour : OutputSlotBehaviour
     {
         IOutput[] outputs;
 

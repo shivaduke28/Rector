@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using R3;
 using Rector.NodeBehaviours;
+using Rector.SlotBehaviours;
 using UnityEngine;
 using UnityEngine.VFX;
 
-namespace Rector.NodeComponents
+namespace Rector.Vfx
 {
     [RequireComponent(typeof(VisualEffect))]
-    public sealed class VfxInputBehaviour : InputBehaviour
+    public sealed class VfxInputSlot : InputSlotBehaviour
     {
-        [SerializeField] VisualEffect visualEffect;
-        [SerializeField] BoolInput activeInput = new("Active", false);
-        [SerializeField] string[] events;
-
         [Serializable]
         sealed class VfxPropertyInput
         {
@@ -24,6 +21,10 @@ namespace Rector.NodeComponents
             int? id;
             public int Id => id ??= Shader.PropertyToID(input.Name);
         }
+
+        [SerializeField] VisualEffect visualEffect;
+        [SerializeField] BoolInput activeInput = new("Active", false);
+        [SerializeField] string[] events;
 
         [SerializeField] VfxPropertyInput[] propertyInputs;
 

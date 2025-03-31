@@ -1,20 +1,18 @@
 using R3;
 using Rector.NodeBehaviours;
+using Rector.SlotBehaviours;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 namespace Rector.PostProcess
 {
+    [AddComponentMenu("Rector/URP Color Grading Input Slot")]
     [RequireComponent(typeof(Volume))]
-    public sealed class ColorGradingInputBehaviour : InputBehaviour
+    public sealed class UrpColorGradingInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] Volume volume;
-
-        [FormerlySerializedAs("postExposure")] [SerializeField]
-        FloatInput exposure;
-
+        [SerializeField] FloatInput exposure;
         [SerializeField] FloatInput contrast;
         [SerializeField] FloatInput saturation;
 

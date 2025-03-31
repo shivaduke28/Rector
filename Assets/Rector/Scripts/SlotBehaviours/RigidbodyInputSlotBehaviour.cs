@@ -1,10 +1,12 @@
 using Rector.NodeBehaviours;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-namespace Rector.NodeComponents
+namespace Rector.SlotBehaviours
 {
+    [AddComponentMenu("Rector/Rigitbody Input Slot")]
     [RequireComponent(typeof(Rigidbody))]
-    public sealed class RigidbodyInputBehaviour : InputBehaviour
+    public sealed class RigidbodyInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] Rigidbody rb;
         [SerializeField] FloatInput power = new("Power", 1f, 0f, 10f);
