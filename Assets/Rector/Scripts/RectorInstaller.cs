@@ -34,7 +34,7 @@ namespace Rector
         {
             VisualElementFactory.Initialize(rectorUISettingsAsset);
 
-            var audioInputDeviceManager = Register(new AudioInputDeviceManager());
+            var audioInputDeviceManager = Register(new AudioInputDeviceManager(transform));
 
             // input
             rectorInput = Register(new RectorInput());
