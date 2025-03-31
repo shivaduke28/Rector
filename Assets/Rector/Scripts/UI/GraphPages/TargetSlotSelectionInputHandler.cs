@@ -1,7 +1,6 @@
 ﻿using System;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Slots;
-using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 
 namespace Rector.UI.GraphPages
@@ -26,8 +25,8 @@ namespace Rector.UI.GraphPages
 
         void SelectNextTargetSlot(int direction)
         {
-            if (graphPage.TargetNode.Value is not { } targetNode) throw new InvalidOperationException("target node is null");
-            if (graphPage.TargetSlot.Value is not { } targetSlot) throw new InvalidOperationException("target slot is null");
+            if (graphPage.TargetNode is not { NodeView: { Node: var targetNode } }) throw new InvalidOperationException("target node is null");
+            if (graphPage.TargetSlot is not { } targetSlot) throw new InvalidOperationException("target slot is null");
 
             if (targetSlot.Direction == SlotDirection.Input)
             {
@@ -51,7 +50,7 @@ namespace Rector.UI.GraphPages
 
         public override void Submit()
         {
-            if (!ToOutputAndInput(graphPage.SelectedSlot.Value, graphPage.TargetSlot.Value, out var output, out var input)) return;
+            if (!ToOutputAndInput(graphPage.SelectedSlot, graphPage.TargetSlot, out var output, out var input)) return;
             var edgeId = new EdgeId(output, input);
             if (!graphPage.Graph.RemoveEdge(edgeId))
             {
@@ -68,11 +67,18 @@ namespace Rector.UI.GraphPages
                     graphPage.Graph.AddEdge(newEdge);
                 }
             }
+
             graphPage.Sort();
         }
 
         static bool ToOutputAndInput(ISlot slot1, ISlot slot2, out OutputSlot output, out InputSlot input)
         {
+            if (slot1 == null || slot2 == null)
+            {
+                output = null;
+                input = null;
+                return false;
+            }
             output = slot1.Direction == SlotDirection.Output ? (OutputSlot)slot1 : (OutputSlot)slot2;
             input = slot2.Direction == SlotDirection.Input ? (InputSlot)slot2 : (InputSlot)slot1;
             return output != null && input != null;
@@ -81,13 +87,13 @@ namespace Rector.UI.GraphPages
 
         public override void Action()
         {
-            graphPage.TargetNode.Value?.DoAction();
+            graphPage.TargetNode?.NodeView.Node.DoAction();
         }
 
 
         public override void Mute()
         {
-            if (graphPage.TargetNode.Value is { } targetNode)
+            if (graphPage.TargetNode is { NodeView: { Node: var targetNode } })
             {
                 targetNode.IsMuted.Value = !targetNode.IsMuted.Value;
             }

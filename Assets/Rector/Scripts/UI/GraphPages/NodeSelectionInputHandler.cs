@@ -19,33 +19,33 @@ namespace Rector.UI.GraphPages
         public override void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
-            if (graphPage.SelectedNode.Value is { } selectedNode && graphPage.Graph.TryGetNode(selectedNode.Id, out var selectedNodeView))
+            if (graphPage.SelectedNode is { } selectedNode)
             {
-                var nextNodeView = nodeNavigator.SelectNextNode(selectedNodeView, value);
-                graphPage.SelectNode(nextNodeView.NodeView.Node);
+                var nextNodeView = nodeNavigator.SelectNextNode(selectedNode, value);
+                graphPage.SelectNode(nextNodeView);
             }
             else
             {
                 var first = graphPage.Graph.Layers.FirstOrDefault(l => l.Count > 0)?.FirstOrDefault();
                 if (first is LayeredNode layeredNode)
                 {
-                    graphPage.SelectNode(layeredNode.NodeView.Node);
+                    graphPage.SelectNode(layeredNode);
                 }
             }
         }
 
         public override void Submit()
         {
-            if (graphPage.SelectedNode.Value is { } selected && (selected.InputSlots.Length > 0 || selected.OutputSlots.Length > 0))
+            if (graphPage.SelectedNode is { } selected && (selected.InputSlotCount > 0 || selected.OutputSlotCount > 0))
             {
                 graphPage.State.Value = GraphPageState.SlotSelection;
-                graphPage.SelectSlot(selected.InputSlots.Length > 0 ? selected.InputSlots[0] : selected.OutputSlots[0]);
+                graphPage.SelectSlot(selected.InputSlotCount > 0 ? selected.NodeView.Node.InputSlots[0] : selected.NodeView.Node.OutputSlots[0]);
             }
         }
 
         public override void Action()
         {
-            graphPage.SelectedNode.Value?.DoAction();
+            graphPage.SelectedNode?.NodeView.Node.DoAction();
         }
 
         public override void AddNode()
@@ -68,7 +68,7 @@ namespace Rector.UI.GraphPages
                 case HoldState.Perform:
                 {
                     graphPage.HideHold();
-                    if (graphPage.SelectedNode.Value is { } selectedNode)
+                    if (graphPage.SelectedNode is { } selectedNode)
                     {
                         graphPage.Graph.RemoveEdgesFrom(selectedNode);
                         graphPage.Sort();
@@ -104,7 +104,7 @@ namespace Rector.UI.GraphPages
 
         public override void Mute()
         {
-            if (graphPage.SelectedNode.Value is { } selectedNode)
+            if (graphPage.SelectedNode is { NodeView: { Node: var selectedNode } })
             {
                 var mute = !selectedNode.IsMuted.Value;
                 selectedNode.IsMuted.Value = mute;
@@ -114,7 +114,7 @@ namespace Rector.UI.GraphPages
 
         public override void OpenNodeParameter()
         {
-            if (graphPage.SelectedNode.Value is not null)
+            if (graphPage.SelectedNode is not null)
             {
                 graphPage.State.Value = GraphPageState.NodeParameter;
             }

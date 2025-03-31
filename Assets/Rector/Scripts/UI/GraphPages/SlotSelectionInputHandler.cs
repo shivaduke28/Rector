@@ -1,6 +1,5 @@
 ﻿using System;
 using R3;
-using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
@@ -30,8 +29,8 @@ namespace Rector.UI.GraphPages
 
         void SelectNextSlot(int direction)
         {
-            if (graphPage.SelectedNode.Value is not { } selectedNode) throw new InvalidOperationException("selected node is null");
-            if (graphPage.SelectedSlot.Value is not { } selectedSlot) throw new InvalidOperationException("selected slot is null");
+            if (graphPage.SelectedNode is not { NodeView: { Node: var selectedNode } }) throw new InvalidOperationException("selected node is null");
+            if (graphPage.SelectedSlot is not { } selectedSlot) throw new InvalidOperationException("selected slot is null");
 
             if (selectedSlot.Direction == SlotDirection.Input)
             {
@@ -49,8 +48,8 @@ namespace Rector.UI.GraphPages
 
         void SelectOppositeSlot()
         {
-            if (graphPage.SelectedNode.Value is not { } selectedNode) throw new InvalidOperationException("selected node is null");
-            if (graphPage.SelectedSlot.Value is not { } selectedSlot) throw new InvalidOperationException("selected slot is null");
+            if (graphPage.SelectedNode is not { NodeView: { Node: var selectedNode } }) throw new InvalidOperationException("selected node is null");
+            if (graphPage.SelectedSlot is not { } selectedSlot) throw new InvalidOperationException("selected slot is null");
 
             if (selectedSlot.Direction == SlotDirection.Input)
             {
@@ -78,15 +77,15 @@ namespace Rector.UI.GraphPages
 
         public override void Submit()
         {
-            graphPage.TargetSlot.Value = null;
-            graphPage.TargetNode.Value = graphPage.SelectedNode.Value;
+            graphPage.TargetSlot = null;
+            graphPage.TargetNode = graphPage.SelectedNode;
             graphPage.State.Value = GraphPageState.TargetNodeSelection;
         }
 
         public override void Action()
         {
             // ちょっと難しすぎるかも
-            switch (graphPage.SelectedSlot.Value)
+            switch (graphPage.SelectedSlot)
             {
                 case CallbackInputSlot callbackInputSlot:
                     callbackInputSlot.Send(Unit.Default);
@@ -112,14 +111,13 @@ namespace Rector.UI.GraphPages
                 case HoldState.Perform:
                 {
                     graphPage.HideHold();
-                    if (graphPage.SelectedSlot.Value is { } selectedSlot)
+                    if (graphPage.SelectedSlot is { } selectedSlot)
                     {
                         graphPage.Graph.RemoveEdgesFrom(selectedSlot);
                         graphPage.Sort();
                     }
 
                     break;
-
                 }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -128,7 +126,7 @@ namespace Rector.UI.GraphPages
 
         public override void Mute()
         {
-            if (graphPage.SelectedNode.Value is { } selectedNode)
+            if (graphPage.SelectedNode is { NodeView: { Node : var selectedNode } })
             {
                 selectedNode.IsMuted.Value = !selectedNode.IsMuted.Value;
             }

@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using Rector.UI.Graphs;
-using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
-using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 
 namespace Rector.UI.GraphPages
@@ -21,10 +19,9 @@ namespace Rector.UI.GraphPages
         public override void Navigate(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return;
-            if (graphPage.Graph.TryGetNode(graphPage.TargetNode.Value.Id, out var targetLayeredNode))
             {
-                var nextNode = navigator.SelectNextNode(targetLayeredNode, value);
-                graphPage.SetTargetNode(nextNode.NodeView.Node);
+                var nextNode = navigator.SelectNextNode(graphPage.TargetNode, value);
+                graphPage.SetTargetNode(nextNode);
             }
         }
 
@@ -36,7 +33,8 @@ namespace Rector.UI.GraphPages
 
         public override void Submit()
         {
-            if (graphPage.SelectedSlot.Value is { } sourceSlot && graphPage.TargetNode.Value is { } targetNode &&
+            if (graphPage.SelectedSlot is { } sourceSlot &&
+                graphPage.TargetNode is { NodeView: { Node: var targetNode } } &&
                 EdgeConnector.CanConnect(sourceSlot, targetNode))
             {
                 graphPage.State.Value = GraphPageState.TargetSlotSelection;
@@ -53,13 +51,13 @@ namespace Rector.UI.GraphPages
 
         public override void Action()
         {
-            graphPage.TargetNode.Value?.DoAction();
+            graphPage.TargetNode?.NodeView.Node?.DoAction();
         }
 
 
         public override void Mute()
         {
-            if (graphPage.TargetNode.Value is { } targetNode)
+            if (graphPage.TargetNode is { NodeView: { Node: var targetNode } })
             {
                 targetNode.IsMuted.Value = !targetNode.IsMuted.Value;
             }
