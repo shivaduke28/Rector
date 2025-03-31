@@ -51,6 +51,18 @@ namespace Rector.Audio
             RectorLogger.AudioInputDevice(audioInputDeviceInfo.Id, audioInputDeviceInfo.Name);
         }
 
+        public void Clear()
+        {
+            if (InputStream != null)
+            {
+                InputStream.Dispose();
+                InputStream = null;
+            }
+
+            currentInputDevice.Value = AudioInputDeviceInfo.Empty;
+            PlayerPrefs.DeleteKey(PrefsKey);
+        }
+
         public void ReloadLastDevice()
         {
             var lastDeviceId = PlayerPrefs.GetString(PrefsKey, "");

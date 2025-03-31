@@ -55,23 +55,32 @@ namespace Rector.Audio
         {
             var stream = audioInputDeviceManager.InputStream;
             if (stream is not { IsValid: true } ) return;
-            level.Value = stream.Level;
-            levelLow.Value = stream.LevelLow;
-            levelMid.Value = stream.LevelMid;
-            levelHigh.Value = stream.LevelHigh;
 
-            // NOTE: sliceの長さが可変なのでminを取ってshaderにも配る
-            var audioDataLice = stream.AudioDataSlice;
-            var len = Mathf.Min(audioDataLice.Length, AudioInputStream.SpectrumSize);
-            for (var i = 0; i < len; i++)
+            try
             {
-                waveform[i] = audioDataLice[i];
+                level.Value = stream.Level;
+                levelLow.Value = stream.LevelLow;
+                levelMid.Value = stream.LevelMid;
+                levelHigh.Value = stream.LevelHigh;
+
+                // NOTE: sliceの長さが可変なのでminを取ってshaderにも配る
+                var audioDataLice = stream.AudioDataSlice;
+                var len = Mathf.Min(audioDataLice.Length, AudioInputStream.SpectrumSize);
+                for (var i = 0; i < len; i++)
+                {
+                    waveform[i] = audioDataLice[i];
+                }
+
+                waveformBuffer.SetData(waveform);
+                Shader.SetGlobalInt(WaveformSizePropertyId, len);
+
+                spectrumBuffer.SetData(stream.LogSpectrum);
             }
-
-            waveformBuffer.SetData(waveform);
-            Shader.SetGlobalInt(WaveformSizePropertyId, len);
-
-            spectrumBuffer.SetData(stream.LogSpectrum);
+            catch (InvalidOperationException e)
+            {
+                Debug.LogException(e);
+                audioInputDeviceManager.Clear();
+            }
         }
 
         public void Dispose()
