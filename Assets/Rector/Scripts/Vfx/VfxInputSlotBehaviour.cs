@@ -36,7 +36,7 @@ namespace Rector.Vfx
 
         void Start()
         {
-            activeInput.Value.Subscribe(x => visualEffect.enabled = x);
+            activeInput.Value.Subscribe(x => visualEffect.enabled = x).AddTo(this);
             foreach (var property in properties)
             {
                 var id = Shader.PropertyToID(property.Name);
