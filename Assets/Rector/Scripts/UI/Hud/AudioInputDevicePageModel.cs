@@ -53,7 +53,7 @@ namespace Rector.UI.Hud
             var d = new CompositeDisposable();
             foreach (var inputDevice in audioInputDeviceManager.GetInputDevices().OrderBy(x => x.Name))
             {
-                var button = new RectorButtonState(inputDevice.Name, () => audioInputDeviceManager.Switch(inputDevice));
+                var button = new RectorButtonState(inputDevice.Name, () => audioInputDeviceManager.SwitchDevice(inputDevice));
                 buttons.Add(button);
                 audioInputDeviceManager.CurrentInputDevice
                     .Where(x => x.IsValid)
