@@ -22,8 +22,8 @@ namespace Rector.Cameras
         {
             return inputs ??= new IInput[]
             {
+                activeInput,
                 dutchInput,
-                activeInput
             };
         }
 
