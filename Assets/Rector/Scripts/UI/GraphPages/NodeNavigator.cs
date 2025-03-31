@@ -31,11 +31,41 @@ namespace Rector.UI.GraphPages
                     {
                         return layeredNode;
                     }
+
                     currentIndexInLayer = nextIndex;
                 }
             }
             else
             {
+                // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
+                // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
+                if (direction == Direction.Up)
+                {
+                    // 一つ上のレイヤーで一番x座標が近いノードに移動する
+                    var parentNode = current.Parents
+                        .Select(t => t.Node)
+                        .OfType<LayeredNode>()
+                        .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
+                        .FirstOrDefault();
+                    if (parentNode != null)
+                    {
+                        return parentNode;
+                    }
+                }
+                else
+                {
+                    // 一つ下のレイヤーで一番x座標が近いノードに移動する
+                    var childNode = current.Children
+                        .Select(t => t.Node)
+                        .OfType<LayeredNode>()
+                        .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
+                        .FirstOrDefault();
+                    if (childNode != null)
+                    {
+                        return childNode;
+                    }
+                }
+
                 while (true)
                 {
                     var nextLayerIndex = currentLayerIndex + (direction == Direction.Up ? -1 : 1);
@@ -47,6 +77,7 @@ namespace Rector.UI.GraphPages
                     {
                         return nextLayer.Where(x => !x.IsDummy).Cast<LayeredNode>().OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x)).First();
                     }
+
                     currentLayerIndex = nextLayerIndex;
                 }
             }
