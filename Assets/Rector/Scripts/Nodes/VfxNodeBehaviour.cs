@@ -15,7 +15,11 @@ namespace Rector.Nodes
         public IOutput[] GetOutputs() => outputBehaviours.SelectMany(output => output.GetOutputs()).ToArray();
 
         public string Name => name;
-        public void SetActive(bool value) => vfxInputBehaviour.SetActive(value);
+
+        public void ToggleActive()
+        {
+            vfxInputBehaviour.ToggleActive();
+        }
 
         void Reset()
         {

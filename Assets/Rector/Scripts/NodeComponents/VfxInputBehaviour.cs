@@ -12,13 +12,8 @@ namespace Rector.NodeComponents
     public sealed class VfxInputBehaviour : InputBehaviour
     {
         [SerializeField] VisualEffect visualEffect;
+        [SerializeField] BoolInput activeInput = new("Active", false);
         [SerializeField] string[] events;
-
-        public void SetActive(bool value)
-        {
-            visualEffect.enabled = value;
-        }
-
 
         [Serializable]
         sealed class VfxPropertyInput
@@ -39,11 +34,18 @@ namespace Rector.NodeComponents
         public override IInput[] GetInputs()
             => inputs ??= events.Select(x => new CallbackInput(x, () => visualEffect.SendEvent(x)))
                 .Concat(propertyInputs.Select(x => x.input))
+                .Prepend(activeInput)
                 .ToArray();
 
 
+        public void ToggleActive()
+        {
+            activeInput.Value.Value = !activeInput.Value.Value;
+        }
+
         void Start()
         {
+            activeInput.Value.Subscribe(x => visualEffect.enabled = x);
             foreach (var propertyInput in propertyInputs)
             {
                 switch (propertyInput.input)

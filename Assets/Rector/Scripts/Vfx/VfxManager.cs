@@ -28,7 +28,6 @@ namespace Rector.Vfx
                 var behaviour = Object.Instantiate(vfxNodeBehaviour);
                 behaviour.name = vfxNodeBehaviour.name;
                 vfxNodeBehaviours.Add(behaviour);
-                behaviour.SetActive(false);
             }
         }
 

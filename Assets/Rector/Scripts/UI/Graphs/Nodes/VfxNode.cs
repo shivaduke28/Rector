@@ -1,16 +1,12 @@
-using System;
-using R3;
 using Rector.Nodes;
 using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class VfxNode : Node, IInitializable, IDisposable
+    public sealed class VfxNode : Node
     {
         public static string Category => NodeCategory.Vfx;
         readonly VfxNodeBehaviour behaviour;
-        readonly BoolInput activeInput = new("Active", false);
-        IDisposable disposable;
 
         public VfxNode(NodeId id, VfxNodeBehaviour behaviour) : base(id, behaviour.Name)
         {
@@ -18,11 +14,10 @@ namespace Rector.UI.Graphs.Nodes
             var inputs = behaviour.GetInputs();
             var outputs = behaviour.GetOutputs();
 
-            InputSlots = new InputSlot[inputs.Length + 1];
-            InputSlots[0] = SlotConverter.Convert(id, 0, activeInput, IsMuted);
+            InputSlots = new InputSlot[inputs.Length];
             for (var i = 0; i < inputs.Length; i++)
             {
-                InputSlots[i + 1] = SlotConverter.Convert(id, i + 1, inputs[i], IsMuted);
+                InputSlots[i] = SlotConverter.Convert(id, i, inputs[i], IsMuted);
             }
 
             OutputSlots = new OutputSlot[outputs.Length];
@@ -35,17 +30,9 @@ namespace Rector.UI.Graphs.Nodes
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
 
-        public void Initialize()
-        {
-            disposable = activeInput.Value
-                .Subscribe(x => behaviour.SetActive(x));
-        }
-
         public override void DoAction()
         {
-            activeInput.Value.Value = !activeInput.Value.Value;
+            behaviour.ToggleActive();
         }
-
-        public void Dispose() => disposable?.Dispose();
     }
 }
