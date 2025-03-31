@@ -5,17 +5,21 @@ using UnityEngine;
 namespace Rector.Editor
 {
     [CustomEditor(typeof(NodeBehaviour), true)]
+    [CanEditMultipleObjects]
     public class NodeBehaviourEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            var nodeBehaviour = (NodeBehaviour)target;
             if (GUILayout.Button("Retrieve Components"))
             {
-                nodeBehaviour.RetrieveComponents();
-                EditorUtility.SetDirty(nodeBehaviour);
+                foreach (var t in targets)
+                {
+                    var nodeBehaviour = (NodeBehaviour)t;
+                    nodeBehaviour.RetrieveComponents();
+                    EditorUtility.SetDirty(nodeBehaviour);
+                }
             }
         }
     }
