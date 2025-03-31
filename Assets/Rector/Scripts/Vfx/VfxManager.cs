@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rector.Nodes;
 using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
 
@@ -28,7 +27,6 @@ namespace Rector.Vfx
                 var behaviour = Object.Instantiate(vfxNodeBehaviour);
                 behaviour.name = vfxNodeBehaviour.name;
                 vfxNodeBehaviours.Add(behaviour);
-                behaviour.SetActive(false);
             }
         }
 

@@ -129,11 +129,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 6802043967661518610}
+  activeInput:
+    name: Active
+    value:
+      value: 0
+    defaultValue: 0
   events: []
-  propertyInputs: []
+  properties:
+  - rid: 8375393097419849816
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8375393097419849816
+      type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
+      data:
+        name: Angle
+        value:
+          value: {x: 0, y: 1, z: 0}
+        defaultValue: {x: 0, y: 1, z: 0}
 --- !u!114 &877061114993312373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,6 +159,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxInputBehaviour: {fileID: 3343033110342158112}
-  inputBehaviours: []
-  outputBehaviours: []
+  slotBehaviours:
+  - {fileID: 3343033110342158112}
+  vfxInputSlot: {fileID: 3343033110342158112}

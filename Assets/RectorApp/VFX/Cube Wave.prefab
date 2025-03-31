@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 5525917792864079699}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 640cbd9151a1404b8d721c35d2373660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualEffect: {fileID: 5488202194648697371}
   input:
     name: Position
     value:
@@ -77,6 +76,8 @@ GameObject:
   - component: {fileID: 5311212678923135535}
   - component: {fileID: 8416515057407661693}
   - component: {fileID: 8549564959209217536}
+  - component: {fileID: 8312157823665751902}
+  - component: {fileID: 6806275308808874307}
   m_Layer: 0
   m_Name: Cube Wave
   m_TagString: Untagged
@@ -194,25 +195,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 5488202194648697371}
+  activeInput:
+    name: Active
+    value:
+      value: 0
+    defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375392794136543563
-    reinit: 1
-  - input:
-      rid: 8375392794136543565
-    reinit: 1
-  - input:
-      rid: 8375392794136543566
-    reinit: 1
-  - input:
-      rid: 8375392794136543567
-    reinit: 0
+  properties:
+  - rid: 8375393097419849817
+  - rid: 8375393097419849818
+  - rid: 8375393097419849819
+  - rid: 8375393097419849820
   references:
     version: 2
     RefIds:
-    - rid: 8375392794136543563
-      type: {class: IntInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393097419849817
+      type: {class: IntInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Count
         value:
@@ -220,17 +218,17 @@ MonoBehaviour:
         defaultValue: 16
         minValue: 1
         maxValue: 16
-    - rid: 8375392794136543565
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393097419849818
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Scale
         value:
           value: 2
         defaultValue: 2
-        minValue: 0.1
-        maxValue: 16
-    - rid: 8375392794136543566
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+        minValue: 1
+        maxValue: 8
+    - rid: 8375393097419849819
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Size
         value:
@@ -238,8 +236,8 @@ MonoBehaviour:
         defaultValue: 1
         minValue: 0
         maxValue: 1
-    - rid: 8375392794136543567
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393097419849820
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Speed
         value:
@@ -259,8 +257,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxInputBehaviour: {fileID: 8416515057407661693}
-  inputBehaviours:
+  slotBehaviours:
+  - {fileID: 8416515057407661693}
   - {fileID: 9202545598117814673}
-  outputBehaviours:
   - {fileID: 4831095143488441197}
+  vfxInputSlot: {fileID: 8416515057407661693}
+--- !u!114 &8312157823665751902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8225909253412846301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 0
+  m_Bindings:
+  - {fileID: 6806275308808874307}
+  m_VisualEffect: {fileID: 5488202194648697371}
+--- !u!114 &6806275308808874307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8225909253412846301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07c3070554d0a8944a95ff8f018c2c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 1
+  m_Property:
+    m_Name: _Position
+  Target: {fileID: 8032251408575636696}

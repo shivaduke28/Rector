@@ -18,7 +18,7 @@ namespace Rector
         [SerializeField] Camera mainCamera;
         [SerializeField] CinemachineBrain cinemachineBrain;
 
-        [SerializeField] CameraBehaviour[] cameraBehaviours;
+        [SerializeField] CameraNodeBehaviour[] cameraBehaviours;
         [SerializeField] LoadingView loadingView;
         [SerializeField] RectorSettingsAsset rectorSettingsAsset;
         [SerializeField] RectorUISettingsAsset rectorUISettingsAsset;

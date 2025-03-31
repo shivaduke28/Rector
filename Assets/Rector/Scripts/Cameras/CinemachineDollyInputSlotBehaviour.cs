@@ -1,13 +1,15 @@
 using System;
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
+using Rector.SlotBehaviours;
 using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Rector.Cameras
 {
+    [AddComponentMenu("Rector/Cinemachine Dolly Input Slot")]
     [RequireComponent(typeof(CinemachineSplineDolly))]
-    public class CinemachineDollyInputBehaviour : InputBehaviour
+    public class CinemachineDollyInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CinemachineSplineDolly dolly;
         [SerializeField] FloatInput speed;

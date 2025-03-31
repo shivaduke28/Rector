@@ -1,10 +1,12 @@
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
 
-namespace Rector.NodeComponents
+namespace Rector.SlotBehaviours
 {
-    public sealed class TransformOutputBehaviour : OutputBehaviour
+    // NOTE: Transform系まとめて一つにしてしまってもいいかも
+    [AddComponentMenu("Rector Transform Output Slot")]
+    public sealed class TransformOutputSlotBehaviour : OutputSlotBehaviour
     {
         IOutput[] outputs;
 

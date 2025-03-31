@@ -1,15 +1,14 @@
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
-using UnityEngine.VFX;
 
-namespace Rector.NodeComponents
+namespace Rector.SlotBehaviours
 {
-    public sealed class CurlNoiseTargetInputBehaviour : InputBehaviour
+    [AddComponentMenu("Rector/Curl Noise Position Input Slot")]
+    public sealed class CurlNoisePositionInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] FloatInput radius = new("Radius", 5f, 0f, 10f);
         [SerializeField] Vector3Input offset = new("Offset", new Vector3(0, 3, 0));
         [SerializeField] FloatInput speed = new("Speed", 0.2f, 0f, 1f);
-        [SerializeField] VisualEffect visualEffect;
         Vector3 target;
 
         Transform trans;
@@ -35,11 +34,6 @@ namespace Rector.NodeComponents
             }
 
             trans.localPosition = Noise.CurlNoise(t, t, t) * radiusValue + offsetValue;
-            if (visualEffect != null)
-            {
-                var p = trans.position;
-                visualEffect.SetVector3("Target", p);
-            }
         }
 
         public override IInput[] GetInputs()

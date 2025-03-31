@@ -1,7 +1,6 @@
-
 using R3;
 
-namespace Rector.Nodes
+namespace Rector.NodeBehaviours
 {
     public interface IOutput
     {

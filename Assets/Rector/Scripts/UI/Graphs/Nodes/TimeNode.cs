@@ -1,20 +1,24 @@
-using System;
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class TimeNode : Node
+    public sealed class TimeNode : SourceNode
     {
         public const string NodeName = "Time";
         public static string Category => NodeCategory.Event;
 
         public TimeNode(NodeId id) : base(id, NodeName)
         {
-            var output = new ObservableOutput<float>("time", Observable.EveryUpdate(UnityFrameProvider.Update).Select(_ => Time.time));
-            var timeFraction = new ObservableOutput<float>("frac", output.Observable.Select(t => t % 1));
+            InputSlots = new[]
+            {
+                SlotConverter.Convert(id, 0, ActiveInput, IsMuted),
+            };
+
+            var output = new ObservableOutput<float>("time", Observable.EveryUpdate(UnityFrameProvider.Update).Where(_ => IsActive).Select(_ => Time.time));
+            var timeFraction = new ObservableOutput<float>("frac", output.Observable.Where(_ => IsActive).Select(t => t % 1));
             OutputSlots = new[]
             {
                 SlotConverter.Convert(id, 0, output, IsMuted),
@@ -22,7 +26,7 @@ namespace Rector.UI.Graphs.Nodes
             };
         }
 
-        public override InputSlot[] InputSlots { get; } = Array.Empty<InputSlot>();
+        public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
     }
 }

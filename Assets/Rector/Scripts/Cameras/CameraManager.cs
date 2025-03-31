@@ -1,6 +1,6 @@
 ﻿using System;
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using Unity.Cinemachine;
 
 namespace Rector.Cameras
@@ -19,17 +19,17 @@ namespace Rector.Cameras
     public sealed class CameraManager : IInitializable, IDisposable
     {
         readonly CinemachineBrain brain;
-        readonly CameraBehaviour[] cameraBehaviours;
+        readonly CameraNodeBehaviour[] cameraBehaviours;
         readonly CompositeDisposable disposables = new();
         readonly ReactiveProperty<string> currentCamera = new("");
-        public CameraBehaviour[] GetCameraBehaviours() => cameraBehaviours;
+        public CameraNodeBehaviour[] GetCameraBehaviours() => cameraBehaviours;
         public ReadOnlyReactiveProperty<string> CurrentCamera => currentCamera;
 
         readonly ReactiveProperty<CameraBlend> blendStyle = new(CameraBlend.Cut);
         public readonly BoolInput[] BlendInputs;
         public readonly ReactiveProperty<float> BlendTime = new(1f);
 
-        public CameraManager(CinemachineBrain brain, CameraBehaviour[] cameraBehaviours)
+        public CameraManager(CinemachineBrain brain, CameraNodeBehaviour[] cameraBehaviours)
         {
             this.brain = brain;
             this.cameraBehaviours = cameraBehaviours;
@@ -88,11 +88,11 @@ namespace Rector.Cameras
             }).AddTo(disposables);
         }
 
-        void DisableOthers(CameraBehaviour camera)
+        void DisableOthers(CameraNodeBehaviour cameraNode)
         {
             foreach (var other in cameraBehaviours)
             {
-                other.IsActive.Value = other == camera;
+                other.IsActive.Value = other == cameraNode;
             }
         }
 

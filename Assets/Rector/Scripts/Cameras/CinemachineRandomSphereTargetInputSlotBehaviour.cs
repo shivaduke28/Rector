@@ -1,12 +1,13 @@
 using R3;
-using Rector.Cameras;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
+using Rector.SlotBehaviours;
 using UnityEngine;
 
-namespace Rector.NodeComponents
+namespace Rector.Cameras
 {
+    [AddComponentMenu("Rector/Cinemachine Random Sphere Target Input Slot")]
     [RequireComponent(typeof(CinemachineRandomSphereTarget))]
-    public sealed class CinemachineRandomSphereTargetInputBehaviour : InputBehaviour
+    public sealed class CinemachineRandomSphereTargetInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CinemachineRandomSphereTarget cinemachineRandomSphereTarget;
         [SerializeField] FloatInput speed = new("Speed", 3f, 0f, 10f);

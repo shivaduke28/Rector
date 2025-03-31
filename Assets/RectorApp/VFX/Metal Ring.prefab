@@ -129,11 +129,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 4799784463852739577}
+  activeInput:
+    name: Active
+    value:
+      value: 0
+    defaultValue: 0
   events:
+  - S
   - L
   - M
-  - S
-  propertyInputs: []
+  properties: []
   references:
     version: 2
     RefIds: []
@@ -149,6 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxInputBehaviour: {fileID: 1690360380606316912}
-  inputBehaviours: []
-  outputBehaviours: []
+  slotBehaviours:
+  - {fileID: 1690360380606316912}
+  vfxInputSlot: {fileID: 1690360380606316912}

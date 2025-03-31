@@ -129,42 +129,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualEffect: {fileID: 7970929313286778783}
+  activeInput:
+    name: Active
+    value:
+      value: 0
+    defaultValue: 0
   events: []
-  propertyInputs:
-  - input:
-      rid: 8375392507146534993
-    reinit: 0
-  - input:
-      rid: 8375392507146534994
-    reinit: 0
-  - input:
-      rid: 8375392507146534995
-    reinit: 0
+  properties:
+  - rid: 8375393097419849813
+  - rid: 8375393097419849814
+  - rid: 8375393097419849815
   references:
     version: 2
     RefIds:
-    - rid: 8375392507146534993
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393097419849813
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Intensity
         value:
           value: 32
+        defaultValue: 32
         minValue: 0
         maxValue: 64
-    - rid: 8375392507146534994
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393097419849814
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: SpawnRate
         value:
           value: 5
+        defaultValue: 5
         minValue: 0
         maxValue: 32
-    - rid: 8375392507146534995
-      type: {class: FloatInput, ns: Rector.Nodes, asm: Rector}
+    - rid: 8375393097419849815
+      type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Speed
         value:
           value: 1
+        defaultValue: 1
         minValue: 0
         maxValue: 2
 --- !u!114 &-4233992428353006084
@@ -179,6 +181,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vfxInputBehaviour: {fileID: 7731421678659081616}
-  inputBehaviours: []
-  outputBehaviours: []
+  slotBehaviours:
+  - {fileID: 7731421678659081616}
+  vfxInputSlot: {fileID: 7731421678659081616}

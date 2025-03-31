@@ -1,5 +1,6 @@
 ﻿using System;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
+using Rector.Vfx;
 using UnityEngine;
 
 namespace Rector
