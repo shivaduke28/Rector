@@ -1,5 +1,6 @@
 using System;
 using R3;
+using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -17,6 +18,7 @@ namespace Rector.UI.GraphPages
         float currentScale = 1f;
         const float MaxScale = 4f;
         const float MinScale = 0.5f;
+        Vector2 offset;
 
         public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction)
         {
@@ -59,7 +61,7 @@ namespace Rector.UI.GraphPages
 
             // maskの中心が移動した分だけcontentを移動させることでmaskの中心をズームする
             var maskCenter = mask.worldBound.center;
-            var contentLeftUp = content.worldBound.center;
+            var contentLeftUp = new Vector2(content.worldBound.xMin, content.worldBound.yMin);
             var centerPosition = maskCenter - contentLeftUp;
             var diff = centerPosition * (currentScale / beforeScale - 1f);
             content.transform.position -= new Vector3(diff.x, diff.y);
@@ -97,8 +99,20 @@ namespace Rector.UI.GraphPages
         {
             var delta = new Vector3(translate.x, -translate.y, 0f) * 10f;
             content.transform.position += delta;
+            offset += new Vector2(delta.x, delta.y);
         }
 
+        public void MoveContentToMakeNodeVisible(LayeredNode node)
+        {
+            var maskBound = mask.worldBound;
+            var maskWidth = maskBound.width;
+            var maskHeight = maskBound.height;
+
+            // left-top
+            var nodePosition = node.TargetPosition * currentScale;
+
+            content.transform.position = new Vector3(maskWidth * 0.5f - nodePosition.x - 40f + offset.x, maskHeight * 0.5f - nodePosition.y - 10f + offset.y, 0f);
+        }
 
         public void Dispose()
         {

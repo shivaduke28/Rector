@@ -17,6 +17,8 @@ namespace Rector.UI.LayeredGraphDrawing
             set => NodeView.Position = value;
         }
 
+        public Vector2 TargetPosition => NodeView.TargetPosition;
+
         public int Layer { get; set; }
         public int Index { get; set; }
         public int InputSlotCount { get; }

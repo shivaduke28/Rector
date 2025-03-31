@@ -172,9 +172,10 @@
 }
 
 .rector-graph-content {
-    width: 3000px;
-    height: 3000px;
+    width: 100%;
+    height: 100%;
     position: absolute;
+    transform-origin: left top;
 }
 
 .rector-graph-content-animation {

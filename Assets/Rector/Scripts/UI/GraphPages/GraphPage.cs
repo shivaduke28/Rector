@@ -155,6 +155,7 @@ namespace Rector.UI.GraphPages
             if (node != null)
             {
                 node.NodeView.Node.Selected.Value = true;
+                graphContentTransformer.MoveContentToMakeNodeVisible(node);
             }
 
             SelectedNode = node;
@@ -185,6 +186,11 @@ namespace Rector.UI.GraphPages
             if (node != null)
             {
                 node.NodeView.Node.Selected.Value = true;
+                graphContentTransformer.MoveContentToMakeNodeVisible(node);
+            }
+            else if (SelectedNode is not null)
+            {
+                graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
             }
 
             TargetNode = node;
@@ -249,6 +255,32 @@ namespace Rector.UI.GraphPages
             LayerCount.Value = result.LayerCount;
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
+
+            switch (State.Value)
+            {
+                case GraphPageState.NodeSelection:
+                case GraphPageState.SlotSelection:
+                case GraphPageState.NodeParameter:
+                case GraphPageState.NodeCreation:
+                    if (SelectedNode is not null)
+                    {
+                        graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
+                    }
+                    break;
+                case GraphPageState.TargetNodeSelection:
+                case GraphPageState.TargetSlotSelection:
+                    if (TargetNode is not null)
+                    {
+                        graphContentTransformer.MoveContentToMakeNodeVisible(TargetNode);
+                    }
+                    else if (SelectedNode is not null)
+                    {
+                        graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         void IDisposable.Dispose()
