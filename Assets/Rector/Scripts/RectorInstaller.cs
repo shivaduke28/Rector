@@ -54,7 +54,6 @@ namespace Rector
 
             var nodeTemplateRepository = Register(new NodeTemplateRepository());
             Register(nodeTemplateRepository);
-            var sceneLoader = Register(new BGSceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository));
 
             var uiInputAction = Register(new UIInputAction(rectorInput));
             var graphInputAction = Register(new GraphInputAction(rectorInput));
@@ -62,7 +61,8 @@ namespace Rector
             var hudRoot = hudContainer.Root;
             var hudView = new HudView(hudRoot, uiInputAction, graphInputAction, nodeTemplateRepository);
             var graphPage = Register(hudView.GraphPage);
-            var scenePage = Register(new ScenePageModel(hudView.ScenePageView, sceneLoader));
+            var bgSceneManager = Register(new BGSceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository, graphPage));
+            var scenePage = Register(new ScenePageModel(hudView.ScenePageView, bgSceneManager));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
             var copyrightNoticesPage = Register(new CopyrightNoticesPageModel(hudView.CopyrightNoticesPageView));
@@ -105,7 +105,7 @@ namespace Rector
 
             // set first camera active
             cameraManager.GetCameraBehaviours()[0].IsActive.Value = true;
-            sceneLoader.Load(rectorSettingsAsset.sceneSettings.sceneNames[0]);
+            bgSceneManager.Load(rectorSettingsAsset.sceneSettings.sceneNames[0]);
         }
 
         T Register<T>(T instance)

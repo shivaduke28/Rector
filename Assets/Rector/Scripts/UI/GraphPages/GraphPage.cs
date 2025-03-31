@@ -141,6 +141,7 @@ namespace Rector.UI.GraphPages
 
             // SortでNodeViewのWidthを使用するので1F待機する
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate)
+                .Where(_ => isVisible.Value)
                 .Where(_ => shouldSort)
                 .Subscribe(_ => SortInternal()).AddTo(disposable);
         }

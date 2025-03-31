@@ -16,6 +16,7 @@ namespace Rector.UI.Graphs
                 list = new List<NodeTemplate>();
                 categoryNodeSet.Add(factory.Category, list);
             }
+
             list.Add(factory);
         }
 
@@ -24,9 +25,24 @@ namespace Rector.UI.Graphs
             return factories.Values;
         }
 
-        public void Remove(NodeTemplateId id)
+        public bool Remove(NodeTemplateId id, out NodeTemplate nodeTemplate)
         {
-            factories.Remove(id);
+            if (factories.Remove(id, out nodeTemplate))
+            {
+                if (categoryNodeSet.TryGetValue(nodeTemplate.Category, out var list))
+                {
+                    list.Remove(nodeTemplate);
+                    if (list.Count == 0)
+                    {
+                        categoryNodeSet.Remove(nodeTemplate.Category);
+                    }
+                }
+
+                return true;
+            }
+
+            nodeTemplate = null;
+            return false;
         }
     }
 }

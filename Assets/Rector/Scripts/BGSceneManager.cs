@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
-using Rector.UI;
+using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
-using Rector.UI.Graphs.Nodes;
+using Rector.UI.LayeredGraphDrawing;
 using UnityEngine.SceneManagement;
 
 namespace Rector
@@ -15,18 +14,24 @@ namespace Rector
         readonly SceneSettings sceneSettings;
         readonly LoadingView loadingView;
         readonly NodeTemplateRepository nodeTemplateRepository;
+        readonly GraphPage graphPage;
         readonly CancellationTokenSource cts = new();
         readonly ReactiveProperty<string> currentScene = new("");
         public ReadOnlyReactiveProperty<string> CurrentScene => currentScene;
 
-        public string[] GetScenes() => sceneSettings.sceneNames;
-        readonly HashSet<NodeTemplateId> registeredNodeTemplates = new();
+        readonly CompositeDisposable bgDisposables = new();
 
-        public BGSceneManager(LoadingView loadingView, SceneSettings sceneSettings, NodeTemplateRepository nodeTemplateRepository)
+        public string[] GetScenes() => sceneSettings.sceneNames;
+
+        public BGSceneManager(LoadingView loadingView,
+            SceneSettings sceneSettings,
+            NodeTemplateRepository nodeTemplateRepository,
+            GraphPage graphPage)
         {
             this.loadingView = loadingView;
             this.sceneSettings = sceneSettings;
             this.nodeTemplateRepository = nodeTemplateRepository;
+            this.graphPage = graphPage;
         }
 
         public void Load(string sceneName)
@@ -39,9 +44,9 @@ namespace Rector
         {
             if (!string.IsNullOrEmpty(currentScene.Value))
             {
-                UnregisterNodeTemplates();
                 var current = currentScene.Value;
                 currentScene.Value = "";
+                bgDisposables.Clear();
                 await SceneManager.UnloadSceneAsync(current).ToUniTask(cancellationToken: token);
                 loadingView.SetActive(true);
             }
@@ -55,16 +60,6 @@ namespace Rector
             RegisterNodeTemplates();
         }
 
-        void UnregisterNodeTemplates()
-        {
-            foreach (var id in registeredNodeTemplates)
-            {
-                nodeTemplateRepository.Remove(id);
-            }
-
-            registeredNodeTemplates.Clear();
-        }
-
         void RegisterNodeTemplates()
         {
             var rootObjects = SceneManager.GetSceneByName(currentScene.Value).GetRootGameObjects();
@@ -73,22 +68,8 @@ namespace Rector
                 var bgScenes = rootObject.GetComponentsInChildren<BGScene>();
                 foreach (var bgScene in bgScenes)
                 {
-                    foreach (var nodeBehaviour in bgScene.NodeBehaviours)
-                    {
-                        var template = NodeTemplate.Create(NodeCategory.Scene, nodeBehaviour.name, id => Create(new BehaviourNode(id, nodeBehaviour)));
-                        nodeTemplateRepository.Add(template);
-                        registeredNodeTemplates.Add(template.Id);
-                    }
+                    bgScene.RegisterNodeBehaviour(nodeTemplateRepository, graphPage).AddTo(bgDisposables);
                 }
-            }
-
-            return;
-
-            static NodeView Create(Node node)
-            {
-                var ve = VisualElementFactory.Instance.CreateNode();
-                var nodeView = new NodeView(ve, node);
-                return nodeView;
             }
         }
 
