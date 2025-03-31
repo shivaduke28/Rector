@@ -2,7 +2,7 @@ using System.Linq;
 using Rector.NodeComponents;
 using UnityEngine;
 
-namespace Rector.Nodes
+namespace Rector.NodeBehaviours
 {
     [RequireComponent(typeof(VfxInputBehaviour))]
     public class VfxNodeBehaviour : MonoBehaviour

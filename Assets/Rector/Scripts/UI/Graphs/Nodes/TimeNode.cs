@@ -1,5 +1,5 @@
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 

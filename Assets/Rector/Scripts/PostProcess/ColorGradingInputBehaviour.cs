@@ -1,5 +1,5 @@
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;

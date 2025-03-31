@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
 

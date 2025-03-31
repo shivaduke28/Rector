@@ -1,6 +1,6 @@
 using R3;
 using R3.Triggers;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 
 namespace Rector.NodeComponents
 {

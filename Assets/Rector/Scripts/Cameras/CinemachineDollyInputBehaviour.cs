@@ -1,6 +1,6 @@
 using System;
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using Unity.Cinemachine;
 using UnityEngine;
 

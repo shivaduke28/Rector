@@ -1,4 +1,4 @@
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
 
 namespace Rector.NodeComponents

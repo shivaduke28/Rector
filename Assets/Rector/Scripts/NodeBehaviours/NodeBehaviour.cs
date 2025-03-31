@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Rector.Nodes
+namespace Rector.NodeBehaviours
 {
     public class NodeBehaviour : MonoBehaviour
     {

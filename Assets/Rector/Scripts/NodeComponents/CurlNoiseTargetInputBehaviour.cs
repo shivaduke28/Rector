@@ -1,4 +1,4 @@
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
 using UnityEngine.VFX;
 

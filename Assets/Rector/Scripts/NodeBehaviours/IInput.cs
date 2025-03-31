@@ -2,7 +2,7 @@ using System;
 using R3;
 using UnityEngine;
 
-namespace Rector.Nodes
+namespace Rector.NodeBehaviours
 {
     public interface IInput
     {

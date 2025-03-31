@@ -1,5 +1,5 @@
 using R3;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
 
 namespace Rector.NodeComponents

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Rector.Nodes
+namespace Rector.NodeBehaviours
 {
     public abstract class InputBehaviour : MonoBehaviour
     {

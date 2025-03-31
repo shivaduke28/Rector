@@ -1,4 +1,4 @@
-﻿using Rector.Nodes;
+﻿using Rector.NodeBehaviours;
 
 namespace Rector.UI.Graphs.Nodes
 {

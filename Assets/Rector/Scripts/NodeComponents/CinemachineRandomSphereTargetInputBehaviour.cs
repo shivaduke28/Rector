@@ -1,6 +1,6 @@
 using R3;
 using Rector.Cameras;
-using Rector.Nodes;
+using Rector.NodeBehaviours;
 using UnityEngine;
 
 namespace Rector.NodeComponents
