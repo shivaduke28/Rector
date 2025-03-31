@@ -12,12 +12,12 @@ namespace Rector.UI.Graphs.Nodes
         {
             InputSlots = new InputSlot[]
             {
-                new ReactivePropertyInputSlot<bool>(Id, 0, "Active", IsActive, IsActive.Value, IsMuted)
+                SlotConverter.Convert(id, 0, ActiveInput, IsMuted),
             };
 
             OutputSlots = new OutputSlot[]
             {
-                new ObservableOutputSlot<Unit>(id, 0, "Update", Observable.EveryUpdate(UnityFrameProvider.Update).Where(_ => IsActive.Value).AsUnitObservable(), IsMuted)
+                new ObservableOutputSlot<Unit>(id, 0, "Update", Observable.EveryUpdate(UnityFrameProvider.Update).Where(_ => IsActive).AsUnitObservable(), IsMuted)
             };
         }
 
