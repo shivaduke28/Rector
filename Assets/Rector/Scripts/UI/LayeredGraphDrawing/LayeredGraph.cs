@@ -111,6 +111,7 @@ namespace Rector.UI.LayeredGraphDrawing
                 layeredEdge.EdgeView.Dispose();
 
                 var edge = layeredEdge.EdgeView.Edge;
+                edge.Disconnect();
                 if (TryGetNode(edge.OutputSlot.NodeId, out var outputNode) && TryGetNode(edge.InputSlot.NodeId, out var inputNode))
                 {
                     RectorLogger.DeleteEdge(edge, outputNode.NodeView.Node, inputNode.NodeView.Node);
