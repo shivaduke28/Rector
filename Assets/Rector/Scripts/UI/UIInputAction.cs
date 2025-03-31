@@ -78,6 +78,18 @@ namespace Rector.UI
         {
         }
 
+        public void OnRightClick(InputAction.CallbackContext context)
+        {
+        }
+
+        public void OnMiddleClick(InputAction.CallbackContext context)
+        {
+        }
+
+        public void OnScrollWheel(InputAction.CallbackContext context)
+        {
+        }
+
         public void Initialize()
         {
             rectorInput.UI.SetCallbacks(this);
