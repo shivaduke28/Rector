@@ -16,7 +16,6 @@ namespace Rector.UI.GraphPages
     {
         readonly ReactiveProperty<bool> isVisible = new(false);
         public readonly ReactiveProperty<GraphPageState> State = new(GraphPageState.NodeSelection);
-        GraphPageState lastState;
 
         public LayeredNode? SelectedNode;
         public ISlot? SelectedSlot;
