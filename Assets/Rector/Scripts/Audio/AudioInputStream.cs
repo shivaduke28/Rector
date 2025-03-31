@@ -16,11 +16,38 @@ namespace Rector.Audio
         readonly AudioLevelTracker midTracker;
         readonly AudioLevelTracker highTracker;
         readonly SpectrumAnalyzer spectrum;
+        bool disposed;
+
+        public bool IsValid => !disposed;
 
         public float Level => levelTracker.normalizedLevel;
         public float LevelLow => lowTracker.normalizedLevel;
         public float LevelMid => midTracker.normalizedLevel;
         public float LevelHigh => highTracker.normalizedLevel;
+
+        public bool AutoGain
+        {
+            get => levelTracker.autoGain;
+            set
+            {
+                levelTracker.autoGain = value;
+                lowTracker.autoGain = value;
+                midTracker.autoGain = value;
+                highTracker.autoGain = value;
+            }
+        }
+
+        public bool SmoothFall
+        {
+            get => levelTracker.smoothFall;
+            set
+            {
+                levelTracker.smoothFall = value;
+                lowTracker.smoothFall = value;
+                midTracker.smoothFall = value;
+                highTracker.smoothFall = value;
+            }
+        }
 
         /// <summary>
         /// 音声データ（波形）。マイフレームサイズが変わるので注意。
@@ -88,6 +115,7 @@ namespace Rector.Audio
         public void Dispose()
         {
             Object.Destroy(levelTracker.gameObject);
+            disposed = true;
         }
     }
 }

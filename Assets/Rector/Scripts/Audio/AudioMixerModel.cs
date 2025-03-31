@@ -54,7 +54,7 @@ namespace Rector.Audio
         void Update()
         {
             var stream = audioInputDeviceManager.InputStream;
-            if (stream == null) return;
+            if (stream is not { IsValid: true } ) return;
             level.Value = stream.Level;
             levelLow.Value = stream.LevelLow;
             levelMid.Value = stream.LevelMid;
