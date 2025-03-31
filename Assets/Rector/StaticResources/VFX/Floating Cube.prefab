@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1697512835096086735
+--- !u!1 &6887897314513559376
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,25 +8,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2655796079992518864}
-  - component: {fileID: 6236396361199520924}
-  - component: {fileID: 2715801864732203446}
-  - component: {fileID: 8781365676058433138}
-  - component: {fileID: 1785317180165460032}
+  - component: {fileID: 5859113578930948838}
+  - component: {fileID: 4104121704173847715}
+  - component: {fileID: 3109248606146475354}
+  - component: {fileID: 3678291610920283006}
+  - component: {fileID: 4843034234368150193}
   m_Layer: 0
-  m_Name: Square Ring
+  m_Name: Floating Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2655796079992518864
+--- !u!4 &5859113578930948838
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697512835096086735}
+  m_GameObject: {fileID: 6887897314513559376}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -35,15 +35,15 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!2083052967 &6236396361199520924
+--- !u!2083052967 &4104121704173847715
 VisualEffect:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697512835096086735}
+  m_GameObject: {fileID: 6887897314513559376}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: e23bd75259ce06744bcab471be8ea948, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: bbfd1d21cf6b2cc42b851e588b958585, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -73,22 +73,22 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
---- !u!73398921 &2715801864732203446
+--- !u!73398921 &3109248606146475354
 VFXRenderer:
   serializedVersion: 1
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697512835096086735}
+  m_GameObject: {fileID: 6887897314513559376}
   m_Enabled: 1
-  m_CastShadows: 0
+  m_CastShadows: 1
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 0
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
@@ -116,41 +116,42 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &8781365676058433138
+--- !u!114 &3678291610920283006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697512835096086735}
+  m_GameObject: {fileID: 6887897314513559376}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23f374683db348ccb770c58b5931e150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualEffect: {fileID: 6236396361199520924}
+  visualEffect: {fileID: 4104121704173847715}
   activeInput:
     name: Active
     value:
       value: 0
     defaultValue: 0
-  events: []
+  events:
+  - Spawn
   properties: []
   references:
     version: 2
     RefIds: []
---- !u!114 &1785317180165460032
+--- !u!114 &4843034234368150193
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697512835096086735}
+  m_GameObject: {fileID: 6887897314513559376}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ab4b636e72b84f01be2a3b1629f4cbad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   slotBehaviours:
-  - {fileID: 8781365676058433138}
-  vfxInputSlot: {fileID: 8781365676058433138}
+  - {fileID: 3678291610920283006}
+  vfxInputSlot: {fileID: 3678291610920283006}
