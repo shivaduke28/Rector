@@ -52,7 +52,7 @@ namespace Rector.UI.Graphs
         }
     }
 
-    public sealed class Edge
+    public sealed class Edge : IDisposable
     {
         public readonly EdgeId Id;
         public readonly OutputSlot OutputSlot;
@@ -75,7 +75,7 @@ namespace Rector.UI.Graphs
         public bool IsConnectedTo(ISlot slot) => OutputSlot == slot || InputSlot == slot;
         public bool IsConnectedTo(Node node) => OutputSlot.NodeId.Equals(node.Id) || InputSlot.NodeId.Equals(node.Id);
 
-        public void Disconnect()
+        public void Dispose()
         {
             disposable.Dispose();
             InputSlot.Disconnected();
