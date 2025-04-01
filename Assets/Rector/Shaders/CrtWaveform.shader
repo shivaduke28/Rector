@@ -17,6 +17,7 @@ Shader "Rector/CrtWaveform"
             Name "Update"
             CGPROGRAM
             #include "UnityCustomRenderTexture.cginc"
+            #include "RectorAudioWaveform.hlsl"
 
             #pragma vertex CustomRenderTextureVertexShader
             #pragma fragment frag
@@ -26,17 +27,13 @@ Shader "Rector/CrtWaveform"
             fixed _Intensity;
             fixed _Delta;
 
-            StructuredBuffer<float> _Waveform;
-            int _WaveformSize = 512;
-
-
             float4 frag(v2f_customrendertexture IN) : COLOR
             {
                 const float2 uv = IN.localTexcoord.xy;
                 float x = uv.x;
-                uint ind = floor(x * _WaveformSize);
+                uint ind = floor(x * _RectorWaveformSize);
 
-                float data = _Waveform[ind] + 0.5;
+                float data = RectorAudioWaveform(ind) + 0.5;
                 float v = step(uv.y, data) * step(data, uv.y + _Delta) * _Intensity;
                 return _Color + v;
             }

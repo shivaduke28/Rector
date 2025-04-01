@@ -85,7 +85,7 @@ MonoBehaviour:
   categories: []
   uiBounds:
     serializedVersion: 2
-    x: -351
+    x: -350
     y: 1005
     width: 547
     height: 130
@@ -111,11 +111,11 @@ MonoBehaviour:
   - {fileID: 114350483966674981}
   m_OutputSlots:
   - {fileID: 114350483966674980}
-  m_OperatorName: AudioSpectrum
+  m_OperatorName: Rector Audio Spectrum
   m_HLSLCode: "float FloatFunction(in float value)\n{\n  return value;\n}"
   m_ShaderFile: {fileID: 10900000, guid: a2832dc0da35ef34a819e23b78c9ae67, type: 3}
   m_AvailableFunctions:
-    selection: AudioSpectrum
+    selection: RectorAudioSpectrum
     selectedIndex: 0
 --- !u!114 &114350483966674980
 MonoBehaviour:
