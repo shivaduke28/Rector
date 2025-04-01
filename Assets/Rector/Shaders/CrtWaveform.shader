@@ -31,7 +31,7 @@ Shader "Rector/CrtWaveform"
             {
                 const float2 uv = IN.localTexcoord.xy;
                 float x = uv.x;
-                uint ind = floor(x * _RectorWaveformSize);
+                uint ind = floor(x * _RectorAudioWaveformSize);
 
                 float data = RectorAudioWaveform(ind) + 0.5;
                 float v = step(uv.y, data) * step(data, uv.y + _Delta) * _Intensity;

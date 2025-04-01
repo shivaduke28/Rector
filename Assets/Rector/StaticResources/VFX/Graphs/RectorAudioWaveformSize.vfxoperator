@@ -157,7 +157,7 @@ MonoBehaviour:
   m_OutputSlots: []
   m_ExposedName: out
   m_Exposed: 0
-  m_Order: 2
+  m_Order: 0
   m_Category: 
   m_Min:
     m_Type:
