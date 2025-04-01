@@ -23,7 +23,7 @@ Shader "Rector/CrtSpectrum"
             #pragma fragment frag
             #pragma target 3.0
 
-            #include "AudioSpectrum.hlsl"
+            #include "RectorAudioSpectrum.hlsl"
             fixed4 _Color;
             fixed _BufferRatio;
             fixed _Intensity;
@@ -45,7 +45,7 @@ Shader "Rector/CrtSpectrum"
                 for (int i = -radius; i <= radius; i++)
                 {
                     float weight = gaussian_weight(i, sigma);
-                    sum += AudioSpectrum(clamp(index + i, 0, RECTOR_AUDIO_SPECTRUM_BUFFER_SIZE - 1)) * weight;
+                    sum += RectorAudioSpectrum(clamp(index + i, 0, RECTOR_AUDIO_SPECTRUM_BUFFER_SIZE - 1)) * weight;
                     weightSum += weight;
                 }
 

@@ -25,9 +25,9 @@ namespace Rector.Audio
 
         IDisposable disposable;
 
-        static readonly int AudioSpectrumPropertyId = Shader.PropertyToID("_AudioSpectrum");
-        static readonly int WaveformPropertyId = Shader.PropertyToID("_Waveform");
-        static readonly int WaveformSizePropertyId = Shader.PropertyToID("_WaveformSize");
+        static readonly int AudioSpectrumPropertyId = Shader.PropertyToID("_RectorAudioSpectrum");
+        static readonly int WaveformPropertyId = Shader.PropertyToID("_RectorAudioWaveform");
+        static readonly int WaveformSizePropertyId = Shader.PropertyToID("_RectorAudioWaveformSize");
         readonly float[] waveform = new float[AudioInputStream.SpectrumSize];
 
         GraphicsBuffer spectrumBuffer;
