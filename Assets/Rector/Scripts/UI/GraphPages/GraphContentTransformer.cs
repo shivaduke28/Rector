@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using R3;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
@@ -20,6 +21,8 @@ namespace Rector.UI.GraphPages
         const float MinScale = 0.5f;
         Vector2 offset;
 
+        Vector2 MaskSizeHalf => new(mask.resolvedStyle.width * 0.5f, mask.resolvedStyle.height * 0.5f);
+
         public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction)
         {
             this.mask = mask;
@@ -31,6 +34,12 @@ namespace Rector.UI.GraphPages
         {
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ => ApplyTranslateAndZoom()).AddTo(disposable);
             graphInputAction.ResetTransform.Subscribe(_ => Reset()).AddTo(disposable);
+            // UIの初期化を待ちたいので1F遅らせる
+            UniTask.Create(async () =>
+            {
+                await UniTask.DelayFrame(1);
+                Reset();
+            });
         }
 
         void DisableAnimation()
@@ -48,7 +57,7 @@ namespace Rector.UI.GraphPages
             DisableAnimation();
             currentScale = 1f;
             offset = Vector2.zero;
-            content.transform.position = Vector3.zero;
+            content.transform.position = MaskSizeHalf;
             content.transform.scale = Vector3.one;
         }
 
@@ -107,7 +116,7 @@ namespace Rector.UI.GraphPages
         {
             // left-top
             var nodePosition = node.TargetPosition * currentScale;
-            content.transform.position = new Vector3(-nodePosition.x + offset.x, -nodePosition.y + offset.y, 0f);
+            content.transform.position = -nodePosition + MaskSizeHalf + offset;
         }
 
         public void Dispose()
