@@ -6,7 +6,7 @@ VisualEffectResource:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RectorAudioSpectrum
+  m_Name: RectorAudioWaveformSize
   m_Graph: {fileID: 114350483966674976}
   m_Infos:
     m_RendererSettings:
@@ -33,36 +33,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d4c867f6b72b714dbb5fd1780afe208, type: 3}
-  m_Name: RectorAudioSpectrum
+  m_Name: RectorAudioWaveformSize
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children:
   - {fileID: 114350483966674978}
-  - {fileID: 114350483966674982}
-  - {fileID: 114350483966674984}
+  - {fileID: 114350483966674988}
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
   m_UISuperCollapsed: 0
   m_UIInfos: {fileID: 114350483966674977}
   m_CustomAttributes: []
-  m_ParameterInfo:
-  - name: index
-    path: index
-    tooltip: 
-    space: -1
-    spaceable: 0
-    sheetType: m_Uint
-    realType: UInt32
-    defaultValue:
-      m_Type:
-        m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0
-    min: -Infinity
-    max: Infinity
-    enumValues: []
-    descendantCount: 0
+  m_ParameterInfo: []
   m_ImportDependencies: []
   m_GraphVersion: 18
   m_ResourceVersion: 1
@@ -85,10 +68,10 @@ MonoBehaviour:
   categories: []
   uiBounds:
     serializedVersion: 2
-    x: -350
+    x: -214
     y: 1005
-    width: 547
-    height: 130
+    width: 458
+    height: 128
 --- !u!114 &114350483966674978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,17 +90,16 @@ MonoBehaviour:
   m_UIPosition: {x: -214, y: 1005}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
-  m_InputSlots:
-  - {fileID: 114350483966674981}
+  m_InputSlots: []
   m_OutputSlots:
-  - {fileID: 114350483966674980}
-  m_OperatorName: Rector Audio Spectrum
+  - {fileID: 114350483966674987}
+  m_OperatorName: Rector Audio Waveform Size
   m_HLSLCode: "float FloatFunction(in float value)\n{\n  return value;\n}"
-  m_ShaderFile: {fileID: 10900000, guid: a2832dc0da35ef34a819e23b78c9ae67, type: 3}
+  m_ShaderFile: {fileID: 10900000, guid: 0b327cf705ea425d828a663e16670852, type: 3}
   m_AvailableFunctions:
-    selection: RectorAudioSpectrum
-    selectedIndex: 0
---- !u!114 &114350483966674980
+    selection: RectorAudioWaveformSize
+    selectedIndex: 1
+--- !u!114 &114350483966674987
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,7 +108,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
+  m_Script: {fileID: 11500000, guid: c52d920e7fff73b498050a6b3c4404ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
@@ -135,140 +117,24 @@ MonoBehaviour:
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
   m_UISuperCollapsed: 0
-  m_MasterSlot: {fileID: 114350483966674980}
+  m_MasterSlot: {fileID: 114350483966674987}
   m_MasterData:
     m_Owner: {fileID: 114350483966674978}
     m_Value:
       m_Type:
-        m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+        m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 
+      m_SerializableObject: 0
     m_Space: -1
   m_Property:
     name: out
     m_serializedType:
-      m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-  m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 114350483966674986}
---- !u!114 &114350483966674981
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c52d920e7fff73b498050a6b3c4404ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UIIgnoredErrors: []
-  m_Parent: {fileID: 0}
-  m_Children: []
-  m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
-  m_UISuperCollapsed: 0
-  m_MasterSlot: {fileID: 114350483966674981}
-  m_MasterData:
-    m_Owner: {fileID: 114350483966674978}
-    m_Value:
-      m_Type:
-        m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0
-    m_Space: -1
-  m_Property:
-    name: index
-    m_serializedType:
-      m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=b77a5c561934e089
-  m_Direction: 0
-  m_LinkedSlots:
-  - {fileID: 114350483966674983}
---- !u!114 &114350483966674982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 330e0fca1717dde4aaa144f48232aa64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UIIgnoredErrors: []
-  m_Parent: {fileID: 114350483966674976}
-  m_Children: []
-  m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
-  m_UISuperCollapsed: 0
-  m_InputSlots: []
-  m_OutputSlots:
-  - {fileID: 114350483966674983}
-  m_ExposedName: index
-  m_Exposed: 1
-  m_Order: 0
-  m_Category: 
-  m_Min:
-    m_Type:
-      m_SerializableType: 
-    m_SerializableObject: 
-  m_Max:
-    m_Type:
-      m_SerializableType: 
-    m_SerializableObject: 
-  m_IsOutput: 0
-  m_EnumValues: []
-  m_ValueFilter: 0
-  m_Tooltip: 
-  m_Nodes:
-  - m_Id: 0
-    linkedSlots:
-    - outputSlot: {fileID: 114350483966674983}
-      inputSlot: {fileID: 114350483966674981}
-    position: {x: -350.5, y: 1067}
-    expandedSlots: []
-    expanded: 1
-    supecollapsed: 0
---- !u!114 &114350483966674983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c52d920e7fff73b498050a6b3c4404ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UIIgnoredErrors: []
-  m_Parent: {fileID: 0}
-  m_Children: []
-  m_UIPosition: {x: 0, y: 0}
-  m_UICollapsed: 1
-  m_UISuperCollapsed: 0
-  m_MasterSlot: {fileID: 114350483966674983}
-  m_MasterData:
-    m_Owner: {fileID: 114350483966674982}
-    m_Value:
-      m_Type:
-        m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0
-    m_Space: -1
-  m_Property:
-    name: o
-    m_serializedType:
       m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 1
   m_LinkedSlots:
-  - {fileID: 114350483966674981}
---- !u!114 &114350483966674984
+  - {fileID: 114350483966674990}
+--- !u!114 &114350483966674988
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -287,11 +153,11 @@ MonoBehaviour:
   m_UICollapsed: 1
   m_UISuperCollapsed: 0
   m_InputSlots:
-  - {fileID: 114350483966674986}
+  - {fileID: 114350483966674990}
   m_OutputSlots: []
   m_ExposedName: out
   m_Exposed: 0
-  m_Order: 1
+  m_Order: 2
   m_Category: 
   m_Min:
     m_Type:
@@ -308,13 +174,13 @@ MonoBehaviour:
   m_Nodes:
   - m_Id: 0
     linkedSlots:
-    - outputSlot: {fileID: 114350483966674980}
-      inputSlot: {fileID: 114350483966674986}
-    position: {x: 94, y: 1067}
+    - outputSlot: {fileID: 114350483966674987}
+      inputSlot: {fileID: 114350483966674990}
+    position: {x: 142, y: 1064.5}
     expandedSlots: []
     expanded: 1
     supecollapsed: 0
---- !u!114 &114350483966674986
+--- !u!114 &114350483966674990
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -323,7 +189,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
+  m_Script: {fileID: 11500000, guid: c52d920e7fff73b498050a6b3c4404ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
@@ -332,20 +198,20 @@ MonoBehaviour:
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
   m_UISuperCollapsed: 0
-  m_MasterSlot: {fileID: 114350483966674986}
+  m_MasterSlot: {fileID: 114350483966674990}
   m_MasterData:
-    m_Owner: {fileID: 114350483966674984}
+    m_Owner: {fileID: 114350483966674988}
     m_Value:
       m_Type:
-        m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+        m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
       m_SerializableObject: 0
     m_Space: -1
   m_Property:
     name: i
     m_serializedType:
-      m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
+      m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
   m_LinkedSlots:
-  - {fileID: 114350483966674980}
+  - {fileID: 114350483966674987}

@@ -9,4 +9,9 @@ float RectorAudioWaveform(in uint index)
     return _RectorWaveform[index % _RectorWaveformSize];
 }
 
+uint RectorAudioWaveformSize()
+{
+    return _RectorWaveformSize;
+}
+
 #endif
