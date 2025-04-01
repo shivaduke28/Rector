@@ -136,15 +136,15 @@ MonoBehaviour:
     defaultValue: 0
   events: []
   properties:
-  - rid: 722961916660809805
-  - rid: 722961916660809806
-  - rid: 722961916660809807
-  - rid: 722961916660809808
-  - rid: 722961916660809809
+  - rid: 722961916660809810
+  - rid: 722961916660809811
+  - rid: 722961916660809812
+  - rid: 722961916660809813
+  - rid: 722961916660809814
   references:
     version: 2
     RefIds:
-    - rid: 722961916660809805
+    - rid: 722961916660809810
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Amplitude
@@ -153,14 +153,14 @@ MonoBehaviour:
         defaultValue: 1
         minValue: 0
         maxValue: 10
-    - rid: 722961916660809806
+    - rid: 722961916660809811
       type: {class: Vector3Input, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Center
         value:
           value: {x: 0, y: 0.5, z: 0}
         defaultValue: {x: 0, y: 0.5, z: 0}
-    - rid: 722961916660809807
+    - rid: 722961916660809812
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Intensity
@@ -169,7 +169,7 @@ MonoBehaviour:
         defaultValue: 1
         minValue: 0
         maxValue: 8
-    - rid: 722961916660809808
+    - rid: 722961916660809813
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Radius
@@ -178,13 +178,13 @@ MonoBehaviour:
         defaultValue: 2.5
         minValue: 0
         maxValue: 10
-    - rid: 722961916660809809
+    - rid: 722961916660809814
       type: {class: FloatInput, ns: Rector.NodeBehaviours, asm: Rector}
       data:
         name: Size
         value:
-          value: 0.1
-        defaultValue: 0.1
+          value: 0.01
+        defaultValue: 0.01
         minValue: 0
         maxValue: 0.2
 --- !u!114 &7871319474115034556
