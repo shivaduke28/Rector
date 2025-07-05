@@ -53,8 +53,12 @@ namespace Rector.UI.Graphs.Nodes
             hudModel.FrameColor.Subscribe(c =>
             {
                 Color.RGBToHSV(c, out var hue, out var saturation, out var value);
-                h.Value.Value = hue;
-                s.Value.Value = saturation;
+                // V=0の時はH,Sの値を更新しない（黒色で彩度情報が失われるため）
+                if (value > 0)
+                {
+                    h.Value.Value = hue;
+                    s.Value.Value = saturation;
+                }
                 v.Value.Value = value;
                 a.Value.Value = c.a;
             }).AddTo(disposable);
