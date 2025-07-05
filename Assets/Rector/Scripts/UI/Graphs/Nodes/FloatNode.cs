@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class FloatNode : Node
     {
         public const string NodeName = "Float";
-        public static string Category => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
 
         public FloatNode(NodeId id) : base(id, NodeName)
         {

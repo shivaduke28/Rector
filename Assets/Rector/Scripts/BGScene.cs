@@ -32,7 +32,8 @@ namespace Rector
             foreach (var nodeBehaviour in nodeBehaviours)
             {
                 var proxy = proxyRepository.GetOrCreateProxy(nodeBehaviour);
-                var template = NodeTemplate.Create(nodeBehaviour.Category, nodeBehaviour.name, id =>
+                var category = nodeBehaviour.Category;
+                var template = NodeTemplate.Create(category, nodeBehaviour.name, id =>
                 {
                     var node = new BehaviourNode(id, proxy);
                     var ve = VisualElementFactory.Instance.CreateNode();

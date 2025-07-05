@@ -8,7 +8,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Vector3Node : Node
     {
         public const string NodeName = "Vector3";
-        public static string Category => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
 
         public Vector3Node(NodeId id) : base(id, NodeName)
         {

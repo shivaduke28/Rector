@@ -7,7 +7,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class AudioThresholdNode : SourceNode
     {
         public const string NodeName = "Audio Thld";
-        public static string Category => NodeCategory.Event;
+        public static NodeCategory GetCategory() => NodeCategory.Event;
+        public override NodeCategory Category => GetCategory();
         public AudioThresholdNode(NodeId id, AudioMixerModel audioMixerModel) : base(id, NodeName)
         {
             InputSlots = new[]

@@ -1,4 +1,3 @@
-using Rector.NodeBehaviours;
 using Rector.UI.Graphs.Slots;
 using Rector.Vfx;
 
@@ -6,7 +5,8 @@ namespace Rector.UI.Graphs.Nodes
 {
     public sealed class VfxNode : Node
     {
-        public static string Category => NodeCategory.Vfx;
+        public static NodeCategory GetCategory() => NodeCategory.Vfx;
+        public override NodeCategory Category => GetCategory();
         readonly VfxNodeBehaviour behaviour;
 
         public VfxNode(NodeId id, VfxNodeBehaviour behaviour) : base(id, behaviour.Name)

@@ -20,8 +20,8 @@ namespace Rector.UI.GraphPages
         readonly Action onExit;
 
         public readonly List<RectorButtonState> CategoryButtons = new();
-        readonly Dictionary<string, List<RectorButtonState>> nodeButtons = new();
-        readonly List<string> categories = new();
+        readonly Dictionary<NodeCategory, List<RectorButtonState>> nodeButtons = new();
+        readonly List<NodeCategory> categories = new();
 
         public int CategoryIndex { get; private set; }
         int subIndex;
@@ -33,7 +33,7 @@ namespace Rector.UI.GraphPages
             this.onExit = onExit;
         }
 
-        void ChangeCategory(string category)
+        void ChangeCategory(NodeCategory category)
         {
             if (State.Value == ViewState.Main)
             {
@@ -56,7 +56,7 @@ namespace Rector.UI.GraphPages
             var categoryNodeSet = nodeTemplateRepository.CategoryNodeSet;
             foreach (var (category, nodeTemplates) in categoryNodeSet)
             {
-                var categoryButton = new RectorButtonState(category, () => ChangeCategory(category));
+                var categoryButton = new RectorButtonState(category.ToString(), () => ChangeCategory(category));
                 CategoryButtons.Add(categoryButton);
                 categories.Add(category);
 
@@ -147,7 +147,7 @@ namespace Rector.UI.GraphPages
             return GetItems(categories[index]);
         }
 
-        List<RectorButtonState> GetItems(string category)
+        List<RectorButtonState> GetItems(NodeCategory category)
         {
             if (!nodeButtons.TryGetValue(category, out var buttons))
             {

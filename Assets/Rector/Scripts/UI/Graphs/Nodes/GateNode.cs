@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class GateNode : Node
     {
         public const string NodeName = "Gate";
-        public static string Category => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public override NodeCategory Category => GetCategory();
         readonly Subject<Unit> subject = new();
         readonly ReactiveProperty<bool> gate = new(true);
 

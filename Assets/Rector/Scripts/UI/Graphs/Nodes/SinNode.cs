@@ -8,7 +8,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class SinNode : Node
     {
         public const string NodeName = "Sin";
-        public static string Category => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
 
         public SinNode(NodeId id) : base(id, NodeName)
         {
@@ -34,7 +35,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class CosNode : Node
     {
         public const string NodeName = "Cos";
-        public static string Category => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
 
         public CosNode(NodeId id) : base(id, NodeName)
         {

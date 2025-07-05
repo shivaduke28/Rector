@@ -5,8 +5,8 @@ namespace Rector.UI.Graphs
     public sealed class NodeTemplateRepository
     {
         readonly Dictionary<NodeTemplateId, NodeTemplate> factories = new();
-        readonly Dictionary<string, List<NodeTemplate>> categoryNodeSet = new();
-        public IReadOnlyDictionary<string, List<NodeTemplate>> CategoryNodeSet => categoryNodeSet;
+        readonly Dictionary<NodeCategory, List<NodeTemplate>> categoryNodeSet = new();
+        public IReadOnlyDictionary<NodeCategory, List<NodeTemplate>> CategoryNodeSet => categoryNodeSet;
 
         public void Add(NodeTemplate factory)
         {

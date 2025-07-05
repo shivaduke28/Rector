@@ -11,12 +11,13 @@ namespace Rector.NodeBehaviours
     {
         [SerializeField] protected SlotBehaviour[] slotBehaviours;
         [SerializeField] string guid;
+        [SerializeField] NodeCategory category = NodeCategory.Scene;
 
         IInput[] inputs;
         IOutput[] outputs;
         Guid? cachedGuid;
 
-        public virtual string Category => NodeCategory.Scene;
+        public virtual NodeCategory Category => category;
         public Guid Guid => cachedGuid ??= string.IsNullOrEmpty(guid) ? Guid.Empty : Guid.Parse(guid);
 
         public virtual IInput[] GetInputs() => inputs ??= slotBehaviours.SelectMany(c => c.GetInputs()).ToArray();

@@ -7,7 +7,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class BeatNode : SourceNode
     {
         public const string NodeName = "Beat";
-        public static string Category => NodeCategory.Event;
+        public static NodeCategory GetCategory() => NodeCategory.Event;
+        public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
         readonly BeatModel beatModel;

@@ -7,7 +7,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class CameraBlendNode : Node
     {
         public const string NodeName = "Camera Blend";
-        public static string Category => NodeCategory.Camera;
+        public static NodeCategory GetCategory() => NodeCategory.Camera;
+        public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots => Array.Empty<OutputSlot>();
 
