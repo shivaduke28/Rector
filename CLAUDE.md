@@ -59,4 +59,5 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
 
 ### Development Rules
 - After work, format with `dotnet format Rector.csproj`
-- Use `--include` to specify files as needed
+  - Use `--include` to specify files as needed
+- Add `sealed` to classes if possible
