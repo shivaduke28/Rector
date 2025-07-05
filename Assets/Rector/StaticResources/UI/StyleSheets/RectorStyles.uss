@@ -226,3 +226,42 @@
 .rector-create-node-menu-list > .rector-button--focused > Button {
     background-color: black;
 }
+
+.rector-node-category-button {
+    flex-direction: row;
+    justify-content: center;
+    border-width: 1px;
+}
+
+.rector-node-category-button--focused {
+    border-color: var(--rector-border-color);
+}
+
+.rector-node-category-button--highlighted {
+    background-color: var(--rector-highlighted);
+}
+
+.rector-node-category-button-inner {
+    background-color: rgba(20, 20, 20, 0.7);
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+    color: var(--rector-text-color);
+    font-size: 12px;
+    -unity-text-align: middle-left;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.rector-node-category-button--focused > .rector-node-category-button-inner {
+    background-color: black;
+}
+
+.rector-node-category-button-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    -unity-background-image-tint-color: var(--rector-text-color);
+    flex-shrink: 0;
+}
