@@ -3,7 +3,10 @@
     <Style src="project://database/Assets/Rector/StaticResources/UI/StyleSheets/RectorNode.uss?fileID=7433441132597879392&amp;guid=757db838f8e74c6f8f902c203a8cc049&amp;type=3#RectorNode" />
     <engine:VisualElement name="node" class="rector-node">
         <engine:VisualElement name="input-slot-list" class="rector-node-slot-list rector-node-input-slot-list" />
-        <engine:Label text="Arrow Fish" name="name-label" class="rector-label rector-node-name-label" />
+        <engine:VisualElement name="content" class="rector-node-content">
+            <engine:VisualElement name="icon" class="rector-node-icon" />
+            <engine:Label text="Arrow Fish" name="name-label" class="rector-label rector-node-name-label" />
+        </engine:VisualElement>
         <engine:VisualElement name="output-slot-list" class="rector-node-slot-list rector-node-output-slot-list" />
         <engine:VisualElement name="mute" class="rector-node-mute" />
     </engine:VisualElement>
