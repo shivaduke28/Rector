@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Rector.SlotBehaviours
 {
-    [AddComponentMenu("Rector/Position Input Slot")]
-    public sealed class PositionInputSlotBehaviour : InputSlotBehaviour
+    [AddComponentMenu("Rector/Rotation Input Slot")]
+    public sealed class RotationInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] Vector3Input input;
 
@@ -15,9 +15,9 @@ namespace Rector.SlotBehaviours
         {
             trans = transform;
 
-            input.Value.Subscribe(p =>
+            input.Value.Subscribe(r =>
             {
-                trans.localPosition = p;
+                trans.localRotation = Quaternion.Euler(r);
             }).AddTo(this);
         }
 
@@ -31,7 +31,7 @@ namespace Rector.SlotBehaviours
 
         void Reset()
         {
-            input = new Vector3Input("Position", transform.localPosition);
+            input = new Vector3Input("Rotation", transform.localRotation.eulerAngles);
         }
     }
 }

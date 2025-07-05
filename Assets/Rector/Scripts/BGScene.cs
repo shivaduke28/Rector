@@ -45,17 +45,11 @@ namespace Rector
 
             return Disposable.Create(() =>
             {
-                var graph = graphPage.Graph;
                 foreach (var templateId in registered)
                 {
-                    if (repository.Remove(templateId, out var nodeTemplate))
-                    {
-                        foreach (var nodeId in nodeTemplate.NodeIds)
-                        {
-                            graph.RemoveNode(nodeId);
-                        }
-                    }
+                    repository.Remove(templateId);
                 }
+
                 registered.Clear();
 
                 graphPage.Sort();

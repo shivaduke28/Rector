@@ -25,9 +25,9 @@ namespace Rector.UI.Graphs
             return factories.Values;
         }
 
-        public bool Remove(NodeTemplateId id, out NodeTemplate nodeTemplate)
+        public bool Remove(NodeTemplateId id)
         {
-            if (factories.Remove(id, out nodeTemplate))
+            if (factories.Remove(id, out var nodeTemplate))
             {
                 if (categoryNodeSet.TryGetValue(nodeTemplate.Category, out var list))
                 {
@@ -41,7 +41,6 @@ namespace Rector.UI.Graphs
                 return true;
             }
 
-            nodeTemplate = null;
             return false;
         }
     }
