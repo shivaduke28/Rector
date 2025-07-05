@@ -62,6 +62,11 @@ namespace Rector.UI.GraphPages
                     return;
                 }
 
+                if (graphPage.IsNodeParameterOpen)
+                {
+                    graphPage.Graph.RemoveEdgesFrom(graphPage.SelectedSlot);
+                }
+
                 if (EdgeConnector.TryConnect(output, input, out var newEdge))
                 {
                     graphPage.Graph.AddEdge(newEdge);
@@ -79,6 +84,7 @@ namespace Rector.UI.GraphPages
                 input = null;
                 return false;
             }
+
             output = slot1.Direction == SlotDirection.Output ? (OutputSlot)slot1 : (OutputSlot)slot2;
             input = slot2.Direction == SlotDirection.Input ? (InputSlot)slot2 : (InputSlot)slot1;
             return output != null && input != null;
@@ -97,32 +103,6 @@ namespace Rector.UI.GraphPages
             {
                 targetNode.IsMuted.Value = !targetNode.IsMuted.Value;
             }
-        }
-
-        public override void AddNode()
-        {
-            // Swap機能: 接続先スロット選択時にAddNode入力をした場合、
-            // 接続元スロットの既存エッジを切断して新しいエッジを接続する
-            if (!ToOutputAndInput(graphPage.SelectedSlot, graphPage.TargetSlot, out var output, out var input)) return;
-
-            if (!EdgeConnector.CanConnect(output, input)) return;
-
-            if (!graphPage.Graph.ValidateLoop(output, input))
-            {
-                RectorLogger.LoopDetected(output.NodeId, input.NodeId);
-                return;
-            }
-
-            // 接続元スロットの既存エッジを削除
-            graphPage.Graph.RemoveEdgesFrom(graphPage.SelectedSlot);
-
-            // 新しいエッジを接続
-            if (EdgeConnector.TryConnect(output, input, out var newEdge))
-            {
-                graphPage.Graph.AddEdge(newEdge);
-            }
-
-            graphPage.Sort();
         }
     }
 }
