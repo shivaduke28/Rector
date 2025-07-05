@@ -7,7 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class LevelNode : SourceNode
     {
         public const string NodeName = "Level";
-        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Event;
         public override NodeCategory Category => GetCategory();
 
         public LevelNode(NodeId id, AudioMixerModel audioMixerModel) : base(id, NodeName)
@@ -20,7 +20,8 @@ namespace Rector.UI.Graphs.Nodes
             {
                 new ObservableOutputSlot<float>(id, 0, "Low", audioMixerModel.LevelLow.Where(_ => IsActive), IsMuted),
                 new ObservableOutputSlot<float>(id, 1, "Mid", audioMixerModel.LevelMid.Where(_ => IsActive), IsMuted),
-                new ObservableOutputSlot<float>(id, 2, "High", audioMixerModel.LevelHigh.Where(_ => IsActive), IsMuted)
+                new ObservableOutputSlot<float>(id, 2, "High", audioMixerModel.LevelHigh.Where(_ => IsActive), IsMuted),
+                new ObservableOutputSlot<float>(id, 3, "Level", audioMixerModel.Level.Where(_ => IsActive), IsMuted)
             };
         }
 
