@@ -41,6 +41,8 @@ namespace Rector.UI.Graphs.Nodes
             InputSlotList = Root.Q<VisualElement>("input-slot-list");
             OutputSlotList = Root.Q<VisualElement>("output-slot-list");
 
+            Root.Q<VisualElement>("icon").style.backgroundImage = new StyleBackground(GetCategoryIcon(node.Category));
+
             Node = node;
             NameLabel.text = node.Name;
             node.Selected.Subscribe(x => Root.EnableInClassList(NodeSelectedClassName, x)).AddTo(Disposables);
@@ -68,5 +70,20 @@ namespace Rector.UI.Graphs.Nodes
         public void Dispose() => Disposables.Dispose();
         public void AddTo(VisualElement parent) => parent.Add(Root);
         public void RemoveFrom(VisualElement parent) => parent.Remove(Root);
+
+        static Texture2D GetCategoryIcon(NodeCategory category)
+        {
+            return category switch
+            {
+                NodeCategory.Vfx => VisualElementFactory.Instance.Icons.vfx,
+                NodeCategory.Camera => VisualElementFactory.Instance.Icons.camera,
+                NodeCategory.Event => VisualElementFactory.Instance.Icons.@event,
+                NodeCategory.Operator => VisualElementFactory.Instance.Icons.@operator,
+                NodeCategory.Math => VisualElementFactory.Instance.Icons.math,
+                NodeCategory.Scene => VisualElementFactory.Instance.Icons.scene,
+                NodeCategory.System => VisualElementFactory.Instance.Icons.system,
+                _ => null
+            };
+        }
     }
 }
