@@ -10,11 +10,9 @@ namespace Rector.UI.Graphs
         public readonly string Category;
         public readonly string Name;
         readonly Func<NodeId, NodeView> factory;
-        public readonly List<NodeId> NodeIds = new();
 
         public NodeView Create(NodeId id)
         {
-            NodeIds.Add(id);
             return factory(id);
         }
 
