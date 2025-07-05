@@ -8,7 +8,8 @@ namespace Rector.UI.Graphs.Nodes
     public class MadNode : Node
     {
         public const string NodeName = "MAD";
-        public static string Category => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
         readonly FloatInput x = new("x", 0f, float.NegativeInfinity, float.PositiveInfinity);
         readonly FloatInput a = new("a", 1f, float.NegativeInfinity, float.PositiveInfinity);
         readonly FloatInput b = new("b", 0f, float.NegativeInfinity, float.PositiveInfinity);

@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class AndNode : Node
     {
         public const string NodeName = "And";
-        public static string Category => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public override NodeCategory Category => GetCategory();
 
         readonly ReactiveProperty<bool> x = new(false);
         readonly ReactiveProperty<bool> y = new(false);

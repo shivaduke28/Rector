@@ -28,6 +28,7 @@ namespace Rector.UI.Graphs.Nodes
             }
         }
 
+        public override NodeCategory Category => proxy.Category;
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
     }

@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class StepNode : Node
     {
         public const string NodeName = "Step";
-        public static string Category => NodeCategory.Math;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
         readonly ReactiveProperty<float> x = new(0);
         readonly ReactiveProperty<float> a = new(1);
 

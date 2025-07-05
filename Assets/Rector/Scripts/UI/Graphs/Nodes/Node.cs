@@ -7,6 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     {
         public NodeId Id { get; }
         public string Name { get; }
+        public abstract NodeCategory Category { get; }
         public abstract InputSlot[] InputSlots { get; }
         public abstract OutputSlot[] OutputSlots { get; }
         public readonly ReactiveProperty<bool> Selected = new(false);

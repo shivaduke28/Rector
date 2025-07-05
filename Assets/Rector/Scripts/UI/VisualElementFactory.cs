@@ -39,5 +39,6 @@ namespace Rector.UI
         public VisualElement CreateExposedBoolSlot() => settings.exposedBoolSlot.Instantiate();
         public VisualElement CreateExposedCallbackSlot() => settings.exposedCallbackSlot.Instantiate();
         public VisualElement CreateConsoleLog() => settings.consoleLog.Instantiate();
+        public RectorIconSettings Icons => settings.iconSettings;
     }
 }

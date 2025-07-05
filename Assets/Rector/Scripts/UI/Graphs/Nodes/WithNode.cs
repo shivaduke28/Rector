@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class WithNode : Node
     {
         public const string NodeName = "With";
-        public static string Category => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public override NodeCategory Category => GetCategory();
         readonly Subject<float> subject = new();
         readonly ReactiveProperty<float> x = new(0);
 

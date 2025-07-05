@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,5 +15,19 @@ namespace Rector.UI
         public VisualTreeAsset exposedBoolSlot;
         public VisualTreeAsset exposedCallbackSlot;
         public VisualTreeAsset consoleLog;
+
+        public RectorIconSettings iconSettings;
+    }
+
+    [Serializable]
+    public sealed class RectorIconSettings
+    {
+        public Texture2D vfx;
+        public Texture2D camera;
+        public Texture2D math;
+        public Texture2D @event;
+        public Texture2D @operator;
+        public Texture2D scene;
+        public Texture2D system;
     }
 }

@@ -7,7 +7,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class LevelNode : SourceNode
     {
         public const string NodeName = "Level";
-        public static string Category => NodeCategory.Event;
+        public static NodeCategory GetCategory() => NodeCategory.Math;
+        public override NodeCategory Category => GetCategory();
 
         public LevelNode(NodeId id, AudioMixerModel audioMixerModel) : base(id, NodeName)
         {

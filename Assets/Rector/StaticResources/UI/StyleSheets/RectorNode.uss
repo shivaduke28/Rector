@@ -13,11 +13,23 @@
     font-size: 12px;
 }
 
+.rector-node-content {
+    flex-direction: row;
+    background-color: var(--rector-text-background-color);
+}
+
+.rector-node-icon {
+    width: 16px;
+    height: 16px;
+    -unity-background-image-tint-color: var(--rector-text-color);
+    margin-right: 2px;
+}
+
 .rector-node--selected {
     border-color: var(--rector-border-color);
 }
 
-.rector-node--selected > .rector-node-name-label {
+.rector-node--selected > .rector-node-content {
     background-color: black;
 }
 

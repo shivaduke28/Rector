@@ -7,7 +7,7 @@ namespace Rector.UI.Graphs
     public sealed class NodeTemplate
     {
         public readonly NodeTemplateId Id;
-        public readonly string Category;
+        public readonly NodeCategory Category;
         public readonly string Name;
         readonly Func<NodeId, NodeView> factory;
 
@@ -16,7 +16,7 @@ namespace Rector.UI.Graphs
             return factory(id);
         }
 
-        NodeTemplate(NodeTemplateId id, string category, string name, Func<NodeId, NodeView> factory)
+        NodeTemplate(NodeTemplateId id, NodeCategory category, string name, Func<NodeId, NodeView> factory)
         {
             Id = id;
             Category = category;
@@ -24,7 +24,7 @@ namespace Rector.UI.Graphs
             this.factory = factory;
         }
 
-        public static NodeTemplate Create(string category, string name, Func<NodeId, NodeView> factory)
+        public static NodeTemplate Create(NodeCategory category, string name, Func<NodeId, NodeView> factory)
         {
             return new NodeTemplate(NodeTemplateId.Generate(), category, name, factory);
         }

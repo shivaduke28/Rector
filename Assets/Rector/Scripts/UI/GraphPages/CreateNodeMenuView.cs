@@ -73,7 +73,7 @@ namespace Rector.UI.GraphPages
             visibleDisposable.Clear();
             foreach (var buttonState in model.CategoryButtons)
             {
-                var button = new RectorButton();
+                var button = new NodeCategoryButton();
                 button.Bind(buttonState).AddTo(visibleDisposable);
                 mainList.Add(button);
             }

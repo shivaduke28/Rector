@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class NegateNode : Node
     {
         public const string NodeName = "Negate";
-        public static string Category => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public override NodeCategory Category => GetCategory();
         readonly ReactiveProperty<bool> property = new(false);
 
         public NegateNode(NodeId id) : base(id, NodeName)

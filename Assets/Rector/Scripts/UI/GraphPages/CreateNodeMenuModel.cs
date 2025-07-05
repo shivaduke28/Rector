@@ -19,9 +19,9 @@ namespace Rector.UI.GraphPages
         readonly NodeTemplateRepository nodeTemplateRepository;
         readonly Action onExit;
 
-        public readonly List<RectorButtonState> CategoryButtons = new();
-        readonly Dictionary<string, List<RectorButtonState>> nodeButtons = new();
-        readonly List<string> categories = new();
+        public readonly List<NodeCategoryButtonState> CategoryButtons = new();
+        readonly Dictionary<NodeCategory, List<RectorButtonState>> nodeButtons = new();
+        readonly List<NodeCategory> categories = new();
 
         public int CategoryIndex { get; private set; }
         int subIndex;
@@ -33,7 +33,7 @@ namespace Rector.UI.GraphPages
             this.onExit = onExit;
         }
 
-        void ChangeCategory(string category)
+        void ChangeCategory(NodeCategory category)
         {
             if (State.Value == ViewState.Main)
             {
@@ -56,7 +56,8 @@ namespace Rector.UI.GraphPages
             var categoryNodeSet = nodeTemplateRepository.CategoryNodeSet;
             foreach (var (category, nodeTemplates) in categoryNodeSet)
             {
-                var categoryButton = new RectorButtonState(category, () => ChangeCategory(category));
+                var icon = GetCategoryIcon(category);
+                var categoryButton = new NodeCategoryButtonState(category.ToString(), icon, () => ChangeCategory(category));
                 CategoryButtons.Add(categoryButton);
                 categories.Add(category);
 
@@ -147,7 +148,7 @@ namespace Rector.UI.GraphPages
             return GetItems(categories[index]);
         }
 
-        List<RectorButtonState> GetItems(string category)
+        List<RectorButtonState> GetItems(NodeCategory category)
         {
             if (!nodeButtons.TryGetValue(category, out var buttons))
             {
@@ -156,6 +157,21 @@ namespace Rector.UI.GraphPages
             }
 
             return buttons;
+        }
+
+        static UnityEngine.Texture2D GetCategoryIcon(NodeCategory category)
+        {
+            return category switch
+            {
+                NodeCategory.Vfx => VisualElementFactory.Instance.Icons.vfx,
+                NodeCategory.Camera => VisualElementFactory.Instance.Icons.camera,
+                NodeCategory.Event => VisualElementFactory.Instance.Icons.@event,
+                NodeCategory.Operator => VisualElementFactory.Instance.Icons.@operator,
+                NodeCategory.Math => VisualElementFactory.Instance.Icons.math,
+                NodeCategory.Scene => VisualElementFactory.Instance.Icons.scene,
+                NodeCategory.System => VisualElementFactory.Instance.Icons.system,
+                _ => null
+            };
         }
     }
 }

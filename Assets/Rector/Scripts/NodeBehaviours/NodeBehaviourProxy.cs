@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Rector.UI.Graphs;
 using UnityEngine;
 
 namespace Rector.NodeBehaviours
@@ -16,7 +17,7 @@ namespace Rector.NodeBehaviours
 
         public string Name { get; }
 
-        public string Category { get; }
+        public NodeCategory Category { get; }
 
         public bool IsDestroyed => nodeBehaviour == null;
 

@@ -6,7 +6,8 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class OrNode : Node
     {
         public const string NodeName = "Or";
-        public static string Category => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public override NodeCategory Category => GetCategory();
         readonly ReactiveProperty<bool> x = new(true);
         readonly ReactiveProperty<bool> y = new(true);
 
