@@ -14,9 +14,10 @@ namespace Rector.NodeBehaviours
 
         IInput[] inputs;
         IOutput[] outputs;
+        Guid? cachedGuid;
 
         public virtual string Category => NodeCategory.Scene;
-        public Guid Guid => string.IsNullOrEmpty(guid) ? Guid.Empty : Guid.Parse(guid);
+        public Guid Guid => cachedGuid ??= string.IsNullOrEmpty(guid) ? Guid.Empty : Guid.Parse(guid);
 
         public virtual IInput[] GetInputs() => inputs ??= slotBehaviours.SelectMany(c => c.GetInputs()).ToArray();
         public virtual IOutput[] GetOutputs() => outputs ??= slotBehaviours.SelectMany(c => c.GetOutputs()).ToArray();
@@ -40,6 +41,7 @@ namespace Rector.NodeBehaviours
         public void RegenerateGuid()
         {
             guid = Guid.NewGuid().ToString();
+            cachedGuid = null;
         }
     }
 }
