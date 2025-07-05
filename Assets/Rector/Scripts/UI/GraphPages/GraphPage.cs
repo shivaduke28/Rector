@@ -55,6 +55,8 @@ namespace Rector.UI.GraphPages
         public readonly ReactiveProperty<int> DummyNodeCount = new();
         public readonly ReactiveProperty<int> Type1ConflictCount = new();
 
+        public bool IsNodeParameterOpen => graphInputAction.IsNodeParameterOpen;
+
         public GraphPage(VisualElement container,
             GraphInputAction graphInputAction,
             NodeTemplateRepository nodeTemplateRepository)

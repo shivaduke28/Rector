@@ -62,6 +62,11 @@ namespace Rector.UI.GraphPages
                     return;
                 }
 
+                if (graphPage.IsNodeParameterOpen)
+                {
+                    graphPage.Graph.RemoveEdgesFrom(graphPage.SelectedSlot);
+                }
+
                 if (EdgeConnector.TryConnect(output, input, out var newEdge))
                 {
                     graphPage.Graph.AddEdge(newEdge);
@@ -79,6 +84,7 @@ namespace Rector.UI.GraphPages
                 input = null;
                 return false;
             }
+
             output = slot1.Direction == SlotDirection.Output ? (OutputSlot)slot1 : (OutputSlot)slot2;
             input = slot2.Direction == SlotDirection.Input ? (InputSlot)slot2 : (InputSlot)slot1;
             return output != null && input != null;

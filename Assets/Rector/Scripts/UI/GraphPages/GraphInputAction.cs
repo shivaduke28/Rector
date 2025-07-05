@@ -47,6 +47,7 @@ namespace Rector.UI.GraphPages
 
         public Vector2 Translate { get; private set; }
         public float Zoom { get; private set; }
+        public bool IsNodeParameterOpen => rectorInput.Graph.OpenNodeParameter.IsPressed();
 
         bool removeNodeHolding;
         int removeNodeHoldId;
