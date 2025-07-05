@@ -78,7 +78,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Create(CosNode.GetCategory(), CosNode.NodeName, id => CreateNodeView(new CosNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(MinNode.GetCategory(), MinNode.NodeName, id => CreateNodeView(new MinNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(MaxNode.GetCategory(), MaxNode.NodeName, id => CreateNodeView(new MaxNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(ModNode.GetCategory(), ModNode.NodeName, id => CreateNodeView(new ModNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Create(FractNode.GetCategory(), FractNode.NodeName, id => CreateNodeView(new FractNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(StepNode.GetCategory(), StepNode.NodeName, id => CreateNodeView(new StepNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(CircleNode.GetCategory(), CircleNode.NodeName, id => CreateNodeView(new CircleNode(id))));
 
