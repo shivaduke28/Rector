@@ -202,6 +202,7 @@ MonoBehaviour:
   slotBehaviours:
   - {fileID: 3168789641072119563}
   - {fileID: 8697558328007148229}
+  guid: 3c1e6fab-47c4-497d-9785-7a2812681f6d
   vfxInputSlot: {fileID: 3168789641072119563}
 --- !u!114 &8697558328007148229
 MonoBehaviour:

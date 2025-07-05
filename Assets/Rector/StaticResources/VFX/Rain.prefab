@@ -154,4 +154,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotBehaviours:
   - {fileID: 4153863313710811071}
+  guid: c42e0084-a493-4f4b-819a-53026a2352bf
   vfxInputSlot: {fileID: 4153863313710811071}

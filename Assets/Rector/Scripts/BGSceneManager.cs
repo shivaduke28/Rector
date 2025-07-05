@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using R3;
+using Rector.NodeBehaviours;
 using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
 using Rector.UI.LayeredGraphDrawing;
@@ -14,6 +15,7 @@ namespace Rector
         readonly SceneSettings sceneSettings;
         readonly LoadingView loadingView;
         readonly NodeTemplateRepository nodeTemplateRepository;
+        readonly NodeBehaviourProxyRepository proxyRepository;
         readonly GraphPage graphPage;
         readonly CancellationTokenSource cts = new();
         readonly ReactiveProperty<string> currentScene = new("");
@@ -26,11 +28,13 @@ namespace Rector
         public BGSceneManager(LoadingView loadingView,
             SceneSettings sceneSettings,
             NodeTemplateRepository nodeTemplateRepository,
+            NodeBehaviourProxyRepository proxyRepository,
             GraphPage graphPage)
         {
             this.loadingView = loadingView;
             this.sceneSettings = sceneSettings;
             this.nodeTemplateRepository = nodeTemplateRepository;
+            this.proxyRepository = proxyRepository;
             this.graphPage = graphPage;
         }
 
@@ -68,7 +72,7 @@ namespace Rector
                 var bgScenes = rootObject.GetComponentsInChildren<BGScene>();
                 foreach (var bgScene in bgScenes)
                 {
-                    bgScene.RegisterNodeBehaviour(nodeTemplateRepository, graphPage).AddTo(bgDisposables);
+                    bgScene.RegisterNodeBehaviour(nodeTemplateRepository, proxyRepository, graphPage).AddTo(bgDisposables);
                 }
             }
         }

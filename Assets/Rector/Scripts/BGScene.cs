@@ -27,11 +27,18 @@ namespace Rector
             nodeBehaviours = rootObjects.SelectMany(go => go.GetComponentsInChildren<NodeBehaviour>()).ToArray();
         }
 
-        public IDisposable RegisterNodeBehaviour(NodeTemplateRepository repository, GraphPage graphPage)
+        public IDisposable RegisterNodeBehaviour(NodeTemplateRepository repository, NodeBehaviourProxyRepository proxyRepository, GraphPage graphPage)
         {
             foreach (var nodeBehaviour in nodeBehaviours)
             {
-                var template = NodeTemplate.Create(nodeBehaviour.Category, nodeBehaviour.name, id => Create(id, nodeBehaviour));
+                var proxy = proxyRepository.GetOrCreateProxy(nodeBehaviour);
+                var template = NodeTemplate.Create(nodeBehaviour.Category, nodeBehaviour.name, id =>
+                {
+                    var node = new BehaviourNode(id, proxy);
+                    var ve = VisualElementFactory.Instance.CreateNode();
+                    var nodeView = new NodeView(ve, node);
+                    return nodeView;
+                });
                 repository.Add(template);
                 registered.Add(template.Id);
             }
@@ -53,15 +60,6 @@ namespace Rector
 
                 graphPage.Sort();
             });
-
-
-            static NodeView Create(NodeId id, NodeBehaviour behaviour)
-            {
-                var node = new BehaviourNode(id, behaviour);
-                var ve = VisualElementFactory.Instance.CreateNode();
-                var nodeView = new NodeView(ve, node);
-                return nodeView;
-            }
         }
 
         void Reset()

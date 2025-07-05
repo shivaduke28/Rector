@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Rector.SlotBehaviours;
 using Rector.UI.Graphs;
@@ -9,11 +10,14 @@ namespace Rector.NodeBehaviours
     public class NodeBehaviour : MonoBehaviour
     {
         [SerializeField] protected SlotBehaviour[] slotBehaviours;
+        [SerializeField] string guid;
 
         IInput[] inputs;
         IOutput[] outputs;
+        Guid? cachedGuid;
 
         public virtual string Category => NodeCategory.Scene;
+        public Guid Guid => cachedGuid ??= string.IsNullOrEmpty(guid) ? Guid.Empty : Guid.Parse(guid);
 
         public virtual IInput[] GetInputs() => inputs ??= slotBehaviours.SelectMany(c => c.GetInputs()).ToArray();
         public virtual IOutput[] GetOutputs() => outputs ??= slotBehaviours.SelectMany(c => c.GetOutputs()).ToArray();
@@ -23,11 +27,21 @@ namespace Rector.NodeBehaviours
         void Reset()
         {
             RetrieveComponents();
+            if (string.IsNullOrEmpty(guid))
+            {
+                guid = Guid.NewGuid().ToString();
+            }
         }
 
         public virtual void RetrieveComponents()
         {
             slotBehaviours = GetComponentsInChildren<SlotBehaviour>();
+        }
+
+        public void RegenerateGuid()
+        {
+            guid = Guid.NewGuid().ToString();
+            cachedGuid = null;
         }
     }
 }
