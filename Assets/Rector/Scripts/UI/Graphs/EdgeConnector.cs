@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using R3;
 using Rector.UI.Graphs.Nodes;
@@ -43,78 +43,78 @@ namespace Rector.UI.Graphs
         {
             edge = null;
             if (!CanConnect(slot1, slot2)) return false;
-            var output = slot1.Direction == SlotDirection.Output ? (OutputSlot) slot1 : (OutputSlot) slot2;
-            var input = slot2.Direction == SlotDirection.Input ? (InputSlot) slot2 : (InputSlot) slot1;
+            var output = slot1.Direction == SlotDirection.Output ? (OutputSlot)slot1 : (OutputSlot)slot2;
+            var input = slot2.Direction == SlotDirection.Input ? (InputSlot)slot2 : (InputSlot)slot1;
             IDisposable disposable;
             switch (output.Type)
             {
                 case SlotValueType.Unit:
-                    var outputUnit = (OutputSlot<Unit>) output;
+                    var outputUnit = (OutputSlot<Unit>)output;
                     disposable = input.Type switch
                     {
-                        SlotValueType.Unit => outputUnit.Observable().Subscribe(((InputSlot<Unit>) input).Send),
-                        SlotValueType.Boolean => outputUnit.Observable().Select(_ => true).Subscribe(((InputSlot<bool>) input).Send),
-                        SlotValueType.Float => outputUnit.Observable().Select(_ => 1f).Subscribe(((InputSlot<float>) input).Send),
-                        SlotValueType.Int => outputUnit.Observable().Select(_ => 1).Subscribe(((InputSlot<int>) input).Send),
+                        SlotValueType.Unit => outputUnit.Observable().Subscribe(((InputSlot<Unit>)input).Send),
+                        SlotValueType.Boolean => outputUnit.Observable().Select(_ => true).Subscribe(((InputSlot<bool>)input).Send),
+                        SlotValueType.Float => outputUnit.Observable().Select(_ => 1f).Subscribe(((InputSlot<float>)input).Send),
+                        SlotValueType.Int => outputUnit.Observable().Select(_ => 1).Subscribe(((InputSlot<int>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;
                 case SlotValueType.Boolean:
-                    var outputBool = (OutputSlot<bool>) output;
+                    var outputBool = (OutputSlot<bool>)output;
                     disposable = input.Type switch
                     {
                         SlotValueType.Unit =>
                             // TODO: trueの場合だけ通知で良いのか考える
-                            outputBool.Observable().Where(x => x).AsUnitObservable().Subscribe(((InputSlot<Unit>) input).Send),
-                        SlotValueType.Boolean => outputBool.Observable().Subscribe(((InputSlot<bool>) input).Send),
-                        SlotValueType.Float => outputBool.Observable().Select(x => x ? 1f : 0f).Subscribe(((InputSlot<float>) input).Send),
-                        SlotValueType.Int => outputBool.Observable().Select(x => x ? 1 : 0).Subscribe(((InputSlot<int>) input).Send),
+                            outputBool.Observable().Where(x => x).AsUnitObservable().Subscribe(((InputSlot<Unit>)input).Send),
+                        SlotValueType.Boolean => outputBool.Observable().Subscribe(((InputSlot<bool>)input).Send),
+                        SlotValueType.Float => outputBool.Observable().Select(x => x ? 1f : 0f).Subscribe(((InputSlot<float>)input).Send),
+                        SlotValueType.Int => outputBool.Observable().Select(x => x ? 1 : 0).Subscribe(((InputSlot<int>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;
                 case SlotValueType.Float:
-                    var outputFloat = (OutputSlot<float>) output;
+                    var outputFloat = (OutputSlot<float>)output;
                     disposable = input.Type switch
                     {
-                        SlotValueType.Unit => outputFloat.Observable().Where(x => x != 0).AsUnitObservable().Subscribe(((InputSlot<Unit>) input).Send),
-                        SlotValueType.Boolean => outputFloat.Observable().Select(x => x != 0).Subscribe(((InputSlot<bool>) input).Send),
-                        SlotValueType.Float => outputFloat.Observable().Subscribe(((InputSlot<float>) input).Send),
-                        SlotValueType.Int => outputFloat.Observable().Select(x => (int) x).Subscribe(((InputSlot<int>) input).Send),
+                        SlotValueType.Unit => outputFloat.Observable().Where(x => x != 0).AsUnitObservable().Subscribe(((InputSlot<Unit>)input).Send),
+                        SlotValueType.Boolean => outputFloat.Observable().Select(x => x != 0).Subscribe(((InputSlot<bool>)input).Send),
+                        SlotValueType.Float => outputFloat.Observable().Subscribe(((InputSlot<float>)input).Send),
+                        SlotValueType.Int => outputFloat.Observable().Select(x => (int)x).Subscribe(((InputSlot<int>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;
                 case SlotValueType.Int:
-                    var outputInt = (OutputSlot<int>) output;
+                    var outputInt = (OutputSlot<int>)output;
                     disposable = input.Type switch
                     {
-                        SlotValueType.Unit => outputInt.Observable().Where(x => x != 0).AsUnitObservable().Subscribe(((InputSlot<Unit>) input).Send),
-                        SlotValueType.Boolean => outputInt.Observable().Select(x => x != 0).Subscribe(((InputSlot<bool>) input).Send),
-                        SlotValueType.Float => outputInt.Observable().Select(x => (float) x).Subscribe(((InputSlot<float>) input).Send),
-                        SlotValueType.Int => outputInt.Observable().Subscribe(((InputSlot<int>) input).Send),
+                        SlotValueType.Unit => outputInt.Observable().Where(x => x != 0).AsUnitObservable().Subscribe(((InputSlot<Unit>)input).Send),
+                        SlotValueType.Boolean => outputInt.Observable().Select(x => x != 0).Subscribe(((InputSlot<bool>)input).Send),
+                        SlotValueType.Float => outputInt.Observable().Select(x => (float)x).Subscribe(((InputSlot<float>)input).Send),
+                        SlotValueType.Int => outputInt.Observable().Subscribe(((InputSlot<int>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;
                 case SlotValueType.Texture:
-                    var outputTexture = (OutputSlot<Texture>) output;
+                    var outputTexture = (OutputSlot<Texture>)output;
                     disposable = input.Type switch
                     {
-                        SlotValueType.Texture => outputTexture.Observable().Subscribe(((InputSlot<Texture>) input).Send),
+                        SlotValueType.Texture => outputTexture.Observable().Subscribe(((InputSlot<Texture>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;
                 case SlotValueType.Transform:
-                    var outputTransform = (OutputSlot<Transform>) output;
+                    var outputTransform = (OutputSlot<Transform>)output;
                     disposable = input.Type switch
                     {
-                        SlotValueType.Transform => outputTransform.Observable().Subscribe(((InputSlot<Transform>) input).Send),
+                        SlotValueType.Transform => outputTransform.Observable().Subscribe(((InputSlot<Transform>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;
                 case SlotValueType.Vector3:
-                    var outputVector3 = (OutputSlot<Vector3>) output;
+                    var outputVector3 = (OutputSlot<Vector3>)output;
                     disposable = input.Type switch
                     {
-                        SlotValueType.Vector3 => outputVector3.Observable().Subscribe(((InputSlot<Vector3>) input).Send),
+                        SlotValueType.Vector3 => outputVector3.Observable().Subscribe(((InputSlot<Vector3>)input).Send),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                     break;

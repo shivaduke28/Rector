@@ -1,4 +1,4 @@
-﻿namespace Rector.UI.GraphPages.NodeParameters
+namespace Rector.UI.GraphPages.NodeParameters
 {
     public interface IExposedInputModel
     {

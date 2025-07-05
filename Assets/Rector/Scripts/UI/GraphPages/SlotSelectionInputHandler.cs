@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using R3;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
@@ -101,24 +101,24 @@ namespace Rector.UI.GraphPages
             switch (state)
             {
                 case HoldState.Start:
-                {
-                    graphPage.ShowHoldNextToSelected();
-                    break;
-                }
+                    {
+                        graphPage.ShowHoldNextToSelected();
+                        break;
+                    }
                 case HoldState.Cancel:
                     graphPage.HideHold();
                     break;
                 case HoldState.Perform:
-                {
-                    graphPage.HideHold();
-                    if (graphPage.SelectedSlot is { } selectedSlot)
                     {
-                        graphPage.Graph.RemoveEdgesFrom(selectedSlot);
-                        graphPage.Sort();
-                    }
+                        graphPage.HideHold();
+                        if (graphPage.SelectedSlot is { } selectedSlot)
+                        {
+                            graphPage.Graph.RemoveEdgesFrom(selectedSlot);
+                            graphPage.Sort();
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
@@ -126,7 +126,7 @@ namespace Rector.UI.GraphPages
 
         public override void Mute()
         {
-            if (graphPage.SelectedNode is { NodeView: { Node : var selectedNode } })
+            if (graphPage.SelectedNode is { NodeView: { Node: var selectedNode } })
             {
                 selectedNode.IsMuted.Value = !selectedNode.IsMuted.Value;
             }

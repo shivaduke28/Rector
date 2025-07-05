@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using R3;
 using Rector.NodeBehaviours;
 using Unity.Cinemachine;
@@ -70,7 +70,7 @@ namespace Rector.Cameras
                 };
             }).AddTo(disposables);
 
-            for(var i = 0; i < BlendInputs.Length; i++)
+            for (var i = 0; i < BlendInputs.Length; i++)
             {
                 var index = i;
                 BlendInputs[i].Value.Where(x => x).Subscribe(x =>

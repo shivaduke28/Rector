@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
@@ -58,15 +58,12 @@ namespace Rector.UI.GraphPages
             switch (state)
             {
                 case HoldState.Start:
-                {
                     graphPage.ShowHoldNextToSelected();
                     break;
-                }
                 case HoldState.Cancel:
                     graphPage.HideHold();
                     break;
                 case HoldState.Perform:
-                {
                     graphPage.HideHold();
                     if (graphPage.SelectedNode is { } selectedNode)
                     {
@@ -75,7 +72,6 @@ namespace Rector.UI.GraphPages
                     }
 
                     break;
-                }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }

@@ -1,4 +1,4 @@
-﻿using Unity.Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,12 +17,12 @@ namespace Rector.Cameras
 
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (Application.isPlaying == false)
             {
                 return;
             }
-            #endif
+#endif
             if (IsValid && curState.HasLookAt())
             {
                 t += Time.deltaTime;

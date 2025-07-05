@@ -28,7 +28,7 @@ namespace Rector.UI.LayeredGraphDrawing
             foreach (var (neighbor, slotIndex) in neighbors)
             {
                 var i = neighbor.Index;
-                var slotPos = i + slotIndex / (float)(useParent ? neighbor.OutputSlotCount  : neighbor.InputSlotCount);
+                var slotPos = i + slotIndex / (float)(useParent ? neighbor.OutputSlotCount : neighbor.InputSlotCount);
                 slotCenter += slotPos;
                 slotLeftMost = Math.Min(slotLeftMost, slotPos);
                 count++;

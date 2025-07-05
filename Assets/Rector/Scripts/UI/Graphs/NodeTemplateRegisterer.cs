@@ -1,4 +1,4 @@
-﻿using Rector.Audio;
+using Rector.Audio;
 using Rector.Cameras;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Hud;
@@ -88,18 +88,18 @@ namespace Rector.UI.Graphs
             switch (node)
             {
                 case BeatNode beatNode:
-                {
-                    var ve = VisualElementFactory.Instance.CreateNode();
-                    var nodeView = new BeatNodeView(ve, beatNode);
-                    return nodeView;
-                }
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new BeatNodeView(ve, beatNode);
+                        return nodeView;
+                    }
                 /* You can add custom node view here */
                 default:
-                {
-                    var ve = VisualElementFactory.Instance.CreateNode();
-                    var nodeView = new NodeView(ve, node);
-                    return nodeView;
-                }
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new NodeView(ve, node);
+                        return nodeView;
+                    }
             }
         }
     }

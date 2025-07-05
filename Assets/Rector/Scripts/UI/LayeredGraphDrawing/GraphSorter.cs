@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Rector.UI.Graphs;
 using UnityEngine;
@@ -33,7 +33,7 @@ namespace Rector.UI.LayeredGraphDrawing
         {
             unsortedNodes.Clear();
 
-            foreach(var edge in graph.Edges.Values)
+            foreach (var edge in graph.Edges.Values)
             {
                 edge.DummyNodes.Clear();
             }

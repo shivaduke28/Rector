@@ -1,4 +1,4 @@
-﻿using R3;
+using R3;
 
 namespace Rector.UI
 {
@@ -21,8 +21,8 @@ namespace Rector.UI
             MaxValue = maxValue;
         }
     }
-    
-    
+
+
     public sealed class RectorSliderIntState
     {
         public readonly ReactiveProperty<bool> IsFocused = new(false);

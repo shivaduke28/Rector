@@ -1,4 +1,4 @@
-﻿namespace Rector
+namespace Rector
 {
     public interface IInitializable
     {

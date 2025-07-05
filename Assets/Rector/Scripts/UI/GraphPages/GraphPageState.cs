@@ -1,4 +1,4 @@
-﻿namespace Rector.UI.GraphPages
+namespace Rector.UI.GraphPages
 {
     public enum GraphPageState
     {

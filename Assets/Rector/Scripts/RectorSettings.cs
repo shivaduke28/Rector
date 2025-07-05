@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rector.NodeBehaviours;
 using Rector.Vfx;
 using UnityEngine;

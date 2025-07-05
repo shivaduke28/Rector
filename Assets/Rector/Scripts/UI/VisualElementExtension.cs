@@ -1,4 +1,4 @@
-﻿using R3;
+using R3;
 using UnityEngine.UIElements;
 
 namespace Rector.UI

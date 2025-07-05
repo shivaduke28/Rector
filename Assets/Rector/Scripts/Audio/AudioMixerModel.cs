@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using R3;
 using UnityEngine;
 
@@ -54,7 +54,7 @@ namespace Rector.Audio
         void Update()
         {
             var stream = audioInputDeviceManager.InputStream;
-            if (stream is not { IsValid: true } ) return;
+            if (stream is not { IsValid: true }) return;
 
             try
             {

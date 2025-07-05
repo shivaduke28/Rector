@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using UnityEngine.Assertions;

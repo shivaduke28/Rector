@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;

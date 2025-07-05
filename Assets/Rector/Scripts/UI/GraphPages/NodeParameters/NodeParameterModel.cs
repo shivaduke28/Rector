@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using R3;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;

@@ -154,31 +154,31 @@ namespace Rector.UI.LayeredGraphDrawing
             switch (slot)
             {
                 case OutputSlot outputSlot:
-                {
-                    tempEdges.AddRange(node.EdgesToChild);
-                    foreach (var edge in tempEdges)
                     {
-                        if (edge.Id.OutputSlotIndex == outputSlot.Index)
+                        tempEdges.AddRange(node.EdgesToChild);
+                        foreach (var edge in tempEdges)
                         {
-                            RemoveEdge(edge.Id);
+                            if (edge.Id.OutputSlotIndex == outputSlot.Index)
+                            {
+                                RemoveEdge(edge.Id);
+                            }
                         }
-                    }
 
-                    break;
-                }
+                        break;
+                    }
                 case InputSlot inputSlot:
-                {
-                    tempEdges.AddRange(node.EdgesToParent);
-                    foreach (var edge in tempEdges)
                     {
-                        if (edge.Id.InputSlotIndex == inputSlot.Index)
+                        tempEdges.AddRange(node.EdgesToParent);
+                        foreach (var edge in tempEdges)
                         {
-                            RemoveEdge(edge.Id);
+                            if (edge.Id.InputSlotIndex == inputSlot.Index)
+                            {
+                                RemoveEdge(edge.Id);
+                            }
                         }
-                    }
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
 

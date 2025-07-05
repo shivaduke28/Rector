@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Rector.UI.Graphs
 {
@@ -23,7 +23,7 @@ namespace Rector.UI.Graphs
 
         public override int GetHashCode()
         {
-            return (int) Value;
+            return (int)Value;
         }
 
         public static bool operator ==(NodeTemplateId left, NodeTemplateId right)

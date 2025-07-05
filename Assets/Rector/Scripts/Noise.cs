@@ -1,4 +1,4 @@
-﻿//
+//
 // Perlin noise generator for Unity
 // Keijiro Takahashi, 2013, 2015
 // https://github.com/keijiro/PerlinNoise
@@ -154,6 +154,7 @@ namespace Rector
                 x *= 2.0f;
                 w *= 0.5f;
             }
+
             return f;
         }
 
@@ -167,6 +168,7 @@ namespace Rector
                 coord *= 2.0f;
                 w *= 0.5f;
             }
+
             return f;
         }
 
@@ -185,6 +187,7 @@ namespace Rector
                 coord *= 2.0f;
                 w *= 0.5f;
             }
+
             return f;
         }
 

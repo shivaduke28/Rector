@@ -1,4 +1,4 @@
-﻿using R3;
+using R3;
 using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
