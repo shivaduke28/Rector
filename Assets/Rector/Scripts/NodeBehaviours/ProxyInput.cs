@@ -15,32 +15,28 @@ namespace Rector.NodeBehaviours
     internal sealed class ProxyFloatInput : ProxyInput, IFloatInput
     {
         FloatInput currentInput;
-        readonly ReactiveProperty<float> value;
-        readonly float minValue;
-        readonly float maxValue;
-        readonly float defaultValue;
         IDisposable subscription;
 
         public ProxyFloatInput(FloatInput input)
         {
             currentInput = input;
-            value = new ReactiveProperty<float>(input.Value.Value);
-            minValue = input.MinValue;
-            maxValue = input.MaxValue;
-            defaultValue = input.DefaultValue;
+            Value = new ReactiveProperty<float>(input.Value.Value);
+            MinValue = input.MinValue;
+            MaxValue = input.MaxValue;
+            DefaultValue = input.DefaultValue;
             Name = input.Name;
 
             subscription =
-                new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                    currentInput.Value.Subscribe(v => value.Value = v)
+                new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                    currentInput.Value.Subscribe(v => Value.Value = v)
                 );
         }
 
         public override string Name { get; }
-        public ReactiveProperty<float> Value => value;
-        public float DefaultValue => defaultValue;
-        public float MinValue => minValue;
-        public float MaxValue => maxValue;
+        public ReactiveProperty<float> Value { get; }
+        public float DefaultValue { get; }
+        public float MinValue { get; }
+        public float MaxValue { get; }
 
 
         public override void UpdateInput(IInput input)
@@ -50,8 +46,8 @@ namespace Rector.NodeBehaviours
                 currentInput = floatInput;
                 subscription?.Dispose();
                 subscription =
-                    new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => value.Value = v)
+                    new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                            currentInput.Value.Subscribe(v => Value.Value = v)
                     );
             }
         }
@@ -60,32 +56,28 @@ namespace Rector.NodeBehaviours
     internal sealed class ProxyIntInput : ProxyInput, IIntInput
     {
         IntInput currentInput;
-        readonly ReactiveProperty<int> value;
-        readonly int minValue;
-        readonly int maxValue;
-        readonly int defaultValue;
         IDisposable subscription;
 
         public ProxyIntInput(IntInput input)
         {
             currentInput = input;
-            value = new ReactiveProperty<int>(input.Value.Value);
-            minValue = input.MinValue;
-            maxValue = input.MaxValue;
-            defaultValue = input.DefaultValue;
+            Value = new ReactiveProperty<int>(input.Value.Value);
+            MinValue = input.MinValue;
+            MaxValue = input.MaxValue;
+            DefaultValue = input.DefaultValue;
             Name = input.Name;
 
             subscription =
-                new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                    currentInput.Value.Subscribe(v => value.Value = v)
+                new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                    currentInput.Value.Subscribe(v => Value.Value = v)
                 );
         }
 
         public override string Name { get; }
-        public ReactiveProperty<int> Value => value;
-        public int DefaultValue => defaultValue;
-        public int MinValue => minValue;
-        public int MaxValue => maxValue;
+        public ReactiveProperty<int> Value { get; }
+        public int DefaultValue { get; }
+        public int MinValue { get; }
+        public int MaxValue { get; }
 
 
         public override void UpdateInput(IInput input)
@@ -95,8 +87,8 @@ namespace Rector.NodeBehaviours
                 currentInput = intInput;
                 subscription?.Dispose();
                 subscription =
-                    new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => value.Value = v)
+                    new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                            currentInput.Value.Subscribe(v => Value.Value = v)
                     );
             }
         }
@@ -105,26 +97,24 @@ namespace Rector.NodeBehaviours
     internal sealed class ProxyVector3Input : ProxyInput, IVector3Input
     {
         Vector3Input currentInput;
-        readonly ReactiveProperty<Vector3> value;
-        readonly Vector3 defaultValue;
         IDisposable subscription;
 
         public ProxyVector3Input(Vector3Input input)
         {
             currentInput = input;
-            value = new ReactiveProperty<Vector3>(input.Value.Value);
-            defaultValue = input.DefaultValue;
+            Value = new ReactiveProperty<Vector3>(input.Value.Value);
+            DefaultValue = input.DefaultValue;
             Name = input.Name;
 
             subscription =
-                new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                    currentInput.Value.Subscribe(v => value.Value = v)
+                new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                    currentInput.Value.Subscribe(v => Value.Value = v)
                 );
         }
 
         public override string Name { get; }
-        public ReactiveProperty<Vector3> Value => value;
-        public Vector3 DefaultValue => defaultValue;
+        public ReactiveProperty<Vector3> Value { get; }
+        public Vector3 DefaultValue { get; }
 
 
         public override void UpdateInput(IInput input)
@@ -134,8 +124,8 @@ namespace Rector.NodeBehaviours
                 currentInput = vector3Input;
                 subscription?.Dispose();
                 subscription =
-                    new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => value.Value = v)
+                    new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                            currentInput.Value.Subscribe(v => Value.Value = v)
                     );
             }
         }
@@ -144,26 +134,24 @@ namespace Rector.NodeBehaviours
     internal sealed class ProxyBoolInput : ProxyInput, IBoolInput
     {
         BoolInput currentInput;
-        readonly ReactiveProperty<bool> value;
-        readonly bool defaultValue;
         IDisposable subscription;
 
         public ProxyBoolInput(BoolInput input)
         {
             currentInput = input;
-            value = new ReactiveProperty<bool>(input.Value.Value);
-            defaultValue = input.DefaultValue;
+            Value = new ReactiveProperty<bool>(input.Value.Value);
+            DefaultValue = input.DefaultValue;
             Name = input.Name;
 
             subscription =
-                new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                    currentInput.Value.Subscribe(v => value.Value = v)
+                new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                    currentInput.Value.Subscribe(v => Value.Value = v)
                 );
         }
 
         public override string Name { get; }
-        public ReactiveProperty<bool> Value => value;
-        public bool DefaultValue => defaultValue;
+        public ReactiveProperty<bool> Value { get; }
+        public bool DefaultValue { get; }
 
 
         public override void UpdateInput(IInput input)
@@ -173,8 +161,8 @@ namespace Rector.NodeBehaviours
                 currentInput = boolInput;
                 subscription?.Dispose();
                 subscription =
-                    new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => value.Value = v)
+                    new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                            currentInput.Value.Subscribe(v => Value.Value = v)
                     );
             }
         }
@@ -183,26 +171,24 @@ namespace Rector.NodeBehaviours
     internal sealed class ProxyTransformInput : ProxyInput, ITransformInput
     {
         TransformInput currentInput;
-        readonly ReactiveProperty<Transform> value;
-        readonly Transform defaultValue;
         IDisposable subscription;
 
         public ProxyTransformInput(TransformInput input)
         {
             currentInput = input;
-            value = new ReactiveProperty<Transform>(input.Value.Value);
-            defaultValue = input.DefaultValue;
+            Value = new ReactiveProperty<Transform>(input.Value.Value);
+            DefaultValue = input.DefaultValue;
             Name = input.Name;
 
             subscription =
-                new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                    currentInput.Value.Subscribe(v => value.Value = v)
+                new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                    currentInput.Value.Subscribe(v => Value.Value = v)
                 );
         }
 
         public override string Name { get; }
-        public ReactiveProperty<Transform> Value => value;
-        public Transform DefaultValue => defaultValue;
+        public ReactiveProperty<Transform> Value { get; }
+        public Transform DefaultValue { get; }
 
 
         public override void UpdateInput(IInput input)
@@ -212,8 +198,8 @@ namespace Rector.NodeBehaviours
                 currentInput = transformInput;
                 subscription?.Dispose();
                 subscription =
-                    new CompositeDisposable(value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => value.Value = v)
+                    new CompositeDisposable(Value.Subscribe(v => currentInput.Value.Value = v),
+                            currentInput.Value.Subscribe(v => Value.Value = v)
                     );
             }
         }
@@ -221,8 +207,8 @@ namespace Rector.NodeBehaviours
 
     internal sealed class ProxyCallbackInput : ProxyInput, ICallbackInput
     {
-        readonly Subject<Unit> subject = new();
         CallbackInput currentInput;
+        readonly Subject<Unit> subject = new();
         IDisposable subscription;
 
         public ProxyCallbackInput(CallbackInput input)

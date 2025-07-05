@@ -20,11 +20,12 @@ namespace Rector.NodeBehaviours
         {
             currentOutput = output;
             Name = output.Name;
+            Observable = subject;
             subscription = output.Observable.Subscribe(x => subject.OnNext(x));
         }
 
         public override string Name { get; }
-        public Observable<T> Observable => subject;
+        public Observable<T> Observable { get; }
 
         public override void UpdateOutput(IOutput output)
         {
