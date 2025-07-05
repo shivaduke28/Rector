@@ -61,3 +61,18 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
 - After work, format with `dotnet format Rector.csproj`
   - Use `--include` to specify files as needed
 - Add `sealed` to classes if possible
+- Use C# modern syntax:
+  - Prefer get-only auto-properties over readonly fields with properties
+  - Use auto-properties wherever possible to reduce boilerplate code
+- When a file exceeds 300 lines, consider splitting related classes into separate files
+- Unity-specific constraints:
+  - Cannot use `dotnet build` command
+  - Check compilation errors through Unity's asset refresh
+
+### Compilation Error Checking
+
+To check for compilation errors after making changes:
+1. Refresh Unity assets: `mcp__unity-natural-mcp__refresh_assets`
+2. Get compilation errors: `mcp__unity-natural-mcp__get_compile_logs`
+
+This will show any compile errors or warnings in the Unity project.
