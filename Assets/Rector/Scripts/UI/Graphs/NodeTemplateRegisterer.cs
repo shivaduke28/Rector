@@ -1,5 +1,6 @@
 using Rector.Audio;
 using Rector.Cameras;
+using Rector.NodeBehaviours;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Hud;
 using Rector.Vfx;
@@ -9,6 +10,7 @@ namespace Rector.UI.Graphs
     public sealed class NodeTemplateRegisterer : IInitializable
     {
         readonly NodeTemplateRepository nodeTemplateRepository;
+        readonly NodeBehaviourProxyRepository proxyRepository;
         readonly VfxManager vfxManager;
         readonly BeatModel beatModel;
         readonly AudioMixerModel audioMixerModel;
@@ -17,6 +19,7 @@ namespace Rector.UI.Graphs
 
         public NodeTemplateRegisterer(
             NodeTemplateRepository nodeTemplateRepository,
+            NodeBehaviourProxyRepository proxyRepository,
             VfxManager vfxManager,
             BeatModel beatModel,
             AudioMixerModel audioMixerModel,
@@ -24,6 +27,7 @@ namespace Rector.UI.Graphs
             HudModel hudModel)
         {
             this.nodeTemplateRepository = nodeTemplateRepository;
+            this.proxyRepository = proxyRepository;
             this.vfxManager = vfxManager;
             this.beatModel = beatModel;
             this.audioMixerModel = audioMixerModel;
@@ -82,6 +86,7 @@ namespace Rector.UI.Graphs
 
             /* Add your custom node here  */
         }
+
 
         NodeView CreateNodeView(Node node)
         {

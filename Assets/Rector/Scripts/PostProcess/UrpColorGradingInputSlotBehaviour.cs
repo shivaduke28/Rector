@@ -17,21 +17,23 @@ namespace Rector.PostProcess
         [SerializeField] FloatInput saturation;
 
         ColorAdjustments colorAdjustments;
-        CallbackInput reset;
 
         IInput[] inputs;
 
         public override IInput[] GetInputs()
         {
-            return inputs ??= new IInput[]
+            if (inputs == null)
             {
-                reset, exposure, contrast, saturation
-            };
+                inputs = new IInput[]
+                {
+                    new CallbackInput("Reset", ResetParams), exposure, contrast, saturation
+                };
+            }
+            return inputs;
         }
 
         void Start()
         {
-            reset = new CallbackInput("Reset", ResetParams);
             if (!volume.profile.TryGet(out colorAdjustments)) return;
 
             colorAdjustments.postExposure.overrideState = true;

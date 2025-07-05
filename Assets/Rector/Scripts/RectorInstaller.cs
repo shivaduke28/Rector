@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Rector.Audio;
 using Rector.Cameras;
+using Rector.NodeBehaviours;
 using Rector.UI;
 using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
@@ -52,6 +53,8 @@ namespace Rector
             // camera
             var cameraManager = Register(new CameraManager(cinemachineBrain, cameraBehaviours));
 
+            // node system
+            var nodeBehaviourProxyRepository = Register(new NodeBehaviourProxyRepository());
             var nodeTemplateRepository = Register(new NodeTemplateRepository());
             Register(nodeTemplateRepository);
 
@@ -61,7 +64,7 @@ namespace Rector
             var hudRoot = hudContainer.Root;
             var hudView = new HudView(hudRoot, uiInputAction, graphInputAction, nodeTemplateRepository);
             var graphPage = Register(hudView.GraphPage);
-            var bgSceneManager = Register(new BGSceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository, graphPage));
+            var bgSceneManager = Register(new BGSceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository, nodeBehaviourProxyRepository, graphPage));
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, bgSceneManager));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
@@ -77,6 +80,7 @@ namespace Rector
 
             Register(new NodeTemplateRegisterer(
                 nodeTemplateRepository,
+                nodeBehaviourProxyRepository,
                 vfxManager,
                 beatModel,
                 mixerModel,
