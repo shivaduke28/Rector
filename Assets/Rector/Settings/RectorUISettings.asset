@@ -27,3 +27,11 @@ MonoBehaviour:
     type: 3}
   consoleLog: {fileID: 9197481963319205126, guid: de797c3cfaac3462a9cf0e3a7cd8a6a9,
     type: 3}
+  iconSettings:
+    vfx: {fileID: 2800000, guid: d198f5c480fe44a3fbd6cfcd8d599385, type: 3}
+    camera: {fileID: 2800000, guid: 88140da271422440b8d844c968561239, type: 3}
+    math: {fileID: 2800000, guid: 7cfacff13b8f84d0e937290f2d1c21d8, type: 3}
+    event: {fileID: 2800000, guid: 8fb5eae35113f422da07d4140025dec1, type: 3}
+    operator: {fileID: 2800000, guid: 551400ef548164a44be139e42f6ce555, type: 3}
+    scene: {fileID: 2800000, guid: d8c703804f30f4b238c4de0f5beaf646, type: 3}
+    system: {fileID: 2800000, guid: 54abaddcdf15a4cf59a0d10a54a288c5, type: 3}
