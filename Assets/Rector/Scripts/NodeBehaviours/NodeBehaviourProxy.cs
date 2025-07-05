@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using R3;
-using Rector.UI.Graphs;
+using System.Linq;
 using UnityEngine;
 
 namespace Rector.NodeBehaviours
@@ -85,27 +84,9 @@ namespace Rector.NodeBehaviours
             }
         }
 
-        public IInput[] GetInputs()
-        {
-            var inputs = new IInput[proxyInputs.Length];
-            for (var i = 0; i < proxyInputs.Length; i++)
-            {
-                inputs[i] = proxyInputs[i].GetInput();
-            }
+        public IInput[] GetInputs() => proxyInputs.OfType<IInput>().ToArray();
 
-            return inputs;
-        }
-
-        public IOutput[] GetOutputs()
-        {
-            var outputs = new IOutput[proxyOutputs.Length];
-            for (var i = 0; i < proxyOutputs.Length; i++)
-            {
-                outputs[i] = proxyOutputs[i].GetOutput();
-            }
-
-            return outputs;
-        }
+        public IOutput[] GetOutputs() => proxyOutputs.OfType<IOutput>().ToArray();
 
         static ProxyInput CreateProxyInput(IInput input)
         {
@@ -113,7 +94,7 @@ namespace Rector.NodeBehaviours
             {
                 throw new ArgumentNullException(nameof(input));
             }
-            
+
             return input switch
             {
                 FloatInput floatInput => new ProxyFloatInput(floatInput),
@@ -137,240 +118,6 @@ namespace Rector.NodeBehaviours
             }
 
             throw new ArgumentException($"Unknown output type: {outputType}");
-        }
-
-        // Base classes for proxy inputs/outputs
-        abstract class ProxyInput : IInput
-        {
-            public abstract string Name { get; }
-            public abstract IInput GetInput();
-            public abstract void UpdateInput(IInput input);
-        }
-
-        abstract class ProxyOutput : IOutput
-        {
-            public abstract string Name { get; }
-            public abstract IOutput GetOutput();
-            public abstract void UpdateOutput(IOutput output);
-        }
-
-        // Proxy implementations for each input type
-        sealed class ProxyFloatInput : ProxyInput
-        {
-            FloatInput currentInput;
-            readonly FloatInput proxyInput;
-            IDisposable subscription;
-
-            public ProxyFloatInput(FloatInput input)
-            {
-                currentInput = input;
-                proxyInput = new FloatInput(input.Name, input.Value.Value, input.MinValue, input.MaxValue);
-                subscription =
-                    new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                    );
-            }
-
-            public override string Name => proxyInput.Name;
-            public override IInput GetInput() => proxyInput;
-
-            public override void UpdateInput(IInput input)
-            {
-                if (input is FloatInput floatInput)
-                {
-                    currentInput = floatInput;
-                    subscription?.Dispose();
-                    subscription =
-                        new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                            currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                        );
-                }
-            }
-        }
-
-        sealed class ProxyIntInput : ProxyInput
-        {
-            IntInput currentInput;
-            readonly IntInput proxyInput;
-            IDisposable subscription;
-
-            public ProxyIntInput(IntInput input)
-            {
-                currentInput = input;
-                proxyInput = new IntInput(input.Name, input.Value.Value, input.MinValue, input.MaxValue);
-                subscription =
-                    new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                    );
-            }
-
-            public override string Name => proxyInput.Name;
-            public override IInput GetInput() => proxyInput;
-
-            public override void UpdateInput(IInput input)
-            {
-                if (input is IntInput intInput)
-                {
-                    currentInput = intInput;
-                    subscription?.Dispose();
-                    subscription =
-                        new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                            currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                        );
-                }
-            }
-        }
-
-        sealed class ProxyVector3Input : ProxyInput
-        {
-            Vector3Input currentInput;
-            readonly Vector3Input proxyInput;
-            IDisposable subscription;
-
-            public ProxyVector3Input(Vector3Input input)
-            {
-                currentInput = input;
-                proxyInput = new Vector3Input(input.Name, input.Value.Value);
-                subscription =
-                    new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                    );
-            }
-
-            public override string Name => proxyInput.Name;
-            public override IInput GetInput() => proxyInput;
-
-            public override void UpdateInput(IInput input)
-            {
-                if (input is Vector3Input vector3Input)
-                {
-                    currentInput = vector3Input;
-                    subscription?.Dispose();
-                    subscription =
-                        new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                            currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                        );
-                }
-            }
-        }
-
-        sealed class ProxyBoolInput : ProxyInput
-        {
-            BoolInput currentInput;
-            readonly BoolInput proxyInput;
-            IDisposable subscription;
-
-            public ProxyBoolInput(BoolInput input)
-            {
-                currentInput = input;
-                proxyInput = new BoolInput(input.Name, input.Value.Value);
-                subscription =
-                    new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                    );
-            }
-
-            public override string Name => proxyInput.Name;
-            public override IInput GetInput() => proxyInput;
-
-            public override void UpdateInput(IInput input)
-            {
-                if (input is BoolInput boolInput)
-                {
-                    currentInput = boolInput;
-                    subscription?.Dispose();
-                    subscription =
-                        new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                            currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                        );
-                }
-            }
-        }
-
-        sealed class ProxyTransformInput : ProxyInput
-        {
-            TransformInput currentInput;
-            readonly TransformInput proxyInput;
-            IDisposable subscription;
-
-            public ProxyTransformInput(TransformInput input)
-            {
-                currentInput = input;
-                proxyInput = new TransformInput(input.Name, input.Value.Value);
-                subscription =
-                    new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                        currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                    );
-            }
-
-            public override string Name => proxyInput.Name;
-            public override IInput GetInput() => proxyInput;
-
-            public override void UpdateInput(IInput input)
-            {
-                if (input is TransformInput transformInput)
-                {
-                    currentInput = transformInput;
-                    subscription?.Dispose();
-                    subscription =
-                        new CompositeDisposable(proxyInput.Value.Subscribe(v => currentInput.Value.Value = v),
-                            currentInput.Value.Subscribe(v => proxyInput.Value.Value = v)
-                        );
-                }
-            }
-        }
-
-        sealed class ProxyCallbackInput : ProxyInput
-        {
-            readonly CallbackInput proxyInput;
-            readonly Subject<Unit> subject = new();
-            IDisposable subscription;
-
-            public ProxyCallbackInput(CallbackInput input)
-            {
-                proxyInput = new CallbackInput(input.Name, () => subject.OnNext(Unit.Default));
-                subscription = subject.Subscribe(_ => input.Callback?.Invoke());
-            }
-
-            public override string Name => proxyInput.Name;
-            public override IInput GetInput() => proxyInput;
-
-            public override void UpdateInput(IInput input)
-            {
-                if (input is CallbackInput callbackInput)
-                {
-                    subscription?.Dispose();
-                    subscription = subject.Subscribe(_ => callbackInput.Callback?.Invoke());
-                }
-            }
-        }
-
-        sealed class ProxyObservableOutput<T> : ProxyOutput
-        {
-            ObservableOutput<T> currentOutput;
-            readonly ObservableOutput<T> proxyOutput;
-            readonly Subject<T> subject = new();
-            IDisposable subscription;
-
-            public ProxyObservableOutput(ObservableOutput<T> output)
-            {
-                currentOutput = output;
-                proxyOutput = new ObservableOutput<T>(output.Name, subject);
-                subscription = output.Observable.Subscribe(x => subject.OnNext(x));
-            }
-
-            public override string Name => proxyOutput.Name;
-            public override IOutput GetOutput() => proxyOutput;
-
-            public override void UpdateOutput(IOutput output)
-            {
-                if (output is ObservableOutput<T> observableOutput)
-                {
-                    currentOutput = observableOutput;
-                    subscription?.Dispose();
-                    subscription = observableOutput.Observable.Subscribe(x => subject.OnNext(x));
-                }
-            }
         }
     }
 }

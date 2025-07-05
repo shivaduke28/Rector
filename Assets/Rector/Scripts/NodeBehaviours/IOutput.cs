@@ -7,10 +7,10 @@ namespace Rector.NodeBehaviours
         string Name { get; }
     }
 
-    public class ObservableOutput<T> : IOutput
+    public class ObservableOutput<T> : IObservableOutput<T>
     {
         public string Name { get; }
-        public readonly Observable<T> Observable;
+        public Observable<T> Observable { get; }
 
         public ObservableOutput(string name, Observable<T> observable)
         {

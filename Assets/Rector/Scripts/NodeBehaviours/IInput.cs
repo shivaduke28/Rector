@@ -9,10 +9,10 @@ namespace Rector.NodeBehaviours
         string Name { get; }
     }
 
-    public sealed class CallbackInput : IInput
+    public sealed class CallbackInput : ICallbackInput
     {
         public string Name { get; }
-        public readonly Action Callback;
+        public Action Callback { get; }
 
         public CallbackInput(string name, Action callback)
         {
@@ -43,7 +43,7 @@ namespace Rector.NodeBehaviours
 #nullable disable
 
     [Serializable]
-    public sealed class FloatInput : ValueInput<float>
+    public sealed class FloatInput : ValueInput<float>, IFloatInput
     {
         [SerializeField] float minValue;
         [SerializeField] float maxValue;
@@ -64,7 +64,7 @@ namespace Rector.NodeBehaviours
     }
 
     [Serializable]
-    public sealed class IntInput : ValueInput<int>
+    public sealed class IntInput : ValueInput<int>, IIntInput
     {
         [SerializeField] int minValue;
         [SerializeField] int maxValue;
@@ -86,7 +86,7 @@ namespace Rector.NodeBehaviours
     }
 
     [Serializable]
-    public sealed class Vector3Input : ValueInput<Vector3>
+    public sealed class Vector3Input : ValueInput<Vector3>, IVector3Input
     {
         public Vector3Input(string name, Vector3 defaultValue) : base(name, defaultValue)
         {
@@ -98,7 +98,7 @@ namespace Rector.NodeBehaviours
     }
 
     [Serializable]
-    public sealed class BoolInput : ValueInput<bool>
+    public sealed class BoolInput : ValueInput<bool>, IBoolInput
     {
         public BoolInput(string name, bool defaultValue) : base(name, defaultValue)
         {
@@ -111,7 +111,7 @@ namespace Rector.NodeBehaviours
 
 
     [Serializable]
-    public sealed class TransformInput : ValueInput<Transform>
+    public sealed class TransformInput : ValueInput<Transform>, ITransformInput
     {
         public TransformInput(string name, Transform defaultValue) : base(name, defaultValue)
         {
