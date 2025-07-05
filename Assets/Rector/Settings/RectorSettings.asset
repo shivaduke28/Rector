@@ -15,6 +15,7 @@ MonoBehaviour:
   sceneSettings:
     sceneNames:
     - Room
+    - White
   vfxSettings:
     vfxNodeBehaviours:
     - {fileID: -4233992428353006084, guid: 5b20830707a43094daa7b0ab9a74fd7c, type: 3}
