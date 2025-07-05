@@ -358,6 +358,7 @@ MonoBehaviour:
   - {fileID: 752678206}
   - {fileID: 752678207}
   - {fileID: 752678209}
+  guid: 435c32a6-e4fb-4160-8814-b06226bc6d38
 --- !u!114 &752678209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -812,6 +813,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotBehaviours:
   - {fileID: 1860841797}
+  guid: 70e1c873-f470-4422-94ec-c9e45cf294d7
 --- !u!1 &1922343823
 GameObject:
   m_ObjectHideFlags: 0
@@ -930,6 +932,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotBehaviours:
   - {fileID: 2005920691}
+  guid: d81e2797-1245-4f64-928c-cd2d466a0bae
 --- !u!114 &2005920691
 MonoBehaviour:
   m_ObjectHideFlags: 0

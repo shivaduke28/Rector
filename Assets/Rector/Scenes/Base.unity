@@ -282,6 +282,7 @@ MonoBehaviour:
   - {fileID: 19034546}
   - {fileID: 19034544}
   - {fileID: 19034545}
+  guid: 0aa03a44-f14d-43f7-8559-01cce2a5a940
   cameraInputSlot: {fileID: 19034546}
 --- !u!114 &19034544
 MonoBehaviour:
@@ -672,6 +673,7 @@ MonoBehaviour:
   - {fileID: 194669241}
   - {fileID: 194669239}
   - {fileID: 194669240}
+  guid: fd7102b7-9c18-4a8d-9cee-aabd90edc839
   cameraInputSlot: {fileID: 194669241}
 --- !u!114 &194669239
 MonoBehaviour:
@@ -952,6 +954,7 @@ MonoBehaviour:
   - {fileID: 418786978}
   - {fileID: 418786977}
   - {fileID: 418786976}
+  guid: dd40b01a-438c-4abd-a763-0de05228ce74
   cameraInputSlot: {fileID: 418786978}
 --- !u!114 &418786976
 MonoBehaviour:
@@ -1787,6 +1790,7 @@ MonoBehaviour:
   - {fileID: 868003837}
   - {fileID: 868003835}
   - {fileID: 868003836}
+  guid: de5ac1c8-1c38-454e-bd58-f75920184ac8
   cameraInputSlot: {fileID: 868003837}
 --- !u!114 &868003835
 MonoBehaviour:
@@ -2506,6 +2510,7 @@ MonoBehaviour:
   - {fileID: 1219071083}
   - {fileID: 1219071081}
   - {fileID: 1219071082}
+  guid: ed23166d-702e-4a57-89db-f25cae4e41f5
   cameraInputSlot: {fileID: 1219071083}
 --- !u!114 &1219071081
 MonoBehaviour:
@@ -2755,6 +2760,7 @@ MonoBehaviour:
   - {fileID: 1275581336}
   - {fileID: 1275581335}
   - {fileID: 1275581334}
+  guid: 23b921b8-b0c0-4394-9335-f1101d07de17
   cameraInputSlot: {fileID: 1275581336}
 --- !u!114 &1275581334
 MonoBehaviour:
@@ -2931,6 +2937,7 @@ MonoBehaviour:
   slotBehaviours:
   - {fileID: 1312409706}
   - {fileID: 1312409705}
+  guid: 1ebe8b5d-fcea-4aab-855d-bcea044022d1
   cameraInputSlot: {fileID: 1312409706}
 --- !u!114 &1312409705
 MonoBehaviour:
@@ -3111,6 +3118,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotBehaviours:
   - {fileID: 1364943582}
+  guid: a93f01c8-de6b-4728-a5dc-416d3c41f0df
   cameraInputSlot: {fileID: 1364943582}
 --- !u!114 &1364943582
 MonoBehaviour:
@@ -3380,6 +3388,7 @@ MonoBehaviour:
   - {fileID: 1431009468}
   - {fileID: 1431009465}
   - {fileID: 1431009467}
+  guid: 9a0efca5-0abc-4d24-9dd2-b01f4b177244
   cameraInputSlot: {fileID: 1431009468}
 --- !u!114 &1431009467
 MonoBehaviour:
@@ -3746,6 +3755,7 @@ MonoBehaviour:
   - {fileID: 1792300583}
   - {fileID: 1792300581}
   - {fileID: 1792300579}
+  guid: 589308a0-2e5e-413f-824c-3cc92854503c
   cameraInputSlot: {fileID: 1792300583}
 --- !u!114 &1792300581
 MonoBehaviour:
@@ -4210,6 +4220,7 @@ MonoBehaviour:
   slotBehaviours:
   - {fileID: 1970195325}
   - {fileID: 1970195324}
+  guid: ec175a33-410b-4e37-9291-35f5e0543be0
   cameraInputSlot: {fileID: 1970195325}
 --- !u!114 &1970195324
 MonoBehaviour:

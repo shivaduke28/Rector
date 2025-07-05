@@ -261,6 +261,7 @@ MonoBehaviour:
   - {fileID: 8416515057407661693}
   - {fileID: 9202545598117814673}
   - {fileID: 4831095143488441197}
+  guid: 9252f66d-6b9b-4aab-9815-ae1e111fcd2c
   vfxInputSlot: {fileID: 8416515057407661693}
 --- !u!114 &8312157823665751902
 MonoBehaviour:
