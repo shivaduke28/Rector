@@ -15,9 +15,9 @@ namespace Rector.UI.Graphs.Nodes
         readonly HudModel hudModel;
         readonly CompositeDisposable disposable = new(2);
 
-        readonly FloatInput r = new("R", 0, 0, 1);
-        readonly FloatInput g = new("G", 0, 0, 1);
-        readonly FloatInput b = new("B", 0, 0, 1);
+        readonly FloatInput h = new("H", 0, 0, 1);
+        readonly FloatInput s = new("S", 0, 0, 1);
+        readonly FloatInput v = new("V", 0, 0, 1);
         readonly FloatInput a = new("A", 0, 0, 1);
 
         public HudStyleNode(NodeId id, HudModel hudModel) : base(id, NodeName)
@@ -25,9 +25,9 @@ namespace Rector.UI.Graphs.Nodes
             this.hudModel = hudModel;
             InputSlots = new[]
             {
-                SlotConverter.Convert(id, 0, r, IsMuted),
-                SlotConverter.Convert(id, 1, g, IsMuted),
-                SlotConverter.Convert(id, 2, b, IsMuted),
+                SlotConverter.Convert(id, 0, h, IsMuted),
+                SlotConverter.Convert(id, 1, s, IsMuted),
+                SlotConverter.Convert(id, 2, v, IsMuted),
                 SlotConverter.Convert(id, 3, a, IsMuted)
             };
         }
@@ -42,14 +42,24 @@ namespace Rector.UI.Graphs.Nodes
 
         public void Initialize()
         {
-            r.Value.CombineLatest(g.Value, b.Value, a.Value, (r1, g1, b1, a1) => new Color(r1, g1, b1, a1))
+            h.Value.CombineLatest(s.Value, v.Value, a.Value, (h1, s1, v1, a1) => 
+                {
+                    var color = Color.HSVToRGB(h1, s1, v1);
+                    color.a = a1;
+                    return color;
+                })
                 .Subscribe(c => hudModel.FrameColor.Value = c)
                 .AddTo(disposable);
             hudModel.FrameColor.Subscribe(c =>
             {
-                r.Value.Value = c.r;
-                g.Value.Value = c.g;
-                b.Value.Value = c.b;
+                Color.RGBToHSV(c, out var hue, out var saturation, out var value);
+                // V=0の時はH,Sの値を更新しない（黒色で彩度情報が失われるため）
+                if (value > 0)
+                {
+                    h.Value.Value = hue;
+                    s.Value.Value = saturation;
+                }
+                v.Value.Value = value;
                 a.Value.Value = c.a;
             }).AddTo(disposable);
         }
