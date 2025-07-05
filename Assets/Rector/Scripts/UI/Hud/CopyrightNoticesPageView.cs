@@ -13,6 +13,8 @@ namespace Rector.UI.Hud
         readonly UIInputAction uiInputAction;
         CopyrightNoticesPageModel model;
         readonly SerialDisposable inputDisposable = new();
+        readonly SerialDisposable scrollDisposable = new();
+        const float ScrollSpeed = 50f;
 
         public CopyrightNoticesPageView(VisualElement root, UIInputAction uiInputAction)
         {
@@ -37,6 +39,7 @@ namespace Rector.UI.Hud
         {
             root.style.display = DisplayStyle.None;
             inputDisposable.Disposable = null;
+            scrollDisposable.Disposable = null;
             label.text = "";
             uiInputAction.Unregister(this);
         }
@@ -47,6 +50,16 @@ namespace Rector.UI.Hud
             label.text = await model.LoadCopyrightNoticesAsync();
             label.transform.position = new Vector3(0, 0, 0);
             uiInputAction.Register(this);
+
+            scrollDisposable.Disposable = Observable.Timer(TimeSpan.FromSeconds(1))
+                .SelectMany(_ => Observable.EveryUpdate())
+                .Subscribe(_ =>
+                {
+                    var pos = label.transform.position;
+                    pos.y -= ScrollSpeed * Time.deltaTime;
+                    pos.y = Mathf.Clamp(pos.y, root.resolvedStyle.height - label.resolvedStyle.height, 0f);
+                    label.transform.position = pos;
+                });
         }
 
         void MoveLabel(float y)
