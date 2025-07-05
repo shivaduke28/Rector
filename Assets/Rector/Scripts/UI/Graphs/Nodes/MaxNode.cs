@@ -60,34 +60,4 @@ namespace Rector.UI.Graphs.Nodes
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
     }
-
-    // Mod Node
-    public sealed class ModNode : Node
-    {
-        const float Min = 0.01f;
-        public const string NodeName = "Mod";
-        public static NodeCategory GetCategory() => NodeCategory.Math;
-        public override NodeCategory Category => GetCategory();
-
-        readonly FloatInput x = new("x", 0f, float.NegativeInfinity, float.PositiveInfinity);
-        readonly FloatInput y = new("y", 1f, Min, float.PositiveInfinity);
-
-        public ModNode(NodeId id) : base(id, NodeName)
-        {
-            InputSlots = new[]
-            {
-                SlotConverter.Convert(id, 0, x, IsMuted),
-                SlotConverter.Convert(id, 1, y, IsMuted)
-            };
-
-            OutputSlots = new[]
-            {
-                SlotConverter.Convert(id, 0,
-                    new ObservableOutput<float>("Out", x.Value.CombineLatest(y.Value.Select(t => Mathf.Max(t, Min)), (x1, y1) => x1 % y1)), IsMuted)
-            };
-        }
-
-        public override InputSlot[] InputSlots { get; }
-        public override OutputSlot[] OutputSlots { get; }
-    }
 }
