@@ -11,14 +11,24 @@ namespace Rector.UI.Graphs.Nodes
         public static NodeCategory GetCategory() => NodeCategory.Event;
         public override NodeCategory Category => GetCategory();
 
+        readonly FloatInput scaleInput = new("scale", 1f, float.NegativeInfinity, float.PositiveInfinity);
+
         public TimeNode(NodeId id) : base(id, NodeName)
         {
             InputSlots = new[]
             {
                 SlotConverter.Convert(id, 0, ActiveInput, IsMuted),
+                SlotConverter.Convert(id, 1, scaleInput, IsMuted),
             };
 
-            var output = new ObservableOutput<float>("time", Observable.EveryUpdate(UnityFrameProvider.Update).Where(_ => IsActive).Select(_ => Time.time));
+            var scaledTime = 0f;
+            var output = new ObservableOutput<float>("time", Observable.EveryUpdate(UnityFrameProvider.Update)
+                .Where(_ => IsActive)
+                .Select(_ =>
+                {
+                    scaledTime += Time.deltaTime * scaleInput.Value.Value;
+                    return scaledTime;
+                }));
             var timeFraction = new ObservableOutput<float>("frac", output.Observable.Where(_ => IsActive).Select(t => t % 1));
             OutputSlots = new[]
             {
