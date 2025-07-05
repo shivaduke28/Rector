@@ -54,8 +54,8 @@ namespace Rector.UI.Graphs
 
             nodeTemplateRepository.Add(NodeTemplate.Create(CameraBlendNode.GetCategory(), CameraBlendNode.NodeName, id => CreateNodeView(new CameraBlendNode(id, cameraManager))));
 
-            nodeTemplateRepository.Add(NodeTemplate.Create(LevelNode.GetCategory(), LevelNode.NodeName, id => CreateNodeView(new LevelNode(id, audioMixerModel))));
             nodeTemplateRepository.Add(NodeTemplate.Create(AudioThresholdNode.GetCategory(), AudioThresholdNode.NodeName, id => CreateNodeView(new AudioThresholdNode(id, audioMixerModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Create(LevelNode.GetCategory(), LevelNode.NodeName, id => CreateNodeView(new LevelNode(id, audioMixerModel))));
             nodeTemplateRepository.Add(NodeTemplate.Create(BeatNode.GetCategory(), BeatNode.NodeName, id => CreateNodeView(new BeatNode(id, beatModel))));
             nodeTemplateRepository.Add(NodeTemplate.Create(UpdateNode.GetCategory(), UpdateNode.NodeName, id => CreateNodeView(new UpdateNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(TimeNode.GetCategory(), TimeNode.NodeName, id => CreateNodeView(new TimeNode(id))));
