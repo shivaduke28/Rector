@@ -84,10 +84,35 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
   - Dispose when no longer needed
   - Cancel before disposing
 
-### Compilation Error Checking
+### Error Checking and Diagnostics
 
-To check for compilation errors after making changes:
-1. Refresh Unity assets: `mcp__unity-natural-mcp__refresh_assets`
-2. Get compilation errors: `mcp__unity-natural-mcp__get_compile_logs`
+#### IDE Diagnostics vs Unity Compilation
+Two complementary error checking methods are available:
 
-This will show any compile errors or warnings in the Unity project.
+1. **IDE Diagnostics** (`mcp__ide__getDiagnostics`)
+   - Real-time feedback while coding
+   - Detects syntax errors, code quality issues, potential bugs
+   - Catches YAML/JSON syntax errors in config files
+   - Use for: Daily coding, before committing changes
+
+2. **Unity Compilation** (`mcp__unity-natural-mcp__get_compile_logs`)
+   - Final compilation check by Unity
+   - Detects Unity-specific issues (MonoBehaviour, serialization, etc.)
+   - Required before running in Unity Editor
+   - Use for: After major changes, before testing in Unity
+
+#### Recommended Workflow
+1. Check IDE diagnostics while coding (especially for non-C# files like YAML)
+2. After code changes, refresh Unity assets: `mcp__unity-natural-mcp__refresh_assets`
+3. Check Unity compilation: `mcp__unity-natural-mcp__get_compile_logs`
+4. Fix any errors before proceeding
+
+#### Example Usage
+```bash
+# Check IDE diagnostics for a specific file
+mcp__ide__getDiagnostics --uri "file:///path/to/file.cs"
+
+# Check Unity compilation after changes
+mcp__unity-natural-mcp__refresh_assets
+mcp__unity-natural-mcp__get_compile_logs
+```
