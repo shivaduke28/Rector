@@ -42,7 +42,7 @@ namespace Rector.UI.Graphs.Nodes
 
         public void Initialize()
         {
-            h.Value.CombineLatest(s.Value, v.Value, a.Value, (h1, s1, v1, a1) => 
+            h.Value.CombineLatest(s.Value, v.Value, a.Value, (h1, s1, v1, a1) =>
                 {
                     var color = Color.HSVToRGB(h1, s1, v1);
                     color.a = a1;
@@ -56,7 +56,10 @@ namespace Rector.UI.Graphs.Nodes
                 // V=0の時はH,Sの値を更新しない（黒色で彩度情報が失われるため）
                 if (value > 0)
                 {
-                    h.Value.Value = hue;
+                    if (saturation > 0)
+                    {
+                        h.Value.Value = hue;
+                    }
                     s.Value.Value = saturation;
                 }
                 v.Value.Value = value;
