@@ -1,0 +1,103 @@
+name: Create Release Branch and PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (X.Y.Z format)'
+        required: true
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Validate version format
+        run: |
+          if ! [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version must be in X.Y.Z format"
+            exit 1
+          fi
+      
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      
+      - name: Create release branch
+        run: |
+          BRANCH_NAME="release/v${{ github.event.inputs.version }}"
+          git checkout -b $BRANCH_NAME
+          echo "Created branch: $BRANCH_NAME"
+      
+      - name: Update Unity project version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          sed -i "s/bundleVersion: .*/bundleVersion: $VERSION/" ProjectSettings/ProjectSettings.asset
+          echo "Updated bundleVersion to $VERSION"
+      
+      - name: Commit version update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ProjectSettings/ProjectSettings.asset
+          git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
+      
+      - name: Push release branch
+        run: |
+          git push origin HEAD
+      
+      - name: Create and push tag
+        run: |
+          git tag -a "v${{ github.event.inputs.version }}" -m "Release version ${{ github.event.inputs.version }}"
+          git push origin "v${{ github.event.inputs.version }}"
+      
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          
+          # Get list of merged PRs since last release
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 --match "v*" HEAD^ 2>/dev/null || echo "")
+          
+          PR_BODY="## Summary
+- Bump Unity project version to $VERSION
+- Prepare for v$VERSION release
+
+## Changes
+- Update \`bundleVersion\` in ProjectSettings from previous version to $VERSION
+
+## Recent Changes"
+          
+          if [ -n "$PREVIOUS_TAG" ]; then
+            PR_BODY="$PR_BODY
+Since $PREVIOUS_TAG:"
+            # Get merged PRs since last tag
+            MERGED_PRS=$(gh pr list --state merged --base main --limit 100 --json number,title,author,url,mergedAt | \
+              jq -r --arg since "$(git log -1 --format=%aI $PREVIOUS_TAG)" \
+              '.[] | select(.mergedAt > $since) | "* \(.title) by @\(.author.login) in \(.url)"')
+            
+            if [ -n "$MERGED_PRS" ]; then
+              PR_BODY="$PR_BODY
+$MERGED_PRS"
+            else
+              PR_BODY="$PR_BODY
+No merged PRs found since last release."
+            fi
+          fi
+          
+          PR_BODY="$PR_BODY
+
+---
+This PR was automatically created by GitHub Actions workflow."
+          
+          gh pr create \
+            --title "Release v$VERSION" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "release/v$VERSION"
