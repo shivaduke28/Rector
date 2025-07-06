@@ -62,16 +62,8 @@ jobs:
         run: |
           VERSION="${{ github.event.inputs.version }}"
           
-          PR_BODY="## Summary"$'\n'
-          PR_BODY="${PR_BODY}- Bump Unity project version to $VERSION"$'\n'
-          PR_BODY="${PR_BODY}- Prepare for v$VERSION release"$'\n'$'\n'
-          PR_BODY="${PR_BODY}## Changes"$'\n'
-          PR_BODY="${PR_BODY}- Update bundleVersion in ProjectSettings to $VERSION"$'\n'$'\n'
-          PR_BODY="${PR_BODY}---"$'\n'
-          PR_BODY="${PR_BODY}This PR was automatically created by GitHub Actions workflow."
-          
           gh pr create \
             --title "Release v$VERSION" \
-            --body "$PR_BODY" \
+            --body "Bump version to $VERSION" \
             --base main \
             --head "release/v$VERSION"
