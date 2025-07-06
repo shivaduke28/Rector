@@ -65,36 +65,51 @@ jobs:
           # Get list of merged PRs since last release
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 --match "v*" HEAD^ 2>/dev/null || echo "")
           
-          PR_BODY="## Summary
+          PR_BODY=$(cat <<EOF
+## Summary
 - Bump Unity project version to $VERSION
 - Prepare for v$VERSION release
 
 ## Changes
 - Update \`bundleVersion\` in ProjectSettings from previous version to $VERSION
 
-## Recent Changes"
+## Recent Changes
+EOF
+)
           
           if [ -n "$PREVIOUS_TAG" ]; then
-            PR_BODY="$PR_BODY
-Since $PREVIOUS_TAG:"
+            PR_BODY=$(cat <<EOF
+$PR_BODY
+Since $PREVIOUS_TAG:
+EOF
+)
             # Get merged PRs since last tag
             MERGED_PRS=$(gh pr list --state merged --base main --limit 100 --json number,title,author,url,mergedAt | \
               jq -r --arg since "$(git log -1 --format=%aI $PREVIOUS_TAG)" \
               '.[] | select(.mergedAt > $since) | "* \(.title) by @\(.author.login) in \(.url)"')
             
             if [ -n "$MERGED_PRS" ]; then
-              PR_BODY="$PR_BODY
-$MERGED_PRS"
+              PR_BODY=$(cat <<EOF
+$PR_BODY
+$MERGED_PRS
+EOF
+)
             else
-              PR_BODY="$PR_BODY
-No merged PRs found since last release."
+              PR_BODY=$(cat <<EOF
+$PR_BODY
+No merged PRs found since last release.
+EOF
+)
             fi
           fi
           
-          PR_BODY="$PR_BODY
+          PR_BODY=$(cat <<EOF
+$PR_BODY
 
 ---
-This PR was automatically created by GitHub Actions workflow."
+This PR was automatically created by GitHub Actions workflow.
+EOF
+)
           
           gh pr create \
             --title "Release v$VERSION" \
