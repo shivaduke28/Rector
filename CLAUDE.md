@@ -69,6 +69,21 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
   - Cannot use `dotnet build` command
   - Check compilation errors through Unity's asset refresh
 
+### Async/Await Guidelines
+- **Never use `async void`** - Use `UniTaskVoid` instead
+  - Exception: Unity event handlers that must be `async void`
+- **Always append `Async` suffix** to async methods
+  - Example: `ProcessDataAsync()`, `HandleInputAsync()`
+- **Always pass `CancellationToken`** to async methods
+  - Pass it as the last parameter
+  - Use it in all async operations (e.g., `UniTask.Delay()`, `UniTask.NextFrame()`)
+- **Use `.Forget()` for fire-and-forget operations**
+  - Example: `HandleAsync(cancellationToken).Forget()`
+- **Properly manage CancellationTokenSource**
+  - Create in the scope that controls the lifetime
+  - Dispose when no longer needed
+  - Cancel before disposing
+
 ### Compilation Error Checking
 
 To check for compilation errors after making changes:
