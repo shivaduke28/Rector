@@ -9,7 +9,8 @@
         "Unity.RenderPipelines.Universal.Runtime",
         "UniTask",
         "R3.Unity",
-        "Lasp.Runtime"
+        "Lasp.Runtime",
+        "Unity.Pipeline"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

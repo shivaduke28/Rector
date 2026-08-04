@@ -103,3 +103,10 @@ crashlytics-build.properties
 
 # Mac
 .DS_Store
+
+# com.unity.test-framework.performance が実行のたびに書き出す生成物
+# (マシン構成と解決済みパッケージのスナップショット)
+/Assets/Resources/PerformanceTestRunInfo.json
+/Assets/Resources/PerformanceTestRunInfo.json.meta
+/Assets/Resources/PerformanceTestRunSettings.json
+/Assets/Resources/PerformanceTestRunSettings.json.meta

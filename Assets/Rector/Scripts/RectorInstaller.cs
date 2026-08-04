@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Rector.Audio;
 using Rector.Cameras;
+using Rector.Cli;
 using Rector.NodeBehaviours;
 using Rector.UI;
 using Rector.UI.GraphPages;
@@ -87,6 +88,16 @@ namespace Rector
                 cameraManager,
                 hudModel
             ));
+
+            // Unity CLI (com.unity.pipeline) から観測・操作するための口。
+            // [CliCommand] は static しか登録できないので Instance 経由で参照する。
+            CliClient.Register(Register(new CliClient(
+                graphPage,
+                nodeTemplateRepository,
+                vfxManager,
+                cameraManager,
+                bgSceneManager
+            )));
 
 #if !UNITY_EDITOR
             // disable stack trace

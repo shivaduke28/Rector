@@ -147,11 +147,41 @@ unity command eval 'return UnityEditor.AssetDatabase.FindAssets("t:VisualEffectA
 
 ### Driving a build
 
-`unity command --runtime <player exec name>` connects to a running Player the
-same way it connects to the editor, so a development build of Rector can be
-inspected and hot-reloaded while it is actually running against live audio.
-The runtime API is localhost-only and off by default — development and QA
-builds only, never a shipping build.
+`unity command --runtime RectorApp` connects to a running Player, so a build
+processing live audio can be inspected and driven exactly like the editor.
+Placement of `--runtime` does not matter — commander.js claims it wherever it
+appears — but put it before the command name for readability. When no matching
+Player is found the call fails; it never silently answers from the editor.
+
+Watch the shell instead: **zsh does not word-split unquoted parameters**, so
+`FLAGS="--runtime RectorApp"; unity command $FLAGS rector_state` passes one
+argument `--runtime RectorApp`, which is not recognised and the call goes to
+the editor. Write the flags out, or use an array.
+
+`Base.unity` carries a `RuntimePipelineManager` with `enableInBuilds` on, which
+starts the server in a Player. The listener binds `http://+:<port>/` — every
+interface — and rejects non-loopback callers with 403 in the request handler,
+ahead of the bearer-token check. The token lives in the runtime descriptor,
+which on macOS is written **inside the .app bundle** (`Application.dataPath/..`),
+not beside it.
+
+Only the Roslyn compilers sit behind
+`#if UNITY_EDITOR || (UNITY_STANDALONE && DEBUG)` — `EvalCodeCompiler`,
+`HotReloadCompiler`, `RoslynCompilationService`. The `eval` and hot-reload
+*commands* stay registered in a release build and return "Platform Not
+Supported". Rector is IL2CPP, so they cannot work in any build regardless.
+Nothing gates the server itself: `RuntimePipelineManager.Start()` checks only
+`autoStart && enableInBuilds`, and the build processor never consults
+`EditorUserBuildSettings.development`. A release build from this scene opens
+the port, and `quit` / `set_timescale` / `simulate_key` come with it.
+
+**`enableInBuilds` is deliberately left on** — every build, release included,
+runs the server. Rector is a personal instrument rather than distributed
+software, and being able to drive any build is worth more here than closing a
+port that only processes running as the same user can reach. Reviewers have
+flagged this; it is a decision, not an oversight. Revisit it if Rector is ever
+handed to someone else, and note the exposure is the whole runtime command
+surface, not just `rector_*`.
 
 ### Caveats
 
