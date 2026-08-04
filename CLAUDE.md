@@ -175,6 +175,14 @@ Nothing gates the server itself: `RuntimePipelineManager.Start()` checks only
 `EditorUserBuildSettings.development`. A release build from this scene opens
 the port, and `quit` / `set_timescale` / `simulate_key` come with it.
 
+**`enableInBuilds` is deliberately left on** — every build, release included,
+runs the server. Rector is a personal instrument rather than distributed
+software, and being able to drive any build is worth more here than closing a
+port that only processes running as the same user can reach. Reviewers have
+flagged this; it is a decision, not an oversight. Revisit it if Rector is ever
+handed to someone else, and note the exposure is the whole runtime command
+surface, not just `rector_*`.
+
 ### Caveats
 
 - `com.unity.pipeline` is experimental (`0.4.0-exp.1`); its command surface may
