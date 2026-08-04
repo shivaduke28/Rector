@@ -149,25 +149,31 @@ unity command eval 'return UnityEditor.AssetDatabase.FindAssets("t:VisualEffectA
 
 `unity command --runtime RectorApp` connects to a running Player, so a build
 processing live audio can be inspected and driven exactly like the editor.
+Placement of `--runtime` does not matter — commander.js claims it wherever it
+appears — but put it before the command name for readability. When no matching
+Player is found the call fails; it never silently answers from the editor.
 
-**`--runtime` is an option of `unity command`, so it must come before the
-command name.** Put it after and the call silently goes to the editor instead
-— it does not error, it just answers from the wrong process.
-
-```bash
-unity command --runtime RectorApp rector_state                      # right
-unity command rector_state --runtime RectorApp                      # wrong: hits the editor
-```
+Watch the shell instead: **zsh does not word-split unquoted parameters**, so
+`FLAGS="--runtime RectorApp"; unity command $FLAGS rector_state` passes one
+argument `--runtime RectorApp`, which is not recognised and the call goes to
+the editor. Write the flags out, or use an array.
 
 `Base.unity` carries a `RuntimePipelineManager` with `enableInBuilds` on, which
-is what starts the server in a Player. It binds IPv4 loopback only and requires
-a bearer token published in `.unity-pipeline-runtime-port` next to the build.
+starts the server in a Player. The listener binds `http://+:<port>/` — every
+interface — and rejects non-loopback callers with 403 in the request handler,
+ahead of the bearer-token check. The token lives in the runtime descriptor,
+which on macOS is written **inside the .app bundle** (`Application.dataPath/..`),
+not beside it.
 
-`eval`, `eval_file` and the hot-reload commands are compiled out unless the
-build is a **Development Build** — they sit behind
-`#if UNITY_EDITOR || (UNITY_STANDALONE && DEBUG)`. The server itself and every
-other command, `rector_*` included, carry no such guard. Keep the manager out
-of a shipping build regardless: the command surface can drive the whole graph.
+Only the Roslyn compilers sit behind
+`#if UNITY_EDITOR || (UNITY_STANDALONE && DEBUG)` — `EvalCodeCompiler`,
+`HotReloadCompiler`, `RoslynCompilationService`. The `eval` and hot-reload
+*commands* stay registered in a release build and return "Platform Not
+Supported". Rector is IL2CPP, so they cannot work in any build regardless.
+Nothing gates the server itself: `RuntimePipelineManager.Start()` checks only
+`autoStart && enableInBuilds`, and the build processor never consults
+`EditorUserBuildSettings.development`. A release build from this scene opens
+the port, and `quit` / `set_timescale` / `simulate_key` come with it.
 
 ### Caveats
 

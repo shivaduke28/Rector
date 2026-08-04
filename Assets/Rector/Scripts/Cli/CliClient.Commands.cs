@@ -32,10 +32,11 @@ namespace Rector.Cli
             [CliArg("template", "Template name, as listed by rector_node_templates.", Required = true)] string template)
             => Call(c => c.CreateNode(template));
 
-        [CliCommand("rector_remove_node", "Remove a node and the edges attached to it.")]
+        [CliCommand("rector_remove_node", "Remove a node and the edges attached to it. Not undoable: requires confirm=true.")]
         static object RemoveNodeCommand(
-            [CliArg("id", "Node id, as listed by rector_graph.", Required = true)] uint id)
-            => Call(c => c.RemoveNode(id));
+            [CliArg("id", "Node id, as listed by rector_graph.", Required = true)] uint id,
+            [CliArg("confirm", "Apply the removal. Without it the call is refused.")] bool confirm = false)
+            => Call(c => c.RemoveNode(id, confirm));
 
         [CliCommand("rector_select_node", "Select a node, as if it had been selected in the HUD.")]
         static object SelectNodeCommand(

@@ -112,18 +112,36 @@ namespace Rector.Cli
             return new { success = true, node = ToNodeDto(nodeView.Node.Id) };
         }
 
-        object RemoveNode(uint id)
+        // HUD ではノード削除だけが長押し (NodeSelectionInputHandler)。エッジ削除も
+        // シーン切替も単押しなので、Rector 自身が「慎重にやる操作」と決めているのは
+        // これだけ。undo もないため CLI からも一手間かける。
+        object RemoveNode(uint id, bool confirm)
         {
-            if (!graphPage.Graph.TryGetNode(new NodeId(id), out _)) return UnknownNode(id);
+            if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
 
-            graphPage.Graph.RemoveNode(new NodeId(id));
-            graphPage.Sort();
+            if (!confirm)
+                return Failure("confirm_required", $"Removing node {id} ({node.NodeView.Node.Name}) cannot be undone. Pass confirm=true.");
+
+            // HUD と同じ経路を通す。RemoveSelectedNode が選択・ターゲット・State の
+            // 後始末までまとめて行うので、ここで個別に真似すると取りこぼす。
+            graphPage.SelectNode(node);
+            graphPage.RemoveSelectedNode();
             return new { success = true, removed = id };
         }
 
         object SelectNode(uint id)
         {
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
+
+            // HUD はノード選択を NodeSelection / TargetNodeSelection でしか行わない。
+            // 他の State のまま差し替えると SelectedSlot が前のノードのスロットを
+            // 指したままになり、スロット移動が範囲外になる。State ごと戻して揃える。
+            // TODO(#37): State の扱いごと GraphPage 側に寄せる
+            if (graphPage.State.Value != GraphPageState.NodeSelection)
+            {
+                graphPage.SelectSlot(null);
+                graphPage.State.Value = GraphPageState.NodeSelection;
+            }
 
             graphPage.SelectNode(node);
             return new { success = true, selected = id };
@@ -145,14 +163,26 @@ namespace Rector.Cli
             return new { success = true, id };
         }
 
+        // TODO(#37): 検証と接続を GraphPage 側に引き上げ、HUD と同じ実装を呼ぶ。
+        // ここは HUD の TargetSlotSelectionInputHandler.Submit を書き写したもので、
+        // 片方だけ直すと検証がずれる。
         object Connect(uint fromNode, int fromSlot, uint toNode, int toSlot)
         {
             if (!TryGetSlots(fromNode, fromSlot, toNode, toSlot, out var output, out var input, out var error)) return error;
 
+            // HUD は既存エッジをまず外すトグルなので、繋がっている組に TryConnect が
+            // 届くことがない。CLI は connect と disconnect を分けた分この保護がないため
+            // ここで弾く。通すと AddEdge の TryAdd が false になり、購読を持ったまま
+            // どこからも参照されない Edge と EdgeView が残る。
+            if (graphPage.Graph.Edges.ContainsKey(new EdgeId(output, input)))
+                return Failure("already_connected", $"{fromNode}[{fromSlot}] -> {toNode}[{toSlot}] is already connected.");
+
+            if (fromNode == toNode)
+                return Failure("loop_detected", "A node cannot connect to itself.");
+
             if (!EdgeConnector.CanConnect(output, input))
                 return Failure("incompatible_slots", $"{output.Type} -> {input.Type} is not connectable.");
 
-            // UI と同じ検証順。ループを作るとグラフが破綻するので接続前に弾く。
             if (!graphPage.Graph.ValidateLoop(output, input))
                 return Failure("loop_detected", $"Connecting {fromNode} -> {toNode} would create a loop.");
 
@@ -164,6 +194,7 @@ namespace Rector.Cli
             return new { success = true, fromNode, fromSlot, toNode, toSlot };
         }
 
+        // TODO(#37): GraphPage 側に寄せて HUD と共有する
         object Disconnect(uint fromNode, int fromSlot, uint toNode, int toSlot)
         {
             if (!TryGetSlots(fromNode, fromSlot, toNode, toSlot, out var output, out var input, out var error)) return error;
