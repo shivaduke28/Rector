@@ -21,6 +21,10 @@ namespace Rector.UI.GraphPages
         const float MinScale = 0.5f;
         Vector2 offset;
 
+        // resolvedStyle はレイアウト解決後にしか更新されないため、
+        // 加減算で読み戻さずに済むよう平行移動量を保持する。
+        Vector2 translation;
+
         Vector2 MaskSizeHalf => new(mask.resolvedStyle.width * 0.5f, mask.resolvedStyle.height * 0.5f);
 
         public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction)
@@ -52,13 +56,19 @@ namespace Rector.UI.GraphPages
             content.AddToClassList(AnimationClassName);
         }
 
+        void SetTranslation(Vector2 value)
+        {
+            translation = value;
+            content.style.translate = value;
+        }
+
         void Reset()
         {
             DisableAnimation();
             currentScale = 1f;
             offset = Vector2.zero;
-            content.transform.position = MaskSizeHalf;
-            content.transform.scale = Vector3.one;
+            SetTranslation(MaskSizeHalf);
+            content.style.scale = Vector3.one;
         }
 
         void ApplyZoom(float zoom)
@@ -67,14 +77,14 @@ namespace Rector.UI.GraphPages
             var delta = Time.deltaTime * Mathf.Sign(zoom);
             currentScale = Mathf.Clamp(currentScale + delta, MinScale, MaxScale);
             var scale = new Vector3(currentScale, currentScale, 1f);
-            content.transform.scale = scale;
+            content.style.scale = scale;
 
             // maskの中心が移動した分だけcontentを移動させることでmaskの中心をズームする
             var maskCenter = mask.worldBound.center;
             var contentLeftUp = new Vector2(content.worldBound.xMin, content.worldBound.yMin);
             var centerPosition = maskCenter - contentLeftUp;
             var diff = centerPosition * (currentScale / beforeScale - 1f);
-            content.transform.position -= new Vector3(diff.x, diff.y);
+            SetTranslation(translation - diff);
         }
 
 
@@ -107,16 +117,16 @@ namespace Rector.UI.GraphPages
 
         void ApplyTranslate(Vector2 translate)
         {
-            var delta = new Vector3(translate.x, -translate.y, 0f) * 10f;
-            content.transform.position += delta;
-            offset += new Vector2(delta.x, delta.y);
+            var delta = new Vector2(translate.x, -translate.y) * 10f;
+            SetTranslation(translation + delta);
+            offset += delta;
         }
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
             // left-top
             var nodePosition = node.TargetPosition * currentScale;
-            content.transform.position = -nodePosition + MaskSizeHalf + offset;
+            SetTranslation(-nodePosition + MaskSizeHalf + offset);
         }
 
         public void Dispose()

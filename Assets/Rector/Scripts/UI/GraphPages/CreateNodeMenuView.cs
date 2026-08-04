@@ -89,7 +89,7 @@ namespace Rector.UI.GraphPages
 
         public void SetPosition(Vector2 position)
         {
-            root.transform.position = position;
+            root.style.translate = position;
         }
 
         public void Navigate(Vector2 value)
