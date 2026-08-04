@@ -3,7 +3,7 @@
 ## Project Overview
 
 Rector is a Unity-based audio-reactive visual effects application with a node-based graph system for creating interactive audiovisual experiences.
-Built with Unity 6000.0.42f1 and URP 17.0.4.
+Built with Unity 6000.3.21f1 (6.3 LTS) and URP 17.3.0.
 
 The main codebase is located at `/Assets/Rector/Scripts/`.
 
@@ -67,7 +67,8 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
 - When a file exceeds 300 lines, consider splitting related classes into separate files
 - Unity-specific constraints:
   - Cannot use `dotnet build` command
-  - Check compilation errors through Unity's asset refresh
+  - Check compilation errors with `unity command recompile` — see the Unity CLI
+    section below
 
 ### Async/Await Guidelines
 - **Never use `async void`** - Use `UniTaskVoid` instead
@@ -84,35 +85,78 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
   - Dispose when no longer needed
   - Cancel before disposing
 
-### Error Checking and Diagnostics
+## Unity CLI
 
-#### IDE Diagnostics vs Unity Compilation
-Two complementary error checking methods are available:
+The Unity CLI (`brew install --cask unity-cli`) drives the editor from the
+terminal. `com.unity.pipeline` exposes a local HTTP API that the CLI talks to,
+so a running editor can be queried and controlled without touching its window.
 
-1. **IDE Diagnostics** (`mcp__ide__getDiagnostics`)
-   - Real-time feedback while coding
-   - Detects syntax errors, code quality issues, potential bugs
-   - Catches YAML/JSON syntax errors in config files
-   - Use for: Daily coding, before committing changes
+The editor version is resolved from `ProjectVersion.txt`, so no command needs
+it spelled out. `make` lists the wrapped targets; the rest is used directly.
 
-2. **Unity Compilation** (`mcp__unity-natural-mcp__get_compile_logs`)
-   - Final compilation check by Unity
-   - Detects Unity-specific issues (MonoBehaviour, serialization, etc.)
-   - Required before running in Unity Editor
-   - Use for: After major changes, before testing in Unity
+Every command takes `--json` for structured output. Exit codes: 0 success,
+1 error, 6 test failure.
 
-#### Recommended Workflow
-1. Check IDE diagnostics while coding (especially for non-C# files like YAML)
-2. After code changes, refresh Unity assets: `mcp__unity-natural-mcp__refresh_assets`
-3. Check Unity compilation: `mcp__unity-natural-mcp__get_compile_logs`
-4. Fix any errors before proceeding
+### Checking your work
 
-#### Example Usage
+**`unity command recompile` works while the editor is unfocused or minimized.**
+Bringing Unity to the foreground is not required to compile-check a change.
+
 ```bash
-# Check IDE diagnostics for a specific file
-mcp__ide__getDiagnostics --uri "file:///path/to/file.cs"
-
-# Check Unity compilation after changes
-mcp__unity-natural-mcp__refresh_assets
-mcp__unity-natural-mcp__get_compile_logs
+unity command recompile              # force a script recompile
+unity command recompile_status       # idle | triggered | compiling | completed | up_to_date
+unity command console --level error --tail 20
+unity command console --tail 50      # all levels, with stack traces
+make test                            # EditMode tests -> test-results.xml
 ```
+
+`console` reads the Player's output too, not just the editor's, and takes a
+cursor via `--since` to follow along.
+
+### Recommended workflow
+
+1. While coding, check IDE diagnostics (`mcp__ide__getDiagnostics`) — it also
+   catches YAML/JSON syntax errors that Unity never sees
+2. `unity command recompile`, then poll `unity command recompile_status`
+3. `unity command console --level error` — fix what it reports
+4. `dotnet format Rector.csproj --include <changed files>`
+
+### Inspecting and driving the project
+
+`unity command` with no argument lists all 140 built-in commands. Destructive
+ones require `--confirm true` and accept `--dry_run true`.
+
+```bash
+unity status                         # connected editors: port, project, state, PID
+unity command search --query "t:VisualEffectAsset" --limit 20
+unity command list_open_scenes
+unity command get_performance_stats
+unity command editor_play            # also editor_pause / editor_stop
+unity command package_add --identifier <name@version> --confirm true --wait true
+unity command package_remove --name <name> --confirm true --wait true
+```
+
+`unity command eval` runs C# inside the live editor through Roslyn — no project
+recompile, no domain reload. Use it for one-off inspection; promote anything
+repeated to a `[CliCommand]` method so it lives in source control and can be
+reviewed once instead of per-call.
+
+```bash
+unity command eval 'return UnityEditor.AssetDatabase.FindAssets("t:VisualEffectAsset").Length;'
+```
+
+### Driving a build
+
+`unity command --runtime <player exec name>` connects to a running Player the
+same way it connects to the editor, so a development build of Rector can be
+inspected and hot-reloaded while it is actually running against live audio.
+The runtime API is localhost-only and off by default — development and QA
+builds only, never a shipping build.
+
+### Caveats
+
+- `com.unity.pipeline` is experimental (`0.4.0-exp.1`); its command surface may
+  change between versions
+- Modal dialogs in the editor block the API — anything waiting on one hangs
+- Editing an asset on disk while the editor holds it in memory gets overwritten
+  on the editor's next save. Change those through the CLI or the Inspector
