@@ -16,6 +16,10 @@ namespace Rector.UI.Hud
         readonly SerialDisposable scrollDisposable = new();
         const float ScrollSpeed = 50f;
 
+        // resolvedStyle はレイアウト解決後にしか更新されないため、
+        // 読み戻さずに済むようスクロール位置を保持する。x は常に 0。
+        float scrollY;
+
         public CopyrightNoticesPageView(VisualElement root, UIInputAction uiInputAction)
         {
             this.root = root;
@@ -48,26 +52,25 @@ namespace Rector.UI.Hud
         {
             root.style.display = DisplayStyle.Flex;
             label.text = await model.LoadCopyrightNoticesAsync();
-            label.transform.position = new Vector3(0, 0, 0);
+            // ここではクランプしない。text 代入直後で resolvedStyle.height が未確定のため。
+            scrollY = 0f;
+            label.style.translate = Vector2.zero;
             uiInputAction.Register(this);
 
             scrollDisposable.Disposable = Observable.Timer(TimeSpan.FromSeconds(1))
                 .SelectMany(_ => Observable.EveryUpdate())
-                .Subscribe(_ =>
-                {
-                    var pos = label.transform.position;
-                    pos.y -= ScrollSpeed * Time.deltaTime;
-                    pos.y = Mathf.Clamp(pos.y, root.resolvedStyle.height - label.resolvedStyle.height, 0f);
-                    label.transform.position = pos;
-                });
+                .Subscribe(_ => SetScrollY(scrollY - ScrollSpeed * Time.deltaTime));
+        }
+
+        void SetScrollY(float y)
+        {
+            scrollY = Mathf.Clamp(y, root.resolvedStyle.height - label.resolvedStyle.height, 0f);
+            label.style.translate = new Vector2(0f, scrollY);
         }
 
         void MoveLabel(float y)
         {
-            var pos = label.transform.position;
-            pos.y += y * 10;
-            pos.y = Mathf.Clamp(pos.y, root.resolvedStyle.height - label.resolvedStyle.height, 0f);
-            label.transform.position = pos;
+            SetScrollY(scrollY + y * 10);
         }
 
         void IUIInputHandler.OnNavigate(Vector2 value)

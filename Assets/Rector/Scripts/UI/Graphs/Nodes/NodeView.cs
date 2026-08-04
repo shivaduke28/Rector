@@ -22,13 +22,14 @@ namespace Rector.UI.Graphs.Nodes
 
         protected readonly CompositeDisposable Disposables = new();
 
+        // アニメーション中は補間中の現在値を返す。目標値が要る場合は TargetPosition を使う。
         public Vector2 Position
         {
-            get => Root.transform.position;
+            get => Root.resolvedStyle.translate;
             set
             {
                 TargetPosition = value;
-                Root.transform.position = new Vector3(value.x, value.y, 0);
+                Root.style.translate = value;
             }
         }
 
