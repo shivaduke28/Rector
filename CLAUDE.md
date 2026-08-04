@@ -147,11 +147,27 @@ unity command eval 'return UnityEditor.AssetDatabase.FindAssets("t:VisualEffectA
 
 ### Driving a build
 
-`unity command --runtime <player exec name>` connects to a running Player the
-same way it connects to the editor, so a development build of Rector can be
-inspected and hot-reloaded while it is actually running against live audio.
-The runtime API is localhost-only and off by default — development and QA
-builds only, never a shipping build.
+`unity command --runtime RectorApp` connects to a running Player, so a build
+processing live audio can be inspected and driven exactly like the editor.
+
+**`--runtime` is an option of `unity command`, so it must come before the
+command name.** Put it after and the call silently goes to the editor instead
+— it does not error, it just answers from the wrong process.
+
+```bash
+unity command --runtime RectorApp rector_state                      # right
+unity command rector_state --runtime RectorApp                      # wrong: hits the editor
+```
+
+`Base.unity` carries a `RuntimePipelineManager` with `enableInBuilds` on, which
+is what starts the server in a Player. It binds IPv4 loopback only and requires
+a bearer token published in `.unity-pipeline-runtime-port` next to the build.
+
+`eval`, `eval_file` and the hot-reload commands are compiled out unless the
+build is a **Development Build** — they sit behind
+`#if UNITY_EDITOR || (UNITY_STANDALONE && DEBUG)`. The server itself and every
+other command, `rector_*` included, carry no such guard. Keep the manager out
+of a shipping build regardless: the command surface can drive the whole graph.
 
 ### Caveats
 

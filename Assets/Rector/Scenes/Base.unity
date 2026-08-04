@@ -283,6 +283,7 @@ MonoBehaviour:
   - {fileID: 19034544}
   - {fileID: 19034545}
   guid: 0aa03a44-f14d-43f7-8559-01cce2a5a940
+  category: 5
   cameraInputSlot: {fileID: 19034546}
 --- !u!114 &19034544
 MonoBehaviour:
@@ -429,6 +430,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -450,9 +453,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &20401576
 MeshFilter:
@@ -674,6 +679,7 @@ MonoBehaviour:
   - {fileID: 194669239}
   - {fileID: 194669240}
   guid: fd7102b7-9c18-4a8d-9cee-aabd90edc839
+  category: 5
   cameraInputSlot: {fileID: 194669241}
 --- !u!114 &194669239
 MonoBehaviour:
@@ -955,6 +961,7 @@ MonoBehaviour:
   - {fileID: 418786977}
   - {fileID: 418786976}
   guid: dd40b01a-438c-4abd-a763-0de05228ce74
+  category: 5
   cameraInputSlot: {fileID: 418786978}
 --- !u!114 &418786976
 MonoBehaviour:
@@ -1196,6 +1203,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1217,9 +1226,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &431810040
 MeshFilter:
@@ -1441,6 +1452,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1462,9 +1475,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &611200832
 MeshFilter:
@@ -1489,6 +1504,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &652315990
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 652315991}
+  - component: {fileID: 652315992}
+  m_Layer: 0
+  m_Name: RuntimePipelineManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &652315991
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652315990}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &652315992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652315990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd4ab1c9091e0194196b5f5d51cb932f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Pipeline::Unity.Pipeline.RuntimePipelineManager
+  enableInBuilds: 1
+  port: 0
+  requestTimeoutMs: 30000
+  enableAuditLogging: 1
+  autoStart: 1
+  maxWorkItemsPerFrame: 10
+  m_AllowedReloadRoots: []
 --- !u!1 &829044796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1519,17 +1585,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
   m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!108 &829044798
 Light:
   m_ObjectHideFlags: 0
@@ -1538,14 +1610,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829044796}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1.5
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 2
     m_Resolution: -1
@@ -1791,6 +1863,7 @@ MonoBehaviour:
   - {fileID: 868003835}
   - {fileID: 868003836}
   guid: de5ac1c8-1c38-454e-bd58-f75920184ac8
+  category: 5
   cameraInputSlot: {fileID: 868003837}
 --- !u!114 &868003835
 MonoBehaviour:
@@ -1930,6 +2003,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1951,9 +2026,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &938920419
 MeshFilter:
@@ -2056,7 +2133,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -2064,6 +2140,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!81 &961739751
 AudioListener:
   m_ObjectHideFlags: 0
@@ -2317,9 +2394,13 @@ MonoBehaviour:
   sourceAsset: {fileID: 9197481963319205126, guid: 1d5d0b6cd95bfdf44b2a3b3949b7e34e,
     type: 3}
   m_SortingOrder: 0
+  m_Position: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
 --- !u!4 &1141867452
 Transform:
   m_ObjectHideFlags: 0
@@ -2511,6 +2592,7 @@ MonoBehaviour:
   - {fileID: 1219071081}
   - {fileID: 1219071082}
   guid: ed23166d-702e-4a57-89db-f25cae4e41f5
+  category: 5
   cameraInputSlot: {fileID: 1219071083}
 --- !u!114 &1219071081
 MonoBehaviour:
@@ -2761,6 +2843,7 @@ MonoBehaviour:
   - {fileID: 1275581335}
   - {fileID: 1275581334}
   guid: 23b921b8-b0c0-4394-9335-f1101d07de17
+  category: 5
   cameraInputSlot: {fileID: 1275581336}
 --- !u!114 &1275581334
 MonoBehaviour:
@@ -2938,6 +3021,7 @@ MonoBehaviour:
   - {fileID: 1312409706}
   - {fileID: 1312409705}
   guid: 1ebe8b5d-fcea-4aab-855d-bcea044022d1
+  category: 5
   cameraInputSlot: {fileID: 1312409706}
 --- !u!114 &1312409705
 MonoBehaviour:
@@ -3119,6 +3203,7 @@ MonoBehaviour:
   slotBehaviours:
   - {fileID: 1364943582}
   guid: a93f01c8-de6b-4728-a5dc-416d3c41f0df
+  category: 5
   cameraInputSlot: {fileID: 1364943582}
 --- !u!114 &1364943582
 MonoBehaviour:
@@ -3389,6 +3474,7 @@ MonoBehaviour:
   - {fileID: 1431009465}
   - {fileID: 1431009467}
   guid: 9a0efca5-0abc-4d24-9dd2-b01f4b177244
+  category: 5
   cameraInputSlot: {fileID: 1431009468}
 --- !u!114 &1431009467
 MonoBehaviour:
@@ -3756,6 +3842,7 @@ MonoBehaviour:
   - {fileID: 1792300581}
   - {fileID: 1792300579}
   guid: 589308a0-2e5e-413f-824c-3cc92854503c
+  category: 5
   cameraInputSlot: {fileID: 1792300583}
 --- !u!114 &1792300581
 MonoBehaviour:
@@ -3915,6 +4002,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -3936,9 +4025,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1912550546
 MeshFilter:
@@ -4039,6 +4130,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4060,9 +4153,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1940203304
 MeshFilter:
@@ -4221,6 +4316,7 @@ MonoBehaviour:
   - {fileID: 1970195325}
   - {fileID: 1970195324}
   guid: ec175a33-410b-4e37-9291-35f5e0543be0
+  category: 5
   cameraInputSlot: {fileID: 1970195325}
 --- !u!114 &1970195324
 MonoBehaviour:
@@ -4434,6 +4530,7 @@ SceneRoots:
   - {fileID: 1859786337}
   - {fileID: 1141867452}
   - {fileID: 463492732}
+  - {fileID: 652315991}
   - {fileID: 134190178}
   - {fileID: 20401573}
   - {fileID: 938920420}
