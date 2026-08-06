@@ -16,18 +16,18 @@ namespace Rector.UI.GraphPages
         readonly ReactiveProperty<bool> followSelectedNode;
 
         /// <summary>
-        /// 選択中のノードに合わせてグラフを動かすか。
+        /// 選択中のノードに合わせてグラフを動かすか。既定はオフ。
         /// </summary>
         /// <remarks>
-        /// 今の実装は選択のたびにノードを画面中央へ持ってくる。手で見たい位置に置いたまま
-        /// ノードを辿りたいときは邪魔になるので切れるようにしている。
+        /// 今の実装は選択のたびにノードを画面中央へ持ってくる。ノードを辿るだけで視界が
+        /// 動き続けるほうが邪魔なので、既定では動かさない。
         /// </remarks>
         public ReadOnlyReactiveProperty<bool> FollowSelectedNode => followSelectedNode;
 
         public GraphViewSettings()
         {
             // PlayerPrefs に bool はないので 0/1 で持つ
-            followSelectedNode = new ReactiveProperty<bool>(PlayerPrefs.GetInt(FollowSelectedNodePrefsKey, 1) != 0);
+            followSelectedNode = new ReactiveProperty<bool>(PlayerPrefs.GetInt(FollowSelectedNodePrefsKey, 0) != 0);
         }
 
         public void SetFollowSelectedNode(bool value)
