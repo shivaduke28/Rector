@@ -21,6 +21,9 @@ namespace Rector.UI.LayeredGraphDrawing
         // nealy static
         float Width { get; }
 
+        // nealy static
+        float Height { get; }
+
         // dynamic
         Vector2 Position { get; set; }
 

@@ -4,15 +4,22 @@ using UnityEngine;
 
 namespace Rector.UI.LayeredGraphDrawing
 {
+    /// <summary>
+    /// カラムの枠。content と同じ座標系で、ノードを囲む矩形を表す。
+    /// </summary>
     public readonly struct ColumnBounds
     {
         public readonly float OriginX;
         public readonly float Width;
+        public readonly float OriginY;
+        public readonly float Height;
 
-        public ColumnBounds(float originX, float width)
+        public ColumnBounds(float originX, float width, float originY, float height)
         {
             OriginX = originX;
             Width = width;
+            OriginY = originY;
+            Height = height;
         }
     }
 
@@ -71,12 +78,14 @@ namespace Rector.UI.LayeredGraphDrawing
         }
 
         /// <summary>
-        /// カラムの原点と幅を確定して幅を返す。カラム0から順に呼ぶこと。
+        /// カラムの枠を確定して幅を返す。カラム0から順に呼ぶこと。
         /// </summary>
-        public float Place(float originX, float contentWidth)
+        /// <param name="contentTop">ノードの上端。ノードがないカラムでは0。</param>
+        /// <param name="contentHeight">ノードの上端から下端まで。ノードがないカラムでは0。</param>
+        public float Place(float originX, float contentWidth, float contentTop, float contentHeight)
         {
             var width = Mathf.Max(MinWidth, contentWidth + Padding * 2f);
-            bounds.Add(new ColumnBounds(originX, width));
+            bounds.Add(new ColumnBounds(originX, width, contentTop - Padding, contentHeight + Padding * 2f));
             return width;
         }
     }

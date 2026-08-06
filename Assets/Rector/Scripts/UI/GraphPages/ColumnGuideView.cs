@@ -9,9 +9,9 @@ namespace Rector.UI.GraphPages
     /// カラムの区切り線とヘッダーを描く。
     /// </summary>
     /// <remarks>
-    /// graph-content の兄弟として graph-mask 直下に置き、content と同じ scale と
-    /// 同じ水平方向の平行移動を掛ける。y だけ動かさないことでヘッダーが上に貼り付く。
-    /// カラムの left/width は content と同じ座標系のまま渡すので、ズームでズレようがない。
+    /// graph-content の兄弟として graph-mask 直下に置き、content と全く同じ平行移動と
+    /// scale を掛ける。カラムの矩形も content と同じ座標系のまま渡すので、
+    /// パンでもズームでもノードとズレようがない。
     /// 書き込みは GraphContentTransformer からの Layout 一本に絞っている。
     /// </remarks>
     public sealed class ColumnGuideView
@@ -20,6 +20,7 @@ namespace Rector.UI.GraphPages
 
         const string ColumnClassName = "rector-column";
         const string ColumnActiveClassName = "rector-column--active";
+        const string BoxClassName = "rector-column-box";
         const string LabelClassName = "rector-column-label";
 
         readonly VisualElement root;
@@ -27,7 +28,7 @@ namespace Rector.UI.GraphPages
         readonly List<VisualElement> columnElements = new(GraphColumns.MaxCount);
 
         int activeColumn = -1;
-        float lastTranslationX = float.NaN;
+        Vector2 lastTranslation = new(float.NaN, float.NaN);
         float lastScale = float.NaN;
         int lastRevision = -1;
 
@@ -38,23 +39,24 @@ namespace Rector.UI.GraphPages
             root.pickingMode = PickingMode.Ignore;
         }
 
-        public void Layout(float translationX, float scale)
+        public void Layout(Vector2 translation, float scale)
         {
             var bounds = columns.Bounds;
 
             // 毎フレーム呼ばれるので、変化がなければ何も触らない
             if (columns.Revision == lastRevision
-                && Mathf.Approximately(translationX, lastTranslationX)
+                && Mathf.Approximately(translation.x, lastTranslation.x)
+                && Mathf.Approximately(translation.y, lastTranslation.y)
                 && Mathf.Approximately(scale, lastScale))
             {
                 return;
             }
 
             lastRevision = columns.Revision;
-            lastTranslationX = translationX;
+            lastTranslation = translation;
             lastScale = scale;
 
-            root.style.translate = new Vector2(translationX, 0f);
+            root.style.translate = translation;
             root.style.scale = new Vector3(scale, scale, 1f);
 
             EnsureColumnElements(bounds.Count);
@@ -64,6 +66,9 @@ namespace Rector.UI.GraphPages
                 var element = columnElements[i];
                 element.style.left = bounds[i].OriginX;
                 element.style.width = bounds[i].Width;
+                element.style.top = bounds[i].OriginY;
+                // 0番目のラベルは絶対配置で枠の外（上）に出るので、高さは枠だけで決まる
+                element[1].style.height = bounds[i].Height;
             }
         }
 
@@ -97,9 +102,14 @@ namespace Rector.UI.GraphPages
                 var element = new VisualElement { pickingMode = PickingMode.Ignore };
                 element.AddToClassList(ColumnClassName);
 
+                // ラベルは枠の上へ絶対配置で載せる (USS の bottom: 100%)
                 var label = new Label($"COLUMN {columnElements.Count + 1}") { pickingMode = PickingMode.Ignore };
                 label.AddToClassList(LabelClassName);
                 element.Add(label);
+
+                var box = new VisualElement { pickingMode = PickingMode.Ignore };
+                box.AddToClassList(BoxClassName);
+                element.Add(box);
 
                 root.Add(element);
                 columnElements.Add(element);

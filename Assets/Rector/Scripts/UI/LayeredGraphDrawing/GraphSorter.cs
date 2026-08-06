@@ -115,24 +115,34 @@ namespace Rector.UI.LayeredGraphDrawing
 
                 var minX = 0f;
                 var contentWidth = 0f;
+                var minY = 0f;
+                var contentHeight = 0f;
                 if (colNodes.Count > 0)
                 {
                     minX = float.MaxValue;
+                    minY = float.MaxValue;
                     var maxX = float.MinValue;
+                    var maxY = float.MinValue;
                     foreach (var node in colNodes.Values)
                     {
                         var nodeX = x[node.Id];
                         minX = Mathf.Min(minX, nodeX);
                         maxX = Mathf.Max(maxX, nodeX + node.Width);
-                        // NodeView.WidthはresolvedStyle由来なので、追加直後のフレームでは0のことがある。
-                        // そのまま確定するとカラム幅が足りず、ノードが右のborderをはみ出す。
+
+                        var nodeY = layerY[node.Layer];
+                        minY = Mathf.Min(minY, nodeY);
+                        maxY = Mathf.Max(maxY, nodeY + node.Height);
+
+                        // NodeView.Width/HeightはresolvedStyle由来なので、追加直後のフレームでは0のことがある。
+                        // そのまま確定するとカラムの枠が足りず、ノードが枠をはみ出す。
                         if (!node.IsDummy && node.Width <= 0f) hasUnresolvedWidth = true;
                     }
 
                     contentWidth = maxX - minX;
+                    contentHeight = maxY - minY;
                 }
 
-                var width = columns.Place(originX, contentWidth);
+                var width = columns.Place(originX, contentWidth, minY, contentHeight);
 
                 foreach (var node in colNodes.Values)
                 {

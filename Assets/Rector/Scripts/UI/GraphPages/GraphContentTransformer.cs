@@ -44,7 +44,7 @@ namespace Rector.UI.GraphPages
                 ApplyTranslateAndZoom();
                 // カラムガイドはcontentと同じtranslation/scaleから位置を決めるので、
                 // 書き込み口をここ一本に絞る。Layoutは値が変わらなければ何もしない。
-                columnGuideView.Layout(translation.x, currentScale);
+                columnGuideView.Layout(translation, currentScale);
             }).AddTo(disposable);
             graphInputAction.ResetTransform.Subscribe(_ => Reset()).AddTo(disposable);
             // UIの初期化を待ちたいので1F遅らせる

@@ -191,28 +191,41 @@
     transform-origin: left top;
 }
 
+/* ラベルと枠を縦に積む入れ物。ラベルの幅は中身なりにしたいので align-items は flex-start。 */
 .rector-column {
     position: absolute;
-    top: 0;
-    /* 親ごとズームされるので、縮小したときも下まで届くよう高さを取っておく。
-       はみ出た分は graph-mask の overflow: hidden で切られる。 */
-    height: 4000px;
-    border-left-width: 1px;
-    border-color: var(--rector-border-color);
+    align-items: flex-start;
     /* ノード (.rector-node) と同じ時間で動かす。瞬間移動させるとレイアウト変更の
        アニメーション中だけ枠とノードがずれて、はみ出したように見える。 */
-    transition-property: left, width;
+    transition-property: left, top, width;
     transition-duration: 0.2s;
     transition-timing-function: ease-in-out;
 }
 
+/* ノードを囲む矩形。フォーカス中のカラムだけ枠線を出す。
+   非表示側も同じ太さの透明borderを持たせて、切り替えでサイズが動かないようにする。 */
+.rector-column-box {
+    width: 100%;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    transition-property: height;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+}
+
+.rector-column--active .rector-column-box {
+    border-color: var(--rector-border-color);
+}
+
+/* 枠のすぐ上に左揃えで載せる。高さを決め打ちすると枠の余白がずれるので絶対配置にする。 */
 .rector-column-label {
     position: absolute;
-    top: 8px;
-    left: 8px;
+    bottom: 100%;
+    left: 0;
     font-size: 10px;
     letter-spacing: 2px;
     padding: 2px 6px;
+    -unity-text-align: middle-left;
     color: var(--rector-text-color);
     background-color: var(--rector-text-background-color);
 }

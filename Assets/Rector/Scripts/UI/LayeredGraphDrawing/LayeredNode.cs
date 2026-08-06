@@ -10,6 +10,7 @@ namespace Rector.UI.LayeredGraphDrawing
         public NodeId Id { get; }
         public bool IsDummy => false;
         public float Width => NodeView.Width;
+        public float Height => NodeView.Height;
 
         public Vector2 Position
         {
