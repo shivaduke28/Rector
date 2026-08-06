@@ -217,11 +217,13 @@
     border-color: var(--rector-border-color);
 }
 
-/* 枠のすぐ上に左揃えで載せる。高さを決め打ちすると枠の余白がずれるので絶対配置にする。 */
+/* 枠のすぐ上に左揃えで載せる。高さを決め打ちすると枠の余白がずれるので絶対配置にする。
+   Label の既定 margin (2px) を消さないと、枠との間に隙間が空く。 */
 .rector-column-label {
     position: absolute;
     bottom: 100%;
     left: 0;
+    margin: 0;
     font-size: 10px;
     letter-spacing: 2px;
     padding: 2px 6px;
