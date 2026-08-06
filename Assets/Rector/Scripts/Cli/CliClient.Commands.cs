@@ -49,6 +49,12 @@ namespace Rector.Cli
             [CliArg("muted", "true to mute, false to unmute.", Required = true)] bool muted)
             => Call(c => c.SetNodeMuted(id, muted));
 
+        [CliCommand("rector_set_node_column", "Move a node to another column of the graph layout.")]
+        static object SetNodeColumnCommand(
+            [CliArg("id", "Node id.", Required = true)] uint id,
+            [CliArg("column", "Zero-based column index. rector_state reports columnCount.", Required = true)] int column)
+            => Call(c => c.SetNodeColumn(id, column));
+
         [CliCommand("rector_invoke_node", "Invoke a node's action (Node.DoAction).")]
         static object InvokeNodeCommand(
             [CliArg("id", "Node id.", Required = true)] uint id)

@@ -19,70 +19,84 @@ namespace Rector.UI.GraphPages
             var direction = GetDirection(input);
             var currentLayerIndex = current.Layer;
             var currentLayer = layers[currentLayerIndex];
-            var currentIndexInLayer = currentLayer.IndexOf(current);
+
             if (direction is Direction.Left or Direction.Right)
             {
-                while (true)
+                // レイヤーはカラムを跨いで1行に連結されているので、端では折り返さずに止まる。
+                // 折り返すとグラフの反対側へ飛び、表示位置も全幅スクロールしてしまう。
+                var step = direction == Direction.Right ? 1 : -1;
+                for (var i = currentLayer.IndexOf(current) + step; i >= 0 && i < currentLayer.Count; i += step)
                 {
-                    var nextIndex = currentIndexInLayer + (direction == Direction.Right ? 1 : -1);
-                    nextIndex = (nextIndex + currentLayer.Count) % currentLayer.Count;
-                    var next = currentLayer[nextIndex];
-                    if (next is LayeredNode layeredNode)
+                    if (currentLayer[i] is LayeredNode layeredNode)
                     {
                         return layeredNode;
                     }
-
-                    currentIndexInLayer = nextIndex;
                 }
+
+                return current;
             }
-            else
+
+            var up = direction == Direction.Up;
+
+            // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
+            // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
+            // 同一カラムの親子を最優先にする。カラム数が1なら従来と同じ挙動になる。
+            var neighbor = (up ? current.Parents : current.Children)
+                .Select(t => t.Node)
+                .OfType<LayeredNode>()
+                .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
+                .FirstOrDefault();
+            if (neighbor != null)
             {
-                // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
-                // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
-                if (direction == Direction.Up)
-                {
-                    // 一つ上のレイヤーで一番x座標が近いノードに移動する
-                    var parentNode = current.Parents
-                        .Select(t => t.Node)
-                        .OfType<LayeredNode>()
-                        .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
-                        .FirstOrDefault();
-                    if (parentNode != null)
-                    {
-                        return parentNode;
-                    }
-                }
-                else
-                {
-                    // 一つ下のレイヤーで一番x座標が近いノードに移動する
-                    var childNode = current.Children
-                        .Select(t => t.Node)
-                        .OfType<LayeredNode>()
-                        .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
-                        .FirstOrDefault();
-                    if (childNode != null)
-                    {
-                        return childNode;
-                    }
-                }
+                return neighbor;
+            }
 
-                while (true)
+            // カラムを跨ぐエッジはParents/Childrenに入らないので、生のエッジ列から実の親子を辿る
+            var crossing = FindAcrossColumns(current, up);
+            if (crossing != null)
+            {
+                return crossing;
+            }
+
+            // 隣のレイヤーで一番x座標が近いノードに移動する。ノードのないレイヤーは飛ばす。
+            for (var i = 0; i < layers.Count; i++)
+            {
+                currentLayerIndex = (currentLayerIndex + (up ? -1 : 1) + layers.Count) % layers.Count;
+                var candidate = layers[currentLayerIndex]
+                    .OfType<LayeredNode>()
+                    .OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x))
+                    .FirstOrDefault();
+                if (candidate != null)
                 {
-                    var nextLayerIndex = currentLayerIndex + (direction == Direction.Up ? -1 : 1);
-                    nextLayerIndex = (nextLayerIndex + layers.Count) % layers.Count;
-                    var nextLayer = layers[nextLayerIndex];
-
-                    // NOTE: 0番目のレイヤーは空の場合がある
-                    if (nextLayer.Count != 0)
-                    {
-                        return nextLayer.Where(x => !x.IsDummy).Cast<LayeredNode>().OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x)).First();
-                    }
-
-                    currentLayerIndex = nextLayerIndex;
+                    return candidate;
                 }
             }
+
+            return current;
         }
 
+        LayeredNode FindAcrossColumns(LayeredNode current, bool up)
+        {
+            LayeredNode nearest = null;
+            var nearestDistance = float.MaxValue;
+
+            foreach (var edge in up ? current.EdgesToParent : current.EdgesToChild)
+            {
+                var e = edge.EdgeView.Edge;
+                var nodeId = up ? e.OutputSlot.NodeId : e.InputSlot.NodeId;
+                if (!graph.TryGetNode(nodeId, out var node)) continue;
+                if (node.Column == current.Column) continue;
+
+                var distance = Mathf.Abs(node.TargetPosition.x - current.TargetPosition.x);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearest = node;
+                }
+            }
+
+            return nearest;
+        }
 
         enum Direction
         {

@@ -28,6 +28,7 @@ namespace Rector.UI.GraphPages
         readonly Subject<Unit> openSystem = new();
         readonly Subject<Unit> openScene = new();
         readonly Subject<Unit> resetTransform = new();
+        readonly Subject<int> moveColumn = new();
 
         readonly NavigateInputThrottle navigateInputThrottle = new();
 
@@ -44,10 +45,14 @@ namespace Rector.UI.GraphPages
         public Observable<Unit> OpenScene => openScene;
         public Observable<Unit> ResetTransform => resetTransform;
         public Observable<Vector2> Navigate => navigateInputThrottle.Navigate;
+        public Observable<int> MoveColumn => moveColumn;
 
         public Vector2 Translate { get; private set; }
         public float Zoom { get; private set; }
         public bool IsNodeParameterOpen => rectorInput.Graph.OpenNodeParameter.IsPressed();
+
+        const float MoveColumnThreshold = 0.5f;
+        int moveColumnDirection;
 
         bool removeNodeHolding;
         int removeNodeHoldId;
@@ -68,6 +73,8 @@ namespace Rector.UI.GraphPages
         {
             Translate = Vector2.zero;
             Zoom = 0f;
+            // 倒したまま抜けても、戻ってきたときに入力待ちの状態から始まるようにする
+            moveColumnDirection = 0;
             rectorInput.Graph.Disable();
         }
 
@@ -81,6 +88,30 @@ namespace Rector.UI.GraphPages
             {
                 navigateInputThrottle.SetInput(Vector2.zero);
             }
+        }
+
+        /// <remarks>
+        /// カラム移動は離散的な操作なので、Navigateのようなリピートはさせない。
+        /// スティックが中立から左右に倒れた瞬間だけ発火させる。
+        /// </remarks>
+        public void OnMoveColumn(InputAction.CallbackContext context)
+        {
+            var direction = context.canceled ? 0 : ToHorizontalDirection(context.ReadValue<Vector2>());
+            if (direction == moveColumnDirection) return;
+
+            moveColumnDirection = direction;
+            if (direction != 0)
+            {
+                moveColumn.OnNext(direction);
+            }
+        }
+
+        static int ToHorizontalDirection(Vector2 value)
+        {
+            // 縦入力と、倒しきっていない入力は無視する
+            if (Mathf.Abs(value.x) < MoveColumnThreshold) return 0;
+            if (Mathf.Abs(value.x) <= Mathf.Abs(value.y)) return 0;
+            return value.x > 0 ? 1 : -1;
         }
 
         public void OnSubmit(InputAction.CallbackContext context)

@@ -28,9 +28,9 @@ namespace Rector.UI.LayeredGraphDrawing
             Layers.Add(new List<ILayeredNode>());
         }
 
-        public void AddNode(NodeView nodeView)
+        public void AddNode(NodeView nodeView, int column)
         {
-            var layeredNode = new LayeredNode(nodeView);
+            var layeredNode = new LayeredNode(nodeView) { Column = column };
             if (nodes.TryAdd(layeredNode.Id, layeredNode))
             {
                 var layer = Layers[0];
@@ -46,6 +46,21 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
 
                 RectorLogger.CreateNode(nodeView.Node);
+            }
+        }
+
+        /// <summary>
+        /// カラム数が減ったときに、はみ出したノードを末尾のカラムへ寄せる。
+        /// </summary>
+        public void ClampColumns(int columnCount)
+        {
+            var last = columnCount - 1;
+            foreach (var node in nodes.Values)
+            {
+                if (node.Column > last)
+                {
+                    node.Column = last;
+                }
             }
         }
 

@@ -60,6 +60,7 @@ namespace Rector.Cli
             scene = bgSceneManager.CurrentScene.CurrentValue,
             nodeCount = graphPage.Graph.NodeCount,
             edgeCount = graphPage.Graph.EdgeCount,
+            columnCount = graphPage.Columns.CurrentCount,
             selectedNodeId = graphPage.SelectedNode?.Id.Value,
             pageState = graphPage.State.Value.ToString(),
         };
@@ -106,10 +107,22 @@ namespace Rector.Cli
             var t = nodeTemplateRepository.GetAll().FirstOrDefault(x => x.Name == template);
             if (t == null) return Failure("unknown_template", $"No node template named '{template}'.");
 
+            // HUD と同じ経路を通す。AddNode が「選択中のノードと同じカラムに入れる」まで見る。
             var nodeView = t.Create(NodeId.Generate());
-            graphPage.Graph.AddNode(nodeView);
-            graphPage.Sort();
+            graphPage.AddNode(nodeView);
             return new { success = true, node = ToNodeDto(nodeView.Node.Id) };
+        }
+
+        object SetNodeColumn(uint id, int column)
+        {
+            if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
+
+            var count = graphPage.Columns.CurrentCount;
+            if (column < 0 || column >= count)
+                return Failure("column_out_of_range", $"Column must be in [0, {count - 1}].");
+
+            graphPage.MoveNodeToColumn(node, column);
+            return new { success = true, node = ToNodeDto(node) };
         }
 
         // HUD ではノード削除だけが長押し (NodeSelectionInputHandler)。エッジ削除も
@@ -285,6 +298,7 @@ namespace Rector.Cli
                 name = node.Name,
                 category = node.Category.ToString(),
                 layer = layered.Layer,
+                column = layered.Column,
                 muted = node.IsMuted.Value,
                 selected = node.Selected.Value,
                 inputs = node.InputSlots.Select(ToSlotDto).ToArray(),

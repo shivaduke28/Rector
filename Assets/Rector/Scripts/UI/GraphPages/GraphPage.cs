@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using R3;
 using Rector.UI.GraphPages.NodeParameters;
 using Rector.UI.Graphs;
+using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
@@ -35,6 +36,7 @@ namespace Rector.UI.GraphPages
         readonly GraphInputAction graphInputAction;
 
         public readonly LayeredGraph Graph;
+        public readonly GraphColumns Columns = new();
 
         readonly CreateNodeMenuModel createNodeMenuModel;
         readonly CreateNodeMenuView createNodeMenuView;
@@ -44,6 +46,7 @@ namespace Rector.UI.GraphPages
         readonly NodeParameterModel nodeParameterModel;
 
         readonly GraphContentTransformer graphContentTransformer;
+        readonly ColumnGuideView columnGuideView;
         readonly GraphSorter graphSorter;
 
         readonly CompositeDisposable disposable = new();
@@ -75,10 +78,11 @@ namespace Rector.UI.GraphPages
             createNodeMenuModel = new CreateNodeMenuModel(this, nodeTemplateRepository,
                 () => State.Value = GraphPageState.NodeSelection);
             graphContent1.Add(holdGuideView);
-            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction);
+            columnGuideView = new ColumnGuideView(graphMask1.Q<VisualElement>(ColumnGuideView.RootName), Columns);
+            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, columnGuideView);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
-            graphSorter = new GraphSorter(Graph);
+            graphSorter = new GraphSorter(Graph, Columns);
 
 
             // state machine
@@ -134,7 +138,15 @@ namespace Rector.UI.GraphPages
             State.Where(x => x == GraphPageState.NodeParameter)
                 .Subscribe(_ => nodeParameterModel.Enter()).AddTo(disposable);
 
+            // カラム数を減らしたときは、はみ出したノードを末尾のカラムへ寄せてから並べ直す
+            Columns.Count.Subscribe(x =>
+            {
+                Graph.ClampColumns(x);
+                Sort();
+            }).AddTo(disposable);
+
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
+            graphInputAction.MoveColumn.Subscribe(x => CurrentInputHandler.MoveColumn(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
@@ -155,6 +167,33 @@ namespace Rector.UI.GraphPages
                 .Subscribe(_ => SortInternal()).AddTo(disposable);
         }
 
+        /// <summary>
+        /// ノードを追加する。新しいノードは選択中のノードと同じカラムに入る。
+        /// </summary>
+        public void AddNode(NodeView nodeView)
+        {
+            Graph.AddNode(nodeView, SelectedNode?.Column ?? 0);
+            Sort();
+        }
+
+        /// <summary>
+        /// 選択中のノードを隣のカラムへ移す。directionは-1か1。
+        /// </summary>
+        public void MoveSelectedNodeToColumn(int direction)
+        {
+            if (SelectedNode is not { } node) return;
+
+            MoveNodeToColumn(node, Columns.Clamp(node.Column + direction));
+        }
+
+        public void MoveNodeToColumn(LayeredNode node, int column)
+        {
+            if (column == node.Column) return;
+
+            node.Column = column;
+            Sort();
+        }
+
         public void SelectNode(LayeredNode? node)
         {
             if (SelectedNode is { } old)
@@ -169,6 +208,7 @@ namespace Rector.UI.GraphPages
             }
 
             SelectedNode = node;
+            columnGuideView.SetActiveColumn(node?.Column ?? -1);
         }
 
         public void SelectSlot(ISlot? slot)
@@ -322,6 +362,9 @@ namespace Rector.UI.GraphPages
             LayerCount.Value = result.LayerCount;
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
+
+            // カラム数を減らして選択ノードが寄せられた場合もここで追随する
+            columnGuideView.SetActiveColumn(SelectedNode?.Column ?? -1);
 
             switch (State.Value)
             {

@@ -27,8 +27,18 @@ namespace Rector.UI.LayeredGraphDrawing
         // dynamic
         int Layer { get; set; }
 
+        /// <summary>
+        /// レイヤー内の位置。Sort中はカラム内ローカルの添字になる。
+        /// </summary>
         // dynamic
         int Index { get; set; }
+
+        /// <summary>
+        /// 所属するカラム。並び替えとx圧縮はこの単位で閉じる。
+        /// Dummy Nodeは同一カラム内のエッジにしか作られないので、エッジのカラムを引き継ぐ。
+        /// </summary>
+        // dynamic
+        int Column { get; set; }
 
         /// <summary>
         /// Dummy Nodeを加味した親の配列 (Short Edge)
