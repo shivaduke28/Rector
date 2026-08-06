@@ -54,11 +54,18 @@ namespace Rector.UI.LayeredGraphDrawing
         {
             // 保存された値が範囲外でも壊れないようにclampして読む
             count = new ReactiveProperty<int>(Mathf.Clamp(PlayerPrefs.GetInt(PrefsKey, DefaultCount), MinCount, MaxCount));
+            ResetBounds();
         }
 
         readonly List<GroupBounds> bounds = new(MaxCount);
 
-        /// <summary>Sortが書き込み、GroupGuideViewが読む。要素数はCurrentCountと一致する。</summary>
+        /// <summary>
+        /// Sortが書き込み、GroupGuideViewが読む。要素数は常にCurrentCountと一致する。
+        /// </summary>
+        /// <remarks>
+        /// Sortは表示中しか走らないので、Sortを待って埋めるとグループ数を変えてから最初のSortまでの間
+        /// 要素数が食い違う。設定画面はグラフを閉じてから開くため、その隙間は実際に踏める。
+        /// </remarks>
         public IReadOnlyList<GroupBounds> Bounds => bounds;
 
         /// <summary>Boundsが更新されるたびに増える。Viewが再描画の要否を判定するのに使う。</summary>
@@ -71,7 +78,31 @@ namespace Rector.UI.LayeredGraphDrawing
 
             count.Value = clamped;
             PlayerPrefs.SetInt(PrefsKey, clamped);
+            ResetBounds();
         }
+
+        /// <summary>
+        /// 次のSortまでのつなぎとして、最小幅で並べた枠を作る。
+        /// </summary>
+        void ResetBounds()
+        {
+            bounds.Clear();
+            for (var i = 0; i < count.Value; i++)
+            {
+                bounds.Add(new GroupBounds(i * MinWidth, MinWidth, -Padding, Padding * 2f));
+            }
+
+            Revision++;
+        }
+
+        /// <summary>
+        /// グループ数より大きい番号を、実際に描かれる末尾のグループへ畳む。
+        /// </summary>
+        /// <remarks>
+        /// 畳むだけでノードのGroupは書き換えない。書き換えるとグループ数を戻しても
+        /// 並びが復元できず、undoのないアプリで取り返しがつかなくなる。
+        /// </remarks>
+        public int Fold(int group) => Mathf.Clamp(group, 0, count.Value - 1);
 
         /// <summary>グループ番号をループさせる。右端で右に進むと左端に戻る。</summary>
         public int Wrap(int group)

@@ -61,7 +61,7 @@ namespace Rector.Cli
             nodeCount = graphPage.Graph.NodeCount,
             edgeCount = graphPage.Graph.EdgeCount,
             groupCount = graphPage.Groups.CurrentCount,
-            groups = graphPage.Groups.Bounds.Select(b => new { originX = b.OriginX, width = b.Width }).ToArray(),
+            groups = graphPage.Groups.Bounds.Select((b, i) => new { number = i + 1, originX = b.OriginX, width = b.Width, originY = b.OriginY, height = b.Height }).ToArray(),
             followSelectedNode = graphPage.ViewSettings.FollowSelectedNode.CurrentValue,
             selectedNodeId = graphPage.SelectedNode?.Id.Value,
             pageState = graphPage.State.Value.ToString(),
@@ -112,7 +112,9 @@ namespace Rector.Cli
             // HUD と同じ経路を通す。AddNode が「選択中のノードと同じグループに入れる」まで見る。
             var nodeView = t.Create(NodeId.Generate());
             graphPage.AddNode(nodeView);
-            return new { success = true, node = ToNodeDto(nodeView.Node.Id) };
+            return graphPage.Graph.TryGetNode(nodeView.Node.Id, out var created)
+                ? new { success = true, node = ToNodeSummaryDto(created) }
+                : Failure("create_failed", "The node was not added to the graph.");
         }
 
         object SetNodeGroup(uint id, int group)
@@ -120,11 +122,11 @@ namespace Rector.Cli
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
 
             var count = graphPage.Groups.CurrentCount;
-            if (group < 0 || group >= count)
-                return Failure("group_out_of_range", $"Group must be in [0, {count - 1}].");
+            if (group < 1 || group > count)
+                return Failure("group_out_of_range", $"Group must be in [1, {count}].");
 
-            graphPage.MoveNodeToGroup(node, group);
-            return new { success = true, node = ToNodeDto(node) };
+            graphPage.MoveNodeToGroup(node, group - 1);
+            return new { success = true, node = ToNodeSummaryDto(node) };
         }
 
         // HUD ではノード削除だけが長押し (NodeSelectionInputHandler)。エッジ削除も
@@ -291,7 +293,7 @@ namespace Rector.Cli
         object ToNodeDto(NodeId id) =>
             graphPage.Graph.TryGetNode(id, out var layered) ? ToNodeDto(layered) : null;
 
-        static object ToNodeDto(LayeredNode layered)
+        object ToNodeDto(LayeredNode layered)
         {
             var node = layered.NodeView.Node;
             return new
@@ -300,8 +302,10 @@ namespace Rector.Cli
                 name = node.Name,
                 category = node.Category.ToString(),
                 layer = layered.Layer,
-                group = layered.Group,
-                // レイアウトをCLIから検証できるように、確定後の座標も返す
+                group = ToGroupNumber(layered),
+                // レイアウトをCLIから検証できるように座標も返す。
+                // Sortは1フレーム遅れて走るので、これらは「最後に完了したレイアウト」の値。
+                // ノードを足した直後や動かした直後はまだ反映されていないのに注意。
                 x = layered.TargetPosition.x,
                 y = layered.TargetPosition.y,
                 width = layered.Width,
@@ -311,6 +315,23 @@ namespace Rector.Cli
                 outputs = node.OutputSlots.Select(ToSlotDto).ToArray(),
             };
         }
+
+        /// <summary>
+        /// グラフを変えた直後に返す用。Sortが走る前なので座標は載せない。
+        /// </summary>
+        object ToNodeSummaryDto(LayeredNode layered) => new
+        {
+            id = layered.Id.Value,
+            name = layered.NodeView.Node.Name,
+            category = layered.NodeView.Node.Category.ToString(),
+            group = ToGroupNumber(layered),
+        };
+
+        /// <summary>
+        /// HUDの "GROUP n" ラベルに合わせた1始まりのグループ番号。
+        /// グループ数を減らして畳まれている場合は、実際に描かれている番号を返す。
+        /// </summary>
+        int ToGroupNumber(LayeredNode layered) => graphPage.Groups.Fold(layered.Group) + 1;
 
         static object ToSlotDto(ISlot slot) => new
         {

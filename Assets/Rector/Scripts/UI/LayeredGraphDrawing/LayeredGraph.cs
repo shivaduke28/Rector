@@ -49,21 +49,6 @@ namespace Rector.UI.LayeredGraphDrawing
             }
         }
 
-        /// <summary>
-        /// グループ数が減ったときに、はみ出したノードを末尾のグループへ寄せる。
-        /// </summary>
-        public void ClampGroups(int groupCount)
-        {
-            var last = groupCount - 1;
-            foreach (var node in nodes.Values)
-            {
-                if (node.Group > last)
-                {
-                    node.Group = last;
-                }
-            }
-        }
-
         public void AddEdge(Edge edge)
         {
             if (TryGetNode(edge.OutputSlot.NodeId, out var outputNode) && TryGetNode(edge.InputSlot.NodeId, out var inputNode))

@@ -7,10 +7,12 @@ namespace Rector.UI.GraphPages
     public sealed class NodeNavigator
     {
         readonly LayeredGraph graph;
+        readonly NodeGroups groups;
 
-        public NodeNavigator(LayeredGraph graph)
+        public NodeNavigator(LayeredGraph graph, NodeGroups groups)
         {
             this.graph = graph;
+            this.groups = groups;
         }
 
         /// <remarks>
@@ -71,7 +73,7 @@ namespace Rector.UI.GraphPages
                 currentLayerIndex = (currentLayerIndex + (up ? -1 : 1) + layers.Count) % layers.Count;
                 var candidate = layers[currentLayerIndex]
                     .OfType<LayeredNode>()
-                    .OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x))
+                    .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
                     .FirstOrDefault();
                 if (candidate != null)
                 {
@@ -92,7 +94,7 @@ namespace Rector.UI.GraphPages
                 var e = edge.EdgeView.Edge;
                 var nodeId = up ? e.OutputSlot.NodeId : e.InputSlot.NodeId;
                 if (!graph.TryGetNode(nodeId, out var node)) continue;
-                if (node.Group == current.Group) continue;
+                if (groups.Fold(node.Group) == groups.Fold(current.Group)) continue;
 
                 var distance = Mathf.Abs(node.TargetPosition.x - current.TargetPosition.x);
                 if (distance < nearestDistance)
@@ -110,7 +112,7 @@ namespace Rector.UI.GraphPages
         /// </summary>
         public LayeredNode FindNodeInAdjacentGroup(LayeredNode current, int direction, int groupCount)
         {
-            var startGroup = current?.Group ?? 0;
+            var startGroup = current is null ? 0 : groups.Fold(current.Group);
 
             for (var step = 1; step <= groupCount; step++)
             {
@@ -138,10 +140,12 @@ namespace Rector.UI.GraphPages
             {
                 foreach (var node in layer)
                 {
-                    if (node is not LayeredNode layeredNode || layeredNode.Group != group) continue;
+                    if (node is not LayeredNode layeredNode || groups.Fold(layeredNode.Group) != group) continue;
 
                     var layerDistance = from == null ? 0 : Mathf.Abs(layeredNode.Layer - from.Layer);
-                    var x = from == null ? 0f : Mathf.Abs(layeredNode.Position.x - from.Position.x);
+                    // 他の判定と同じくアニメーション中の現在値ではなく確定値で比べる。
+                    // Positionを使うと再レイアウト直後の0.2sだけ古い並びで一番近いノードを選んでしまう。
+                    var x = from == null ? 0f : Mathf.Abs(layeredNode.TargetPosition.x - from.TargetPosition.x);
 
                     if (layerDistance < nearestLayerDistance || (layerDistance == nearestLayerDistance && x < nearestX))
                     {

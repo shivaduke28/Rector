@@ -61,14 +61,6 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            // レンジ外のグループを持つノードはどのグループにも切り出されず、グラフから見えなくなる。
-            // 通常はグループ数の変更時にLayeredGraph側で寄せているが、保険としてここでも締める。
-            var lastGroup = groups.CurrentCount - 1;
-            foreach (var node in unsortedNodes)
-            {
-                node.Group = Mathf.Clamp(node.Group, 0, lastGroup);
-            }
-
             // step1: layerを作る
             // 層決めはグループを跨ぐエッジも含めた全DAGで行う。これで親の層 < 子の層が常に成り立ち、
             // グループを跨ぐエッジは必ず下向きになる。
@@ -115,34 +107,25 @@ namespace Rector.UI.LayeredGraphDrawing
 
                 var minX = 0f;
                 var contentWidth = 0f;
-                var minY = 0f;
-                var contentHeight = 0f;
+                var contentBottom = 0f;
                 if (colNodes.Count > 0)
                 {
                     minX = float.MaxValue;
-                    minY = float.MaxValue;
                     var maxX = float.MinValue;
-                    var maxY = float.MinValue;
                     foreach (var node in colNodes.Values)
                     {
                         var nodeX = x[node.Id];
                         minX = Mathf.Min(minX, nodeX);
-                        maxX = Mathf.Max(maxX, nodeX + node.Width);
-
-                        var nodeY = layerY[node.Layer];
-                        minY = Mathf.Min(minY, nodeY);
-                        maxY = Mathf.Max(maxY, nodeY + node.Height);
-
-                        // NodeView.Width/HeightはresolvedStyle由来なので、追加直後のフレームでは0のことがある。
-                        // そのまま確定するとグループの枠が足りず、ノードが枠をはみ出す。
-                        if (!node.IsDummy && node.Width <= 0f) hasUnresolvedWidth = true;
+                        maxX = Mathf.Max(maxX, nodeX + Resolved(node, node.Width, ref hasUnresolvedWidth));
+                        contentBottom = Mathf.Max(contentBottom, layerY[node.Layer] + Resolved(node, node.Height, ref hasUnresolvedWidth));
                     }
 
                     contentWidth = maxX - minX;
-                    contentHeight = maxY - minY;
                 }
 
-                var width = groups.Place(originX, contentWidth, minY, contentHeight);
+                // 枠の上端は全グループで揃える。グループごとの一番上のノードに合わせると、
+                // 他グループからのエッジでしか繋がらないグループのヘッダーだけ下がってしまう。
+                var width = groups.Place(originX, contentWidth, 0f, contentBottom);
 
                 foreach (var node in colNodes.Values)
                 {
@@ -180,6 +163,21 @@ namespace Rector.UI.LayeredGraphDrawing
         }
 
         /// <summary>
+        /// レイアウト未解決のサイズを0として扱い、未解決だったことを呼び出し元に伝える。
+        /// </summary>
+        /// <remarks>
+        /// NodeView.Width/HeightはresolvedStyle由来で、要素が一度もレイアウトされていない間は
+        /// 0ではなくNaNを返す。NaNは比較が常にfalseなので `<= 0f` では捕まらず、Mathf.Max/Minと
+        /// originXの積算を通って全グループの座標をNaNにする。
+        /// </remarks>
+        static float Resolved(ILayeredNode node, float size, ref bool hasUnresolved)
+        {
+            if (size > 0f) return size;
+            if (!node.IsDummy) hasUnresolved = true;
+            return 0f;
+        }
+
+        /// <summary>
         /// グローバルなレイヤー構造から1グループ分を切り出す。
         /// </summary>
         /// <remarks>
@@ -187,7 +185,7 @@ namespace Rector.UI.LayeredGraphDrawing
         /// HorizontalCompaction.PlaceBlock が layers[node.Layer] とグローバル層番号で引くので、
         /// 添字を詰めてはいけない。
         /// </remarks>
-        static (List<List<ILayeredNode>> layers, Dictionary<NodeId, ILayeredNode> nodes) SplitGroup(
+        (List<List<ILayeredNode>> layers, Dictionary<NodeId, ILayeredNode> nodes) SplitGroup(
             List<List<ILayeredNode>> layers,
             Dictionary<NodeId, ILayeredNode> layeredNodes,
             int group)
@@ -198,7 +196,7 @@ namespace Rector.UI.LayeredGraphDrawing
                 var groupLayer = new List<ILayeredNode>();
                 foreach (var node in layer)
                 {
-                    if (node.Group != group) continue;
+                    if (groups.Fold(node.Group) != group) continue;
 
                     // Indexはグループ内ローカルに振り直す。
                     // LayerOrderAssignerは隣接ノードを持たないノードの重心にIndexをそのまま使うので、
@@ -215,7 +213,7 @@ namespace Rector.UI.LayeredGraphDrawing
             var groupNodes = new Dictionary<NodeId, ILayeredNode>(layeredNodes.Count);
             foreach (var (id, node) in layeredNodes)
             {
-                if (node.Group == group)
+                if (groups.Fold(node.Group) == group)
                 {
                     groupNodes.Add(id, node);
                 }
@@ -526,7 +524,7 @@ namespace Rector.UI.LayeredGraphDrawing
                             // グループを跨ぐエッジはdummy nodeを作らず、Parents/Childrenにも入れない。
                             // これでレイヤー内の並び替えとx圧縮がグループ内に閉じ、
                             // 跨ぎエッジはスロット同士を結ぶ直線として描かれる。
-                            if (outputNode.Group != node.Group) continue;
+                            if (groups.Fold(outputNode.Group) != groups.Fold(node.Group)) continue;
 
                             var outputLayerIndex = outputNode.Layer;
 

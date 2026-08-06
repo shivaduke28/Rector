@@ -19,18 +19,31 @@ namespace Rector.UI.GraphPages.NodeParameters
         public int MinValue => 1;
         public int MaxValue { get; }
 
+        readonly GraphPage page;
+        readonly LayeredNode node;
+
         public ExposedGroupInputModel(GraphPage page, LayeredNode node)
         {
+            this.page = page;
+            this.node = node;
             MaxValue = page.Groups.CurrentCount;
-            Value = new ReactiveProperty<int>(node.Group + 1);
+            Value = new ReactiveProperty<int>(Current);
 
             // スライダーを直接動かされた場合もここを通る。
             // MoveNodeToGroupは値が変わらなければ何もしないのでループしない。
             Value.Subscribe(x => page.MoveNodeToGroup(node, x - 1));
         }
 
-        public void Increment() => Value.Value = Wrap(Value.Value + 1);
-        public void Decrement() => Value.Value = Wrap(Value.Value - 1);
+        /// <summary>ノードの今のグループ。1始まり。</summary>
+        int Current => page.Groups.Fold(node.Group) + 1;
+
+        // パネルを開いている間にCLIなどからグループを変えられていることがあるので、
+        // 自分が持っている値ではなくノードの現在値から計算する。
+        // 自前の値を起点にすると、外からの変更を巻き戻して別のグループへ飛ばしてしまう。
+        public void Increment() => Value.Value = Wrap(Current + 1);
+        public void Decrement() => Value.Value = Wrap(Current - 1);
+
+        public void DoAction() { }
 
         int Wrap(int oneBased) => (oneBased - 1 + MaxValue) % MaxValue + 1;
 

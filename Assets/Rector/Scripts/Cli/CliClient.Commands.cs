@@ -52,7 +52,7 @@ namespace Rector.Cli
         [CliCommand("rector_set_node_group", "Move a node to another group of the graph layout.")]
         static object SetNodeGroupCommand(
             [CliArg("id", "Node id.", Required = true)] uint id,
-            [CliArg("group", "Zero-based group index. rector_state reports groupCount.", Required = true)] int group)
+            [CliArg("group", "Group number as shown in the HUD (\"GROUP n\"), starting at 1. rector_state reports groupCount.", Required = true)] int group)
             => Call(c => c.SetNodeGroup(id, group));
 
         [CliCommand("rector_invoke_node", "Invoke a node's action (Node.DoAction).")]

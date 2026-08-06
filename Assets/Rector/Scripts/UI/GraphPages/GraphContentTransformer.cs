@@ -73,6 +73,10 @@ namespace Rector.UI.GraphPages
         {
             translation = value;
             content.style.translate = value;
+            // ここで一緒に書かないと、Reset のように毎フレームのループの外から呼ばれた経路で
+            // content だけ先に動き、グループ枠は次のフレーム（アニメーションを戻したあと）に
+            // 遅れて追いかけることになる。
+            groupGuideView.Layout(translation, currentScale);
         }
 
         void Reset()

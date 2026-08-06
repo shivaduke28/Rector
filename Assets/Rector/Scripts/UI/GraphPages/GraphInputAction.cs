@@ -73,8 +73,9 @@ namespace Rector.UI.GraphPages
         {
             Translate = Vector2.zero;
             Zoom = 0f;
-            // 倒したまま抜けても、戻ってきたときに入力待ちの状態から始まるようにする
-            moveGroupDirection = 0;
+            // moveGroupDirection はここでリセットしない。MoveGroup は initialStateCheck 付きなので、
+            // 倒したまま抜けて戻ると再有効化時に performed が来る。0に戻しておくと
+            // 「中立から倒れた」と誤判定して、触っていないのにグループが1つ飛ぶ。
             rectorInput.Graph.Disable();
         }
 

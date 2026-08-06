@@ -9,9 +9,13 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// 選択中のノードをグループ間で移動する。directionは-1か1。
-        /// ノード選択中以外は何もしないので、他のStateでは自然にブロックされる。
+        /// フォーカスを隣のグループへ移す。directionは-1か1。
         /// </summary>
+        /// <remarks>
+        /// ノード自体のグループ移動はパラメータパネルの Group 行が持つ。同じ左スティックの
+        /// 操作がStateによって別の意味にならないよう、ここでは移すのはフォーカスだけにする。
+        /// 実装しないStateでは何もしない。
+        /// </remarks>
         public virtual void MoveGroup(int direction)
         {
         }

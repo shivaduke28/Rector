@@ -88,7 +88,7 @@ namespace Rector.UI.GraphPages
 
 
             // state machine
-            nodeNavigator = new NodeNavigator(Graph);
+            nodeNavigator = new NodeNavigator(Graph, Groups);
             stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.SlotSelection, new SlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this, nodeNavigator));
@@ -140,12 +140,9 @@ namespace Rector.UI.GraphPages
             State.Where(x => x == GraphPageState.NodeParameter)
                 .Subscribe(_ => nodeParameterModel.Enter()).AddTo(disposable);
 
-            // グループ数を減らしたときは、はみ出したノードを末尾のグループへ寄せてから並べ直す
-            Groups.Count.Subscribe(x =>
-            {
-                Graph.ClampGroups(x);
-                Sort();
-            }).AddTo(disposable);
+            // グループ数が変わったら並べ直す。ノードのGroupは書き換えない（NodeGroups.Foldが畳む）ので、
+            // 数を戻せば元の並びに戻る。
+            Groups.Count.Subscribe(_ => Sort()).AddTo(disposable);
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
             graphInputAction.MoveGroup.Subscribe(x => CurrentInputHandler.MoveGroup(x)).AddTo(disposable);
@@ -225,7 +222,7 @@ namespace Rector.UI.GraphPages
             }
 
             SelectedNode = node;
-            groupGuideView.SetActiveGroup(node?.Group ?? -1);
+            groupGuideView.SetActiveGroup(node is null ? -1 : Groups.Fold(node.Group));
         }
 
         public void SelectSlot(ISlot? slot)
@@ -368,7 +365,10 @@ namespace Rector.UI.GraphPages
         }
 
         bool shouldSort;
-        bool retriedForWidth;
+
+        /// <summary>幅が解決しないまま毎フレームSortし続けないための上限。</summary>
+        const int MaxWidthRetries = 3;
+        int widthRetryCount;
 
         void SortInternal()
         {
@@ -381,19 +381,20 @@ namespace Rector.UI.GraphPages
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
 
-            // グループ数を減らして選択ノードが寄せられた場合もここで追随する
-            groupGuideView.SetActiveGroup(SelectedNode?.Group ?? -1);
+            // グループ数を変えて選択ノードの表示先が変わった場合もここで追随する
+            groupGuideView.SetActiveGroup(SelectedNode is null ? -1 : Groups.Fold(SelectedNode.Group));
 
             // 幅が未解決のまま並べてしまったので、解決を待って次のフレームでやり直す。
-            // 解決しないまま毎フレームSortし続けないよう、やり直しは1回だけにする。
-            if (result.HasUnresolvedWidth && !retriedForWidth)
+            // 単なるフラグにすると、やり直し待ちの間に足されたノードが2度目のSortをもらえない。
+            // 連続して解決しない場合だけ諦める。
+            if (result.HasUnresolvedWidth && widthRetryCount < MaxWidthRetries)
             {
-                retriedForWidth = true;
+                widthRetryCount++;
                 Sort();
             }
             else
             {
-                retriedForWidth = false;
+                widthRetryCount = 0;
             }
 
             switch (State.Value)

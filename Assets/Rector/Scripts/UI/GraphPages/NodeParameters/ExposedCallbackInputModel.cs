@@ -13,6 +13,12 @@ namespace Rector.UI.GraphPages.NodeParameters
 
         public void Invoke() => Slot.SendForce();
 
+        public void Increment() { }
+
+        public void Decrement() { }
+
+        public void DoAction() => Invoke();
+
         public void Focus() => IsFocused.Value = true;
 
         public void Unfocus() => IsFocused.Value = false;

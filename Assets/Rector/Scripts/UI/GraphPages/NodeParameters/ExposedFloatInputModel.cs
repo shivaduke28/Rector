@@ -9,15 +9,16 @@ namespace Rector.UI.GraphPages.NodeParameters
     public sealed class ExposedFloatInputModel : IExposedInputModel
     {
         public readonly ReactivePropertyFloatInputSlot Slot;
-        public readonly ReadOnlyReactiveProperty<SliderStepType> StepType;
+        public ReadOnlyReactiveProperty<SliderStepType> StepType => stepType;
         public readonly ReactiveProperty<bool> IsFocused = new(false);
 
+        readonly ReactiveProperty<SliderStepType> stepType;
         readonly int digit;
 
-        public ExposedFloatInputModel(ReactivePropertyFloatInputSlot slot, ReadOnlyReactiveProperty<SliderStepType> stepType)
+        public ExposedFloatInputModel(ReactivePropertyFloatInputSlot slot, ReactiveProperty<SliderStepType> stepType)
         {
             Slot = slot;
-            StepType = stepType;
+            this.stepType = stepType;
             var diff = slot.MaxValue - slot.MinValue;
 
             digit = diff switch
@@ -55,6 +56,17 @@ namespace Rector.UI.GraphPages.NodeParameters
             rounded -= Math.Pow(10, -d);
 
             Slot.Property.Value = Mathf.Clamp((float)rounded, Slot.MinValue, Slot.MaxValue);
+        }
+
+        /// <summary>刻み幅を x1 -> x10 -> x100 と回す。</summary>
+        public void DoAction()
+        {
+            stepType.Value = stepType.CurrentValue switch
+            {
+                SliderStepType.Times1 => SliderStepType.Times10,
+                SliderStepType.Times10 => SliderStepType.Times100,
+                _ => SliderStepType.Times1
+            };
         }
 
         public void Focus() => IsFocused.Value = true;

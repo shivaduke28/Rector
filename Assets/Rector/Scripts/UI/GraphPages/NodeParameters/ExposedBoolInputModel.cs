@@ -24,6 +24,12 @@ namespace Rector.UI.GraphPages.NodeParameters
             Slot.Property.Value = !value;
         }
 
+        public void Increment() => Set(true);
+
+        public void Decrement() => Set(false);
+
+        public void DoAction() => Toggle();
+
         public void Focus() => IsFocused.Value = true;
 
         public void Unfocus() => IsFocused.Value = false;

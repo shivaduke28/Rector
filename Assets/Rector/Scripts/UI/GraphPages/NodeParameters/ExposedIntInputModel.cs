@@ -28,6 +28,8 @@ namespace Rector.UI.GraphPages.NodeParameters
             Slot.Property.Value -= Mathf.Clamp(delta, 0, Slot.Property.Value - Slot.MinValue);
         }
 
+        public void DoAction() { }
+
         public void Focus() => IsFocused.Value = true;
         public void Unfocus() => IsFocused.Value = false;
     }
