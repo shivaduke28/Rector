@@ -54,14 +54,10 @@ namespace Rector.UI.GraphPages.NodeParameters
                 }
             }
 
-            // 先頭はGroup行なので、パラメータを持つノードでは2番目から始める。
-            // ここを0のままにすると、開いて最初の十字キー左右がノードのグループ移動になってしまう。
-            index = ExposedInputs.Count switch
-            {
-                0 => -1,
-                1 => 0,
-                _ => 1
-            };
+            // 先頭のGroup行にフォーカスを置く。開いてすぐ左右でグループを振り分けられるのが狙いで、
+            // 「開いて最初の十字キー左右がグループ移動になる」のは避けたい副作用ではなく意図した
+            // 挙動 (#43)。ノードが選ばれていればGroup行は必ずあるので、-1になるのは未選択のときだけ。
+            index = ExposedInputs.Count > 0 ? 0 : -1;
             if (index >= 0) ExposedInputs[index].Focus();
 
             IsVisible.Value = true;
