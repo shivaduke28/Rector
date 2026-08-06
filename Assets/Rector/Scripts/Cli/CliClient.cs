@@ -124,7 +124,7 @@ namespace Rector.Cli
 
             // HUD と同じ経路を通す。RemoveSelectedNode が選択・ターゲット・State の
             // 後始末までまとめて行うので、ここで個別に真似すると取りこぼす。
-            graphPage.SelectNode(node);
+            graphPage.EnterNodeSelection(node);
             graphPage.RemoveSelectedNode();
             return new { success = true, removed = id };
         }
@@ -134,16 +134,9 @@ namespace Rector.Cli
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
 
             // HUD はノード選択を NodeSelection / TargetNodeSelection でしか行わない。
-            // 他の State のまま差し替えると SelectedSlot が前のノードのスロットを
-            // 指したままになり、スロット移動が範囲外になる。State ごと戻して揃える。
-            // TODO(#37): State の扱いごと GraphPage 側に寄せる
-            if (graphPage.State.Value != GraphPageState.NodeSelection)
-            {
-                graphPage.SelectSlot(null);
-                graphPage.State.Value = GraphPageState.NodeSelection;
-            }
-
-            graphPage.SelectNode(node);
+            // 他の State のまま差し替えると SelectedSlot が前のノードのスロットを指したままに
+            // なるので、State ごと揃える EnterNodeSelection を通す。
+            graphPage.EnterNodeSelection(node);
             return new { success = true, selected = id };
         }
 
@@ -163,46 +156,31 @@ namespace Rector.Cli
             return new { success = true, id };
         }
 
-        // TODO(#37): 検証と接続を GraphPage 側に引き上げ、HUD と同じ実装を呼ぶ。
-        // ここは HUD の TargetSlotSelectionInputHandler.Submit を書き写したもので、
-        // 片方だけ直すと検証がずれる。
+        // HUD は「繋がっていれば外す」トグルなので、繋がっている組に接続処理が届くことがない。
+        // CLI は connect と disconnect を分けているぶんその保護がないが、既接続の判定も
+        // GraphPage 側にあるので、両者で検証がずれることはない。
         object Connect(uint fromNode, int fromSlot, uint toNode, int toSlot)
         {
             if (!TryGetSlots(fromNode, fromSlot, toNode, toSlot, out var output, out var input, out var error)) return error;
 
-            // HUD は既存エッジをまず外すトグルなので、繋がっている組に TryConnect が
-            // 届くことがない。CLI は connect と disconnect を分けた分この保護がないため
-            // ここで弾く。通すと AddEdge の TryAdd が false になり、購読を持ったまま
-            // どこからも参照されない Edge と EdgeView が残る。
-            if (graphPage.Graph.Edges.ContainsKey(new EdgeId(output, input)))
-                return Failure("already_connected", $"{fromNode}[{fromSlot}] -> {toNode}[{toSlot}] is already connected.");
-
-            if (fromNode == toNode)
-                return Failure("loop_detected", "A node cannot connect to itself.");
-
-            if (!EdgeConnector.CanConnect(output, input))
-                return Failure("incompatible_slots", $"{output.Type} -> {input.Type} is not connectable.");
-
-            if (!graphPage.Graph.ValidateLoop(output, input))
-                return Failure("loop_detected", $"Connecting {fromNode} -> {toNode} would create a loop.");
-
-            if (!EdgeConnector.TryConnect(output, input, out var edge))
-                return Failure("connect_failed", "EdgeConnector refused the connection.");
-
-            graphPage.Graph.AddEdge(edge);
-            graphPage.Sort();
-            return new { success = true, fromNode, fromSlot, toNode, toSlot };
+            return graphPage.TryConnectSlots(output, input) switch
+            {
+                ConnectResult.Connected => new { success = true, fromNode, fromSlot, toNode, toSlot },
+                ConnectResult.AlreadyConnected => Failure("already_connected", $"{fromNode}[{fromSlot}] -> {toNode}[{toSlot}] is already connected."),
+                ConnectResult.Loop => Failure("loop_detected", $"Connecting {fromNode} -> {toNode} would create a loop."),
+                ConnectResult.Incompatible => Failure("incompatible_slots", $"{output.Type} -> {input.Type} is not connectable."),
+                ConnectResult.Failed => Failure("connect_failed", "EdgeConnector refused the connection."),
+                _ => throw new ArgumentOutOfRangeException(),
+            };
         }
 
-        // TODO(#37): GraphPage 側に寄せて HUD と共有する
         object Disconnect(uint fromNode, int fromSlot, uint toNode, int toSlot)
         {
             if (!TryGetSlots(fromNode, fromSlot, toNode, toSlot, out var output, out var input, out var error)) return error;
 
-            if (!graphPage.Graph.RemoveEdge(new EdgeId(output, input)))
+            if (!graphPage.DisconnectSlots(output, input))
                 return Failure("no_such_edge", "There is no edge between those slots.");
 
-            graphPage.Sort();
             return new { success = true, fromNode, fromSlot, toNode, toSlot };
         }
 
