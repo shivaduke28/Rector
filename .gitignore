@@ -110,3 +110,7 @@ crashlytics-build.properties
 /Assets/Resources/PerformanceTestRunInfo.json.meta
 /Assets/Resources/PerformanceTestRunSettings.json
 /Assets/Resources/PerformanceTestRunSettings.json.meta
+
+# com.unity.pipeline が Play Mode / Player 起動のたびに書き出すランタイム記述子
+# (接続先のポートとベアラトークン)
+/.unity-pipeline-runtime-port
