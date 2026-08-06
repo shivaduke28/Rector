@@ -111,6 +111,14 @@ namespace Rector.UI.GraphPages
             graphContentTransformer.Initialize();
             graphContentTransformer.AddTo(disposable);
 
+            // 各パネルは自分の Exit 経路でしか閉じないので、State を外（CLI）から動かされると
+            // 出しっぱなしになる。State から閉じる側も張っておく。
+            State.Subscribe(x =>
+            {
+                if (x != GraphPageState.NodeCreation) createNodeMenuModel.Hide();
+                if (x != GraphPageState.NodeParameter) nodeParameterModel.Hide();
+            }).AddTo(disposable);
+
             State.Where(x => x == GraphPageState.NodeCreation)
                 .Subscribe(_ =>
                 {

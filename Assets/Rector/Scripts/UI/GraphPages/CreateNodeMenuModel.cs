@@ -88,15 +88,31 @@ namespace Rector.UI.GraphPages
             LoadButtons();
             CategoryIndex = 0;
             subIndex = 0;
+            // Hide は Sub の途中でも呼ばれるので、開き直すときに Main へ戻す
+            State.Value = ViewState.Main;
             State.ForceNotify();
             Visible.Value = true;
             CategoryButtons[CategoryIndex].IsFocused.Value = true;
         }
 
+        /// <summary>
+        /// 表示を消すだけ。State は動かさないので GraphPage の State 購読から呼べる。
+        /// </summary>
+        public void Hide()
+        {
+            if (!Visible.Value) return;
+            // LoadButtons 前は空
+            if (CategoryButtons.Count > 0)
+            {
+                CategoryButtons[CategoryIndex].IsFocused.Value = false;
+            }
+
+            Visible.Value = false;
+        }
+
         void Exit()
         {
-            CategoryButtons[CategoryIndex].IsFocused.Value = false;
-            Visible.Value = false;
+            Hide();
             onExit.Invoke();
         }
 
