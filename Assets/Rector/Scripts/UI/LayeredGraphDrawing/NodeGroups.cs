@@ -44,9 +44,17 @@ namespace Rector.UI.LayeredGraphDrawing
         /// <summary>グループの左右の内側の余白。左borderとノードがくっついて見えなくなるのを防ぐ。</summary>
         public const float Padding = 24f;
 
-        readonly ReactiveProperty<int> count = new(DefaultCount);
+        const string PrefsKey = "Rector_NodeGroupCount";
+
+        readonly ReactiveProperty<int> count;
         public ReadOnlyReactiveProperty<int> Count => count;
         public int CurrentCount => count.Value;
+
+        public NodeGroups()
+        {
+            // 保存された値が範囲外でも壊れないようにclampして読む
+            count = new ReactiveProperty<int>(Mathf.Clamp(PlayerPrefs.GetInt(PrefsKey, DefaultCount), MinCount, MaxCount));
+        }
 
         readonly List<GroupBounds> bounds = new(MaxCount);
 
@@ -62,6 +70,7 @@ namespace Rector.UI.LayeredGraphDrawing
             if (clamped == count.Value) return;
 
             count.Value = clamped;
+            PlayerPrefs.SetInt(PrefsKey, clamped);
         }
 
         /// <summary>グループ番号をループさせる。右端で右に進むと左端に戻る。</summary>

@@ -29,8 +29,7 @@ namespace Rector.UI.Hud
             this.viewSettings = viewSettings;
 
             // 真偽値なのでハイライトではなくボタンの文言そのもので今の値を出す
-            var follow = viewSettings.FollowSelectedNode;
-            followButton = new RectorButtonState(string.Empty, () => follow.Value = !follow.Value);
+            followButton = new RectorButtonState(string.Empty, viewSettings.ToggleFollowSelectedNode);
             buttons.Add(followButton);
 
             for (var count = NodeGroups.MinCount; count <= NodeGroups.MaxCount; count++)
