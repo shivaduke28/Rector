@@ -23,6 +23,20 @@ namespace Rector.UI.GraphPages
         const float MinScale = 0.5f;
         Vector2 offset;
 
+        /// <summary>Resetでコンテンツを置くときの、maskの端からの余白。</summary>
+        const float ResetMargin = 24f;
+
+        /// <summary>GROUPラベルの高さ。USS (font-size 10px + padding 2px) からの実測値。</summary>
+        const float GroupLabelHeight = 18f;
+
+        /// <summary>
+        /// Resetでコンテンツ原点をmaskのどこに置くか。
+        /// 原点はグループ枠の左上ではなく最上段のノードの左上なので、枠の余白とその上の
+        /// ラベルの分だけ下げないと、mask (overflow: hidden) に切られる。
+        /// </summary>
+        static readonly Vector2 ResetTranslation =
+            new(ResetMargin, ResetMargin + NodeGroups.Padding + GroupLabelHeight);
+
         // resolvedStyle はレイアウト解決後にしか更新されないため、
         // 加減算で読み戻さずに済むよう平行移動量を保持する。
         Vector2 translation;
@@ -84,7 +98,7 @@ namespace Rector.UI.GraphPages
             DisableAnimation();
             currentScale = 1f;
             offset = Vector2.zero;
-            SetTranslation(MaskSizeHalf);
+            SetTranslation(ResetTranslation);
             content.style.scale = Vector3.one;
         }
 
