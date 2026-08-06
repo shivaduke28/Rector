@@ -93,7 +93,7 @@ namespace Rector.UI.GraphPages
             stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.NodeCreation, new NodeCreationInputHandler(createNodeMenuView));
-            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(this, nodeParameterView));
+            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(nodeParameterView));
         }
 
         public void Enter()

@@ -29,9 +29,12 @@ namespace Rector.UI.GraphPages.NodeParameters
         public void Enter()
         {
             ExposedInputs.Clear();
-            if (Node != null)
+            if (page.SelectedNode is { } selectedNode)
             {
-                foreach (var inputSlot in Node.InputSlots)
+                // カラムはスロットではないがどのノードにもあるので先頭に置く
+                ExposedInputs.Add(new ExposedColumnInputModel(page, selectedNode));
+
+                foreach (var inputSlot in selectedNode.NodeView.Node.InputSlots)
                 {
                     switch (inputSlot)
                     {
@@ -94,6 +97,9 @@ namespace Rector.UI.GraphPages.NodeParameters
             var input = ExposedInputs[index];
             switch (input)
             {
+                case ExposedColumnInputModel columnInputViewModel:
+                    columnInputViewModel.Increment();
+                    break;
                 case ExposedFloatInputModel floatInputViewModel:
                     floatInputViewModel.Increment();
                     break;
@@ -112,6 +118,9 @@ namespace Rector.UI.GraphPages.NodeParameters
             var input = ExposedInputs[index];
             switch (input)
             {
+                case ExposedColumnInputModel columnInputViewModel:
+                    columnInputViewModel.Decrement();
+                    break;
                 case ExposedFloatInputModel floatInputViewModel:
                     floatInputViewModel.Decrement();
                     break;

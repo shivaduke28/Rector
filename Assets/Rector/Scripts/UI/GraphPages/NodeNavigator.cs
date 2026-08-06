@@ -14,7 +14,8 @@ namespace Rector.UI.GraphPages
         }
 
         /// <remarks>
-        /// フォーカスの移動はカラム内で閉じる。カラムを跨ぐのは MoveColumn の担当。
+        /// フォーカスの移動はカラムを跨ぐ。カラム内に閉じるとカラムを跨いだ確認がしづらい。
+        /// 左スティックの MoveColumn は「隣のカラムへ一気に飛ぶ」ための別経路。
         /// </remarks>
         public LayeredNode SelectNextNode(LayeredNode current, Vector2 input)
         {
@@ -25,15 +26,15 @@ namespace Rector.UI.GraphPages
 
             if (direction is Direction.Left or Direction.Right)
             {
-                // レイヤーは全カラムを連結した1行なので、同じカラムのノードだけを拾う。
-                // 端まで行ったらそのカラムの反対側へ回り込む。
+                // レイヤーは全カラムを連結した1行。カラム境界では隣のカラムへそのまま進み、
+                // 行の端まで行ったら反対の端へ回り込む。
                 var step = direction == Direction.Right ? 1 : -1;
                 var count = currentLayer.Count;
                 var start = currentLayer.IndexOf(current);
                 for (var i = 1; i <= count; i++)
                 {
                     var next = currentLayer[((start + step * i) % count + count) % count];
-                    if (next is LayeredNode layeredNode && layeredNode.Column == current.Column)
+                    if (next is LayeredNode layeredNode)
                     {
                         return layeredNode;
                     }
@@ -46,7 +47,7 @@ namespace Rector.UI.GraphPages
 
             // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
             // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
-            // カラムを跨ぐエッジはそもそもParents/Childrenに入らないので、ここは同一カラムに閉じる
+            // カラムを跨ぐエッジはParents/Childrenに入らないので、まずは同一カラムの親子から探す
             var neighbor = (up ? current.Parents : current.Children)
                 .Select(t => t.Node)
                 .OfType<LayeredNode>()
@@ -57,13 +58,19 @@ namespace Rector.UI.GraphPages
                 return neighbor;
             }
 
-            // 同じカラムの隣のレイヤーで一番x座標が近いノードに移動する。空のレイヤーは飛ばす。
+            // カラムを跨ぐエッジはParents/Childrenに入らないので、生のエッジ列から実の親子を辿る
+            var crossing = FindAcrossColumns(current, up);
+            if (crossing != null)
+            {
+                return crossing;
+            }
+
+            // 隣のレイヤーで一番x座標が近いノードに移動する。ノードのないレイヤーは飛ばす。
             for (var i = 0; i < layers.Count; i++)
             {
                 currentLayerIndex = (currentLayerIndex + (up ? -1 : 1) + layers.Count) % layers.Count;
                 var candidate = layers[currentLayerIndex]
                     .OfType<LayeredNode>()
-                    .Where(x => x.Column == current.Column)
                     .OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x))
                     .FirstOrDefault();
                 if (candidate != null)
@@ -73,6 +80,29 @@ namespace Rector.UI.GraphPages
             }
 
             return current;
+        }
+
+        LayeredNode FindAcrossColumns(LayeredNode current, bool up)
+        {
+            LayeredNode nearest = null;
+            var nearestDistance = float.MaxValue;
+
+            foreach (var edge in up ? current.EdgesToParent : current.EdgesToChild)
+            {
+                var e = edge.EdgeView.Edge;
+                var nodeId = up ? e.OutputSlot.NodeId : e.InputSlot.NodeId;
+                if (!graph.TryGetNode(nodeId, out var node)) continue;
+                if (node.Column == current.Column) continue;
+
+                var distance = Mathf.Abs(node.TargetPosition.x - current.TargetPosition.x);
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearest = node;
+                }
+            }
+
+            return nearest;
         }
 
         /// <summary>
