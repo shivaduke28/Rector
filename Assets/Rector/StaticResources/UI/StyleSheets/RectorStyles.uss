@@ -197,23 +197,26 @@
     bottom: 0;
     border-left-width: 1px;
     border-color: var(--rector-border-color);
-}
-
-.rector-column--active {
-    background-color: var(--rector-frame-dark);
+    /* ノード (.rector-node) と同じ時間で動かす。瞬間移動させるとレイアウト変更の
+       アニメーション中だけ枠とノードがずれて、はみ出したように見える。 */
+    transition-property: left, width;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
 }
 
 .rector-column-label {
     position: absolute;
     top: 8px;
-    left: 12px;
+    left: 8px;
     font-size: 10px;
     letter-spacing: 2px;
-    color: var(--rector-border-color);
+    padding: 2px 6px;
+    color: var(--rector-text-color);
+    background-color: var(--rector-text-background-color);
 }
 
 .rector-column--active .rector-column-label {
-    color: var(--rector-text-color);
+    background-color: black;
 }
 
 .rector-node-root {

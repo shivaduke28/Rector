@@ -48,6 +48,7 @@ namespace Rector.UI.GraphPages
         readonly GraphContentTransformer graphContentTransformer;
         readonly ColumnGuideView columnGuideView;
         readonly GraphSorter graphSorter;
+        readonly NodeNavigator nodeNavigator;
 
         readonly CompositeDisposable disposable = new();
 
@@ -86,13 +87,13 @@ namespace Rector.UI.GraphPages
 
 
             // state machine
-            var nodeNavigator = new NodeNavigator(Graph);
+            nodeNavigator = new NodeNavigator(Graph);
             stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.SlotSelection, new SlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.NodeCreation, new NodeCreationInputHandler(createNodeMenuView));
-            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(nodeParameterView));
+            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(this, nodeParameterView));
         }
 
         public void Enter()
@@ -177,13 +178,28 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
+        /// フォーカスを隣のカラムへ移す。directionは-1か1。
+        /// </summary>
+        /// <remarks>
+        /// ノードのないカラムは飛ばし、端まで行ったらループする。
+        /// </remarks>
+        public void MoveActiveColumn(int direction)
+        {
+            var next = nodeNavigator.FindNodeInAdjacentColumn(SelectedNode, direction, Columns.CurrentCount);
+            if (next != null)
+            {
+                SelectNode(next);
+            }
+        }
+
+        /// <summary>
         /// 選択中のノードを隣のカラムへ移す。directionは-1か1。
         /// </summary>
         public void MoveSelectedNodeToColumn(int direction)
         {
             if (SelectedNode is not { } node) return;
 
-            MoveNodeToColumn(node, Columns.Clamp(node.Column + direction));
+            MoveNodeToColumn(node, Columns.Wrap(node.Column + direction));
         }
 
         public void MoveNodeToColumn(LayeredNode node, int column)
@@ -351,6 +367,7 @@ namespace Rector.UI.GraphPages
         }
 
         bool shouldSort;
+        bool retriedForWidth;
 
         void SortInternal()
         {
@@ -365,6 +382,18 @@ namespace Rector.UI.GraphPages
 
             // カラム数を減らして選択ノードが寄せられた場合もここで追随する
             columnGuideView.SetActiveColumn(SelectedNode?.Column ?? -1);
+
+            // 幅が未解決のまま並べてしまったので、解決を待って次のフレームでやり直す。
+            // 解決しないまま毎フレームSortし続けないよう、やり直しは1回だけにする。
+            if (result.HasUnresolvedWidth && !retriedForWidth)
+            {
+                retriedForWidth = true;
+                Sort();
+            }
+            else
+            {
+                retriedForWidth = false;
+            }
 
             switch (State.Value)
             {

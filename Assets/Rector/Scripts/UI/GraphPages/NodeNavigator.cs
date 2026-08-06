@@ -13,6 +13,9 @@ namespace Rector.UI.GraphPages
             this.graph = graph;
         }
 
+        /// <remarks>
+        /// フォーカスの移動はカラム内で閉じる。カラムを跨ぐのは MoveColumn の担当。
+        /// </remarks>
         public LayeredNode SelectNextNode(LayeredNode current, Vector2 input)
         {
             var layers = graph.Layers;
@@ -22,12 +25,15 @@ namespace Rector.UI.GraphPages
 
             if (direction is Direction.Left or Direction.Right)
             {
-                // レイヤーはカラムを跨いで1行に連結されているので、端では折り返さずに止まる。
-                // 折り返すとグラフの反対側へ飛び、表示位置も全幅スクロールしてしまう。
+                // レイヤーは全カラムを連結した1行なので、同じカラムのノードだけを拾う。
+                // 端まで行ったらそのカラムの反対側へ回り込む。
                 var step = direction == Direction.Right ? 1 : -1;
-                for (var i = currentLayer.IndexOf(current) + step; i >= 0 && i < currentLayer.Count; i += step)
+                var count = currentLayer.Count;
+                var start = currentLayer.IndexOf(current);
+                for (var i = 1; i <= count; i++)
                 {
-                    if (currentLayer[i] is LayeredNode layeredNode)
+                    var next = currentLayer[((start + step * i) % count + count) % count];
+                    if (next is LayeredNode layeredNode && layeredNode.Column == current.Column)
                     {
                         return layeredNode;
                     }
@@ -40,7 +46,7 @@ namespace Rector.UI.GraphPages
 
             // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
             // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
-            // 同一カラムの親子を最優先にする。カラム数が1なら従来と同じ挙動になる。
+            // カラムを跨ぐエッジはそもそもParents/Childrenに入らないので、ここは同一カラムに閉じる
             var neighbor = (up ? current.Parents : current.Children)
                 .Select(t => t.Node)
                 .OfType<LayeredNode>()
@@ -51,19 +57,13 @@ namespace Rector.UI.GraphPages
                 return neighbor;
             }
 
-            // カラムを跨ぐエッジはParents/Childrenに入らないので、生のエッジ列から実の親子を辿る
-            var crossing = FindAcrossColumns(current, up);
-            if (crossing != null)
-            {
-                return crossing;
-            }
-
-            // 隣のレイヤーで一番x座標が近いノードに移動する。ノードのないレイヤーは飛ばす。
+            // 同じカラムの隣のレイヤーで一番x座標が近いノードに移動する。空のレイヤーは飛ばす。
             for (var i = 0; i < layers.Count; i++)
             {
                 currentLayerIndex = (currentLayerIndex + (up ? -1 : 1) + layers.Count) % layers.Count;
                 var candidate = layers[currentLayerIndex]
                     .OfType<LayeredNode>()
+                    .Where(x => x.Column == current.Column)
                     .OrderBy(x => Mathf.Abs(x.Position.x - current.Position.x))
                     .FirstOrDefault();
                 if (candidate != null)
@@ -75,23 +75,50 @@ namespace Rector.UI.GraphPages
             return current;
         }
 
-        LayeredNode FindAcrossColumns(LayeredNode current, bool up)
+        /// <summary>
+        /// 隣のカラムのノードを返す。ノードのないカラムは飛ばし、端まで行ったらループする。
+        /// </summary>
+        public LayeredNode FindNodeInAdjacentColumn(LayeredNode current, int direction, int columnCount)
+        {
+            var startColumn = current?.Column ?? 0;
+
+            for (var step = 1; step <= columnCount; step++)
+            {
+                var column = ((startColumn + direction * step) % columnCount + columnCount) % columnCount;
+                var candidate = FindNearestInColumn(column, current);
+                if (candidate != null)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// カラム内で、レイヤーが近く、次にx座標が近いノードを返す。
+        /// </summary>
+        LayeredNode FindNearestInColumn(int column, LayeredNode from)
         {
             LayeredNode nearest = null;
-            var nearestDistance = float.MaxValue;
+            var nearestLayerDistance = int.MaxValue;
+            var nearestX = float.MaxValue;
 
-            foreach (var edge in up ? current.EdgesToParent : current.EdgesToChild)
+            foreach (var layer in graph.Layers)
             {
-                var e = edge.EdgeView.Edge;
-                var nodeId = up ? e.OutputSlot.NodeId : e.InputSlot.NodeId;
-                if (!graph.TryGetNode(nodeId, out var node)) continue;
-                if (node.Column == current.Column) continue;
-
-                var distance = Mathf.Abs(node.TargetPosition.x - current.TargetPosition.x);
-                if (distance < nearestDistance)
+                foreach (var node in layer)
                 {
-                    nearestDistance = distance;
-                    nearest = node;
+                    if (node is not LayeredNode layeredNode || layeredNode.Column != column) continue;
+
+                    var layerDistance = from == null ? 0 : Mathf.Abs(layeredNode.Layer - from.Layer);
+                    var x = from == null ? 0f : Mathf.Abs(layeredNode.Position.x - from.Position.x);
+
+                    if (layerDistance < nearestLayerDistance || (layerDistance == nearestLayerDistance && x < nearestX))
+                    {
+                        nearest = layeredNode;
+                        nearestLayerDistance = layerDistance;
+                        nearestX = x;
+                    }
                 }
             }
 

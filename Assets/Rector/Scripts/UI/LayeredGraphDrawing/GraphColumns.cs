@@ -21,9 +21,9 @@ namespace Rector.UI.LayeredGraphDrawing
     /// レイヤー(y)は全カラム共通のまま、レイヤー内の並び替えとx圧縮だけをカラム内に閉じる。
     /// </summary>
     /// <remarks>
-    /// カラム幅はセッション中単調非減少にしている。毎回コンテンツ幅から計算し直すと、
-    /// あるカラムでのノード追加・削除が右側のカラムを丸ごと横に動かしてしまい、
-    /// 「土地勘を保つ」という目的そのものを損なうため。
+    /// カラム幅は毎回コンテンツ幅から計算する。一度広がった幅を保つ（単調非減少にする）と
+    /// 右のカラムが動かなくなる代わりに、ノードを消したあとの空白が残り続けるので採らない。
+    /// 幅が変わると右のカラムはずれるが、カラム内の並びは動かないので土地勘は保たれる。
     /// </remarks>
     public sealed class GraphColumns
     {
@@ -32,14 +32,15 @@ namespace Rector.UI.LayeredGraphDrawing
         public const int DefaultCount = 4;
 
         /// <summary>カラムの最小幅。NodeView.Widthはレイアウト解決前は0なので、その揺れもここで吸収される。</summary>
-        public const float MinWidth = 360f;
-        public const float Gap = 60f;
+        public const float MinWidth = 240f;
+
+        /// <summary>カラムの左右の内側の余白。左borderとノードがくっついて見えなくなるのを防ぐ。</summary>
+        public const float Padding = 24f;
 
         readonly ReactiveProperty<int> count = new(DefaultCount);
         public ReadOnlyReactiveProperty<int> Count => count;
         public int CurrentCount => count.Value;
 
-        readonly float[] widths = new float[MaxCount];
         readonly List<ColumnBounds> bounds = new(MaxCount);
 
         /// <summary>Sortが書き込み、ColumnGuideViewが読む。要素数はCurrentCountと一致する。</summary>
@@ -53,19 +54,14 @@ namespace Rector.UI.LayeredGraphDrawing
             var clamped = Mathf.Clamp(value, MinCount, MaxCount);
             if (clamped == count.Value) return;
 
-            // 幅の単調性はカラム構成が変わったらリセットする
-            ResetWidths();
             count.Value = clamped;
         }
 
-        public int Clamp(int column) => Mathf.Clamp(column, 0, count.Value - 1);
-
-        void ResetWidths()
+        /// <summary>カラム番号をループさせる。右端で右に進むと左端に戻る。</summary>
+        public int Wrap(int column)
         {
-            for (var i = 0; i < widths.Length; i++)
-            {
-                widths[i] = 0f;
-            }
+            var n = count.Value;
+            return ((column % n) + n) % n;
         }
 
         public void BeginLayout()
@@ -77,10 +73,9 @@ namespace Rector.UI.LayeredGraphDrawing
         /// <summary>
         /// カラムの原点と幅を確定して幅を返す。カラム0から順に呼ぶこと。
         /// </summary>
-        public float Place(int index, float originX, float contentWidth)
+        public float Place(float originX, float contentWidth)
         {
-            var width = Mathf.Max(MinWidth, Mathf.Max(widths[index], contentWidth));
-            widths[index] = width;
+            var width = Mathf.Max(MinWidth, contentWidth + Padding * 2f);
             bounds.Add(new ColumnBounds(originX, width));
             return width;
         }

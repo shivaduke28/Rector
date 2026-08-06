@@ -25,11 +25,17 @@ namespace Rector.UI.LayeredGraphDrawing
             public readonly int DummyNodeCount;
             public readonly int Type1ConflictCount;
 
-            public SortResult(int dummyNodeCount, int layerCount, int type1ConflictCount)
+            /// <summary>
+            /// 幅が未解決(0)のNodeViewがあった。カラム幅を過小に見積もっているのでSortをやり直す。
+            /// </summary>
+            public readonly bool HasUnresolvedWidth;
+
+            public SortResult(int dummyNodeCount, int layerCount, int type1ConflictCount, bool hasUnresolvedWidth)
             {
                 DummyNodeCount = dummyNodeCount;
                 LayerCount = layerCount;
                 Type1ConflictCount = type1ConflictCount;
+                HasUnresolvedWidth = hasUnresolvedWidth;
             }
         }
 
@@ -86,6 +92,7 @@ namespace Rector.UI.LayeredGraphDrawing
 
             var dummyNodeCount = 0;
             var type1ConflictCount = 0;
+            var hasUnresolvedWidth = false;
             var originX = 0f;
 
             // step2以降はカラムごとに独立して回す。これで並び替えとx圧縮の影響がカラム内に閉じる。
@@ -117,20 +124,24 @@ namespace Rector.UI.LayeredGraphDrawing
                         var nodeX = x[node.Id];
                         minX = Mathf.Min(minX, nodeX);
                         maxX = Mathf.Max(maxX, nodeX + node.Width);
+                        // NodeView.WidthはresolvedStyle由来なので、追加直後のフレームでは0のことがある。
+                        // そのまま確定するとカラム幅が足りず、ノードが右のborderをはみ出す。
+                        if (!node.IsDummy && node.Width <= 0f) hasUnresolvedWidth = true;
                     }
 
                     contentWidth = maxX - minX;
                 }
 
-                var width = columns.Place(c, originX, contentWidth);
+                var width = columns.Place(originX, contentWidth);
 
                 foreach (var node in colNodes.Values)
                 {
-                    node.Position = new Vector2(x[node.Id] - minX + originX, layerY[node.Layer]);
+                    node.Position = new Vector2(x[node.Id] - minX + originX + GraphColumns.Padding, layerY[node.Layer]);
                     if (node.IsDummy) dummyNodeCount++;
                 }
 
-                originX += width + GraphColumns.Gap;
+                // カラム同士は隙間なく並べる。区切りは左borderと内側のPaddingで付ける。
+                originX += width;
                 type1ConflictCount += markedEdges.Count;
             }
 
@@ -155,7 +166,7 @@ namespace Rector.UI.LayeredGraphDrawing
                 graph.Layers.Add(merged);
             }
 
-            return new SortResult(dummyNodeCount, layers.Count, type1ConflictCount);
+            return new SortResult(dummyNodeCount, layers.Count, type1ConflictCount, hasUnresolvedWidth);
         }
 
         /// <summary>
@@ -453,42 +464,16 @@ namespace Rector.UI.LayeredGraphDrawing
             var layers = new List<List<ILayeredNode>>();
             var layeredNodes = new Dictionary<NodeId, ILayeredNode>();
 
-            var islands = new List<ILayeredNode>();
+            // step1: 入力を持たないノード（どこにも繋がっていない孤立ノードを含む）を最上段に置く
+            // 孤立ノードを専用の層に分けると、孤立ノードのないカラムの1行目が丸ごと空になる
             var sources = new List<ILayeredNode>();
-
-
-            // step1: island
             for (var i = 0; i < unsortedNodes.Count;)
             {
                 var node = unsortedNodes[i];
-                var hasInput = node.EdgesToParent.Count > 0;
-                var hasOutput = node.EdgesToChild.Count > 0;
-                if (!hasInput && !hasOutput)
-                {
-                    islands.Add(node);
-                    node.Layer = 0;
-                    node.Index = islands.Count - 1;
-                    layeredNodes.Add(node.Id, node);
-                    unsortedNodes.RemoveAt(i);
-                }
-                else
-                {
-                    i++;
-                }
-            }
-
-            layers.Add(islands);
-
-            // source
-            var sourceIndex = layers.Count;
-            for (var i = 0; i < unsortedNodes.Count;)
-            {
-                var node = unsortedNodes[i];
-                var hasInput = node.EdgesToParent.Count > 0;
-                if (!hasInput)
+                if (node.EdgesToParent.Count == 0)
                 {
                     sources.Add(node);
-                    node.Layer = sourceIndex;
+                    node.Layer = 0;
                     node.Index = sources.Count - 1;
                     layeredNodes.Add(node.Id, node);
                     unsortedNodes.RemoveAt(i);
@@ -499,10 +484,8 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            if (sources.Count > 0)
-            {
-                layers.Add(sources);
-            }
+            // 空でも必ず追加する。Layers[0]が存在する前提のコードがある（LayeredGraph.AddNode）
+            layers.Add(sources);
 
             // step2: それ以外のノードを最長パス法で layer に追加
             while (unsortedNodes.Count > 0)

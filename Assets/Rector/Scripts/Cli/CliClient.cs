@@ -61,6 +61,7 @@ namespace Rector.Cli
             nodeCount = graphPage.Graph.NodeCount,
             edgeCount = graphPage.Graph.EdgeCount,
             columnCount = graphPage.Columns.CurrentCount,
+            columns = graphPage.Columns.Bounds.Select(b => new { originX = b.OriginX, width = b.Width }).ToArray(),
             selectedNodeId = graphPage.SelectedNode?.Id.Value,
             pageState = graphPage.State.Value.ToString(),
         };
@@ -299,6 +300,10 @@ namespace Rector.Cli
                 category = node.Category.ToString(),
                 layer = layered.Layer,
                 column = layered.Column,
+                // レイアウトをCLIから検証できるように、確定後の座標も返す
+                x = layered.TargetPosition.x,
+                y = layered.TargetPosition.y,
+                width = layered.Width,
                 muted = node.IsMuted.Value,
                 selected = node.Selected.Value,
                 inputs = node.InputSlots.Select(ToSlotDto).ToArray(),
