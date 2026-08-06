@@ -64,9 +64,18 @@ namespace Rector.UI.GraphPages.NodeParameters
             IsVisible.Value = true;
         }
 
+        /// <summary>
+        /// 表示を消すだけ。State は動かさないので GraphPage の State 購読から呼べる。
+        /// </summary>
+        public void Hide()
+        {
+            if (!IsVisible.Value) return;
+            IsVisible.Value = false;
+        }
+
         public void Close()
         {
-            IsVisible.Value = false;
+            Hide();
             page.State.Value = GraphPageState.NodeSelection;
         }
 

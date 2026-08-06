@@ -1,5 +1,4 @@
 using System;
-using Rector.UI.Graphs;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
 
@@ -48,32 +47,15 @@ namespace Rector.UI.GraphPages
             graphPage.State.Value = GraphPageState.TargetNodeSelection;
         }
 
+        // 繋がっていれば外す、繋がっていなければ繋ぐトグル。検証と接続そのものは GraphPage 側に
+        // あり、CLI も同じものを呼ぶ。
         public override void Submit()
         {
             if (!ToOutputAndInput(graphPage.SelectedSlot, graphPage.TargetSlot, out var output, out var input)) return;
-            var edgeId = new EdgeId(output, input);
-            if (!graphPage.Graph.RemoveEdge(edgeId))
-            {
-                if (!EdgeConnector.CanConnect(output, input)) return;
+            if (graphPage.DisconnectSlots(output, input)) return;
 
-                if (!graphPage.Graph.ValidateLoop(output, input))
-                {
-                    RectorLogger.LoopDetected(output.NodeId, input.NodeId);
-                    return;
-                }
-
-                if (graphPage.IsNodeParameterOpen)
-                {
-                    graphPage.Graph.RemoveEdgesFrom(graphPage.SelectedSlot);
-                }
-
-                if (EdgeConnector.TryConnect(output, input, out var newEdge))
-                {
-                    graphPage.Graph.AddEdge(newEdge);
-                }
-            }
-
-            graphPage.Sort();
+            // OpenNodeParameter を押しながらの接続は、選択中スロットの既存エッジを差し替える
+            graphPage.TryConnectSlots(output, input, graphPage.IsNodeParameterOpen ? graphPage.SelectedSlot : null);
         }
 
         static bool ToOutputAndInput(ISlot slot1, ISlot slot2, out OutputSlot output, out InputSlot input)

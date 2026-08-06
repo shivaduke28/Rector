@@ -111,6 +111,14 @@ namespace Rector.UI.GraphPages
             graphContentTransformer.Initialize();
             graphContentTransformer.AddTo(disposable);
 
+            // 各パネルは自分の Exit 経路でしか閉じないので、State を外（CLI）から動かされると
+            // 出しっぱなしになる。State から閉じる側も張っておく。
+            State.Subscribe(x =>
+            {
+                if (x != GraphPageState.NodeCreation) createNodeMenuModel.Hide();
+                if (x != GraphPageState.NodeParameter) nodeParameterModel.Hide();
+            }).AddTo(disposable);
+
             State.Where(x => x == GraphPageState.NodeCreation)
                 .Subscribe(_ =>
                 {
@@ -213,6 +221,65 @@ namespace Rector.UI.GraphPages
             TargetSlot = slot;
         }
 
+        /// <summary>
+        /// 選択・ターゲット・State をまとめて NodeSelection に揃える。
+        /// </summary>
+        /// <remarks>
+        /// SelectNode を SetTargetNode より先に呼ぶこと。逆にすると SetTargetNode(null) の
+        /// else 分岐が、これから外す（あるいは削除する）SelectedNode に向けて
+        /// MoveContentToMakeNodeVisible してしまう。
+        /// </remarks>
+        public void EnterNodeSelection(LayeredNode? node)
+        {
+            SelectSlot(null);
+            SelectNode(node);
+            SetTargetSlot(null);
+            SetTargetNode(null);
+            State.Value = GraphPageState.NodeSelection;
+        }
+
+        public bool DisconnectSlots(OutputSlot output, InputSlot input)
+        {
+            if (!Graph.RemoveEdge(new EdgeId(output, input))) return false;
+            Sort();
+            return true;
+        }
+
+        /// <param name="replaceEdgesOn">
+        /// 差し替え接続（HUD で OpenNodeParameter を押しながら繋いだとき）に、
+        /// 先に張られていたエッジを外すスロット。検証を通ったあとに外すので、
+        /// 接続を断られた場合に既存のエッジだけ失うことがない。
+        /// </param>
+        public ConnectResult TryConnectSlots(OutputSlot output, InputSlot input, ISlot? replaceEdgesOn = null)
+        {
+            if (Graph.Edges.ContainsKey(new EdgeId(output, input))) return ConnectResult.AlreadyConnected;
+
+            // ValidateLoop を CanConnect より先に見るのは、自分自身への接続を Incompatible ではなく
+            // Loop として返すため。HUD は TargetNodeSelection で自ノードを選べないので影響しない。
+            if (!Graph.ValidateLoop(output, input))
+            {
+                RectorLogger.LoopDetected(output.NodeId, input.NodeId);
+                return ConnectResult.Loop;
+            }
+
+            if (!EdgeConnector.CanConnect(output, input)) return ConnectResult.Incompatible;
+
+            if (replaceEdgesOn is not null)
+            {
+                Graph.RemoveEdgesFrom(replaceEdgesOn);
+            }
+
+            if (!EdgeConnector.TryConnect(output, input, out var edge))
+            {
+                // replaceEdgesOn の分だけグラフが変わっている可能性がある
+                Sort();
+                return ConnectResult.Failed;
+            }
+
+            Graph.AddEdge(edge);
+            Sort();
+            return ConnectResult.Connected;
+        }
 
         public void ShowHoldNextToSelected()
         {
@@ -230,14 +297,12 @@ namespace Rector.UI.GraphPages
 
         public void RemoveSelectedNode()
         {
-            if (SelectedNode is not null)
-            {
-                Graph.RemoveNode(SelectedNode.Id);
-                SelectSlot(null);
-                SelectNode(null);
-                Sort();
-                State.Value = GraphPageState.NodeSelection;
-            }
+            if (SelectedNode is not { } node) return;
+
+            // NodeView が生きているうちに選択とターゲットを外す
+            EnterNodeSelection(null);
+            Graph.RemoveNode(node.Id);
+            Sort();
         }
 
         public void Sort()
