@@ -105,7 +105,7 @@ namespace Rector
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""MoveColumn"",
+                    ""name"": ""MoveGroup"",
                     ""type"": ""PassThrough"",
                     ""id"": ""db45d00f-e29c-400f-8261-28f8b94c2f82"",
                     ""expectedControlType"": ""Vector2"",
@@ -770,7 +770,7 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""MoveColumn"",
+                    ""action"": ""MoveGroup"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -781,7 +781,7 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""MoveColumn"",
+                    ""action"": ""MoveGroup"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -792,7 +792,7 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""MoveColumn"",
+                    ""action"": ""MoveGroup"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -803,7 +803,7 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""MoveColumn"",
+                    ""action"": ""MoveGroup"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 }
@@ -1189,7 +1189,7 @@ namespace Rector
             // Graph
             m_Graph = asset.FindActionMap("Graph", throwIfNotFound: true);
             m_Graph_Navigate = m_Graph.FindAction("Navigate", throwIfNotFound: true);
-            m_Graph_MoveColumn = m_Graph.FindAction("MoveColumn", throwIfNotFound: true);
+            m_Graph_MoveGroup = m_Graph.FindAction("MoveGroup", throwIfNotFound: true);
             m_Graph_Submit = m_Graph.FindAction("Submit", throwIfNotFound: true);
             m_Graph_Cancel = m_Graph.FindAction("Cancel", throwIfNotFound: true);
             m_Graph_Action = m_Graph.FindAction("Action", throwIfNotFound: true);
@@ -1295,7 +1295,7 @@ namespace Rector
         private readonly InputActionMap m_Graph;
         private List<IGraphActions> m_GraphActionsCallbackInterfaces = new List<IGraphActions>();
         private readonly InputAction m_Graph_Navigate;
-        private readonly InputAction m_Graph_MoveColumn;
+        private readonly InputAction m_Graph_MoveGroup;
         private readonly InputAction m_Graph_Submit;
         private readonly InputAction m_Graph_Cancel;
         private readonly InputAction m_Graph_Action;
@@ -1325,9 +1325,9 @@ namespace Rector
             /// </summary>
             public InputAction @Navigate => m_Wrapper.m_Graph_Navigate;
             /// <summary>
-            /// Provides access to the underlying input action "Graph/MoveColumn".
+            /// Provides access to the underlying input action "Graph/MoveGroup".
             /// </summary>
-            public InputAction @MoveColumn => m_Wrapper.m_Graph_MoveColumn;
+            public InputAction @MoveGroup => m_Wrapper.m_Graph_MoveGroup;
             /// <summary>
             /// Provides access to the underlying input action "Graph/Submit".
             /// </summary>
@@ -1409,9 +1409,9 @@ namespace Rector
                 @Navigate.started += instance.OnNavigate;
                 @Navigate.performed += instance.OnNavigate;
                 @Navigate.canceled += instance.OnNavigate;
-                @MoveColumn.started += instance.OnMoveColumn;
-                @MoveColumn.performed += instance.OnMoveColumn;
-                @MoveColumn.canceled += instance.OnMoveColumn;
+                @MoveGroup.started += instance.OnMoveGroup;
+                @MoveGroup.performed += instance.OnMoveGroup;
+                @MoveGroup.canceled += instance.OnMoveGroup;
                 @Submit.started += instance.OnSubmit;
                 @Submit.performed += instance.OnSubmit;
                 @Submit.canceled += instance.OnSubmit;
@@ -1465,9 +1465,9 @@ namespace Rector
                 @Navigate.started -= instance.OnNavigate;
                 @Navigate.performed -= instance.OnNavigate;
                 @Navigate.canceled -= instance.OnNavigate;
-                @MoveColumn.started -= instance.OnMoveColumn;
-                @MoveColumn.performed -= instance.OnMoveColumn;
-                @MoveColumn.canceled -= instance.OnMoveColumn;
+                @MoveGroup.started -= instance.OnMoveGroup;
+                @MoveGroup.performed -= instance.OnMoveGroup;
+                @MoveGroup.canceled -= instance.OnMoveGroup;
                 @Submit.started -= instance.OnSubmit;
                 @Submit.performed -= instance.OnSubmit;
                 @Submit.canceled -= instance.OnSubmit;
@@ -1728,12 +1728,12 @@ namespace Rector
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnNavigate(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "MoveColumn" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "MoveGroup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMoveColumn(InputAction.CallbackContext context);
+            void OnMoveGroup(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Submit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

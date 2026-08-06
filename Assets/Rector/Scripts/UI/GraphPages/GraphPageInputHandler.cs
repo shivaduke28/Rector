@@ -9,10 +9,10 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// 選択中のノードをカラム間で移動する。directionは-1か1。
+        /// 選択中のノードをグループ間で移動する。directionは-1か1。
         /// ノード選択中以外は何もしないので、他のStateでは自然にブロックされる。
         /// </summary>
-        public virtual void MoveColumn(int direction)
+        public virtual void MoveGroup(int direction)
         {
         }
 

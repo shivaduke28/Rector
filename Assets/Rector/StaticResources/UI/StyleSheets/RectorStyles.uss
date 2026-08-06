@@ -184,7 +184,7 @@
     transition-timing-function: linear;
 }
 
-.rector-column-guide-root {
+.rector-group-guide-root {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -192,7 +192,7 @@
 }
 
 /* ラベルと枠を縦に積む入れ物。ラベルの幅は中身なりにしたいので align-items は flex-start。 */
-.rector-column {
+.rector-group {
     position: absolute;
     align-items: flex-start;
     /* ノード (.rector-node) と同じ時間で動かす。瞬間移動させるとレイアウト変更の
@@ -202,9 +202,9 @@
     transition-timing-function: ease-in-out;
 }
 
-/* ノードを囲む矩形。フォーカス中のカラムだけ枠線を出す。
+/* ノードを囲む矩形。フォーカス中のグループだけ枠線を出す。
    非表示側も同じ太さの透明borderを持たせて、切り替えでサイズが動かないようにする。 */
-.rector-column-box {
+.rector-group-box {
     width: 100%;
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0);
@@ -213,13 +213,13 @@
     transition-timing-function: ease-in-out;
 }
 
-.rector-column--active .rector-column-box {
+.rector-group--active .rector-group-box {
     border-color: var(--rector-border-color);
 }
 
 /* 枠のすぐ上に左揃えで載せる。高さを決め打ちすると枠の余白がずれるので絶対配置にする。
    Label の既定 margin (2px) を消さないと、枠との間に隙間が空く。 */
-.rector-column-label {
+.rector-group-label {
     position: absolute;
     bottom: 100%;
     left: 0;
@@ -232,7 +232,7 @@
     background-color: var(--rector-text-background-color);
 }
 
-.rector-column--active .rector-column-label {
+.rector-group--active .rector-group-label {
     background-color: black;
 }
 

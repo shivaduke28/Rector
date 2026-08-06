@@ -60,8 +60,8 @@ namespace Rector.Cli
             scene = bgSceneManager.CurrentScene.CurrentValue,
             nodeCount = graphPage.Graph.NodeCount,
             edgeCount = graphPage.Graph.EdgeCount,
-            columnCount = graphPage.Columns.CurrentCount,
-            columns = graphPage.Columns.Bounds.Select(b => new { originX = b.OriginX, width = b.Width }).ToArray(),
+            groupCount = graphPage.Groups.CurrentCount,
+            groups = graphPage.Groups.Bounds.Select(b => new { originX = b.OriginX, width = b.Width }).ToArray(),
             selectedNodeId = graphPage.SelectedNode?.Id.Value,
             pageState = graphPage.State.Value.ToString(),
         };
@@ -108,21 +108,21 @@ namespace Rector.Cli
             var t = nodeTemplateRepository.GetAll().FirstOrDefault(x => x.Name == template);
             if (t == null) return Failure("unknown_template", $"No node template named '{template}'.");
 
-            // HUD と同じ経路を通す。AddNode が「選択中のノードと同じカラムに入れる」まで見る。
+            // HUD と同じ経路を通す。AddNode が「選択中のノードと同じグループに入れる」まで見る。
             var nodeView = t.Create(NodeId.Generate());
             graphPage.AddNode(nodeView);
             return new { success = true, node = ToNodeDto(nodeView.Node.Id) };
         }
 
-        object SetNodeColumn(uint id, int column)
+        object SetNodeGroup(uint id, int group)
         {
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
 
-            var count = graphPage.Columns.CurrentCount;
-            if (column < 0 || column >= count)
-                return Failure("column_out_of_range", $"Column must be in [0, {count - 1}].");
+            var count = graphPage.Groups.CurrentCount;
+            if (group < 0 || group >= count)
+                return Failure("group_out_of_range", $"Group must be in [0, {count - 1}].");
 
-            graphPage.MoveNodeToColumn(node, column);
+            graphPage.MoveNodeToGroup(node, group);
             return new { success = true, node = ToNodeDto(node) };
         }
 
@@ -299,7 +299,7 @@ namespace Rector.Cli
                 name = node.Name,
                 category = node.Category.ToString(),
                 layer = layered.Layer,
-                column = layered.Column,
+                group = layered.Group,
                 // レイアウトをCLIから検証できるように、確定後の座標も返す
                 x = layered.TargetPosition.x,
                 y = layered.TargetPosition.y,

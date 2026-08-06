@@ -6,45 +6,45 @@ using UnityEngine.UIElements;
 namespace Rector.UI.GraphPages
 {
     /// <summary>
-    /// カラムの区切り線とヘッダーを描く。
+    /// グループの区切り線とヘッダーを描く。
     /// </summary>
     /// <remarks>
     /// graph-content の兄弟として graph-mask 直下に置き、content と全く同じ平行移動と
-    /// scale を掛ける。カラムの矩形も content と同じ座標系のまま渡すので、
+    /// scale を掛ける。グループの矩形も content と同じ座標系のまま渡すので、
     /// パンでもズームでもノードとズレようがない。
     /// 書き込みは GraphContentTransformer からの Layout 一本に絞っている。
     /// </remarks>
-    public sealed class ColumnGuideView
+    public sealed class GroupGuideView
     {
-        public const string RootName = "column-guide-root";
+        public const string RootName = "group-guide-root";
 
-        const string ColumnClassName = "rector-column";
-        const string ColumnActiveClassName = "rector-column--active";
-        const string BoxClassName = "rector-column-box";
-        const string LabelClassName = "rector-column-label";
+        const string GroupClassName = "rector-group";
+        const string GroupActiveClassName = "rector-group--active";
+        const string BoxClassName = "rector-group-box";
+        const string LabelClassName = "rector-group-label";
 
         readonly VisualElement root;
-        readonly GraphColumns columns;
-        readonly List<VisualElement> columnElements = new(GraphColumns.MaxCount);
+        readonly NodeGroups groups;
+        readonly List<VisualElement> groupElements = new(NodeGroups.MaxCount);
 
-        int activeColumn = -1;
+        int activeGroup = -1;
         Vector2 lastTranslation = new(float.NaN, float.NaN);
         float lastScale = float.NaN;
         int lastRevision = -1;
 
-        public ColumnGuideView(VisualElement root, GraphColumns columns)
+        public GroupGuideView(VisualElement root, NodeGroups groups)
         {
             this.root = root;
-            this.columns = columns;
+            this.groups = groups;
             root.pickingMode = PickingMode.Ignore;
         }
 
         public void Layout(Vector2 translation, float scale)
         {
-            var bounds = columns.Bounds;
+            var bounds = groups.Bounds;
 
             // 毎フレーム呼ばれるので、変化がなければ何も触らない
-            if (columns.Revision == lastRevision
+            if (groups.Revision == lastRevision
                 && Mathf.Approximately(translation.x, lastTranslation.x)
                 && Mathf.Approximately(translation.y, lastTranslation.y)
                 && Mathf.Approximately(scale, lastScale))
@@ -52,18 +52,18 @@ namespace Rector.UI.GraphPages
                 return;
             }
 
-            lastRevision = columns.Revision;
+            lastRevision = groups.Revision;
             lastTranslation = translation;
             lastScale = scale;
 
             root.style.translate = translation;
             root.style.scale = new Vector3(scale, scale, 1f);
 
-            EnsureColumnElements(bounds.Count);
+            EnsureGroupElements(bounds.Count);
 
             for (var i = 0; i < bounds.Count; i++)
             {
-                var element = columnElements[i];
+                var element = groupElements[i];
                 element.style.left = bounds[i].OriginX;
                 element.style.width = bounds[i].Width;
                 element.style.top = bounds[i].OriginY;
@@ -72,12 +72,12 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public void SetActiveColumn(int column)
+        public void SetActiveGroup(int group)
         {
-            if (column == activeColumn) return;
+            if (group == activeGroup) return;
 
-            activeColumn = column;
-            ApplyActiveColumn();
+            activeGroup = group;
+            ApplyActiveGroup();
         }
 
         public void SetAnimationEnabled(bool enabled)
@@ -85,25 +85,25 @@ namespace Rector.UI.GraphPages
             root.EnableInClassList(GraphContentTransformer.AnimationClassName, enabled);
         }
 
-        void ApplyActiveColumn()
+        void ApplyActiveGroup()
         {
-            for (var i = 0; i < columnElements.Count; i++)
+            for (var i = 0; i < groupElements.Count; i++)
             {
-                columnElements[i].EnableInClassList(ColumnActiveClassName, i == activeColumn);
+                groupElements[i].EnableInClassList(GroupActiveClassName, i == activeGroup);
             }
         }
 
-        void EnsureColumnElements(int count)
+        void EnsureGroupElements(int count)
         {
-            if (columnElements.Count == count) return;
+            if (groupElements.Count == count) return;
 
-            while (columnElements.Count < count)
+            while (groupElements.Count < count)
             {
                 var element = new VisualElement { pickingMode = PickingMode.Ignore };
-                element.AddToClassList(ColumnClassName);
+                element.AddToClassList(GroupClassName);
 
                 // ラベルは枠の上へ絶対配置で載せる (USS の bottom: 100%)
-                var label = new Label($"COLUMN {columnElements.Count + 1}") { pickingMode = PickingMode.Ignore };
+                var label = new Label($"GROUP {groupElements.Count + 1}") { pickingMode = PickingMode.Ignore };
                 label.AddToClassList(LabelClassName);
                 element.Add(label);
 
@@ -112,17 +112,17 @@ namespace Rector.UI.GraphPages
                 element.Add(box);
 
                 root.Add(element);
-                columnElements.Add(element);
+                groupElements.Add(element);
             }
 
-            while (columnElements.Count > count)
+            while (groupElements.Count > count)
             {
-                var last = columnElements.Count - 1;
-                root.Remove(columnElements[last]);
-                columnElements.RemoveAt(last);
+                var last = groupElements.Count - 1;
+                root.Remove(groupElements[last]);
+                groupElements.RemoveAt(last);
             }
 
-            ApplyActiveColumn();
+            ApplyActiveGroup();
         }
     }
 }

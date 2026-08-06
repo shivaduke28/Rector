@@ -10,7 +10,7 @@
         <engine:VisualElement class="rector-hud-body-content-internal">
             <engine:VisualElement name="graph-page" class="rector-graph-page rector-page">
                 <engine:VisualElement name="graph-mask" class="rector-graph-mask">
-                    <engine:VisualElement name="column-guide-root" class="rector-column-guide-root rector-graph-content-animation" />
+                    <engine:VisualElement name="group-guide-root" class="rector-group-guide-root rector-graph-content-animation" />
                     <engine:VisualElement name="graph-content" class="rector-graph-content rector-graph-content-animation">
                         <engine:VisualElement name="edge-root" class="rector-node-root" />
                         <engine:VisualElement name="node-root" class="rector-node-root" />

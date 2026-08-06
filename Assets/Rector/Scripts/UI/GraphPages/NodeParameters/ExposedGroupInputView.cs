@@ -5,9 +5,9 @@ using UnityEngine.UIElements;
 namespace Rector.UI.GraphPages.NodeParameters
 {
     /// <summary>
-    /// int入力と同じ見た目を使う。中身はスロットではなくカラム番号。
+    /// int入力と同じ見た目を使う。中身はスロットではなくグループ番号。
     /// </summary>
-    public sealed class ExposedColumnInputView
+    public sealed class ExposedGroupInputView
     {
         readonly VisualElement root;
         readonly Label nameLabel;
@@ -16,7 +16,7 @@ namespace Rector.UI.GraphPages.NodeParameters
 
         RectorSliderIntState sliderState;
 
-        public ExposedColumnInputView(VisualElement container)
+        public ExposedGroupInputView(VisualElement container)
         {
             root = container.Q<VisualElement>("input");
             nameLabel = root.Q<Label>("name-label");
@@ -24,9 +24,9 @@ namespace Rector.UI.GraphPages.NodeParameters
             valueLabel = root.Q<Label>("value-label");
         }
 
-        public IDisposable Bind(ExposedColumnInputModel model)
+        public IDisposable Bind(ExposedGroupInputModel model)
         {
-            nameLabel.text = ExposedColumnInputModel.Name;
+            nameLabel.text = ExposedGroupInputModel.Name;
             sliderState = new RectorSliderIntState(model.Value, model.MinValue, model.MaxValue);
             return new CompositeDisposable(
                 slider.Bind(sliderState),

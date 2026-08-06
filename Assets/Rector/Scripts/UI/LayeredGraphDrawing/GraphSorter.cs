@@ -11,12 +11,12 @@ namespace Rector.UI.LayeredGraphDrawing
 
         readonly List<LayeredNode> unsortedNodes = new();
         readonly LayeredGraph graph;
-        readonly GraphColumns columns;
+        readonly NodeGroups groups;
 
-        public GraphSorter(LayeredGraph graph, GraphColumns columns)
+        public GraphSorter(LayeredGraph graph, NodeGroups groups)
         {
             this.graph = graph;
-            this.columns = columns;
+            this.groups = groups;
         }
 
         public readonly struct SortResult
@@ -26,7 +26,7 @@ namespace Rector.UI.LayeredGraphDrawing
             public readonly int Type1ConflictCount;
 
             /// <summary>
-            /// 幅が未解決(0)のNodeViewがあった。カラム幅を過小に見積もっているのでSortをやり直す。
+            /// 幅が未解決(0)のNodeViewがあった。グループ幅を過小に見積もっているのでSortをやり直す。
             /// </summary>
             public readonly bool HasUnresolvedWidth;
 
@@ -61,21 +61,21 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            // レンジ外のカラムを持つノードはどのカラムにも切り出されず、グラフから見えなくなる。
-            // 通常はカラム数の変更時にLayeredGraph側で寄せているが、保険としてここでも締める。
-            var lastColumn = columns.CurrentCount - 1;
+            // レンジ外のグループを持つノードはどのグループにも切り出されず、グラフから見えなくなる。
+            // 通常はグループ数の変更時にLayeredGraph側で寄せているが、保険としてここでも締める。
+            var lastGroup = groups.CurrentCount - 1;
             foreach (var node in unsortedNodes)
             {
-                node.Column = Mathf.Clamp(node.Column, 0, lastColumn);
+                node.Group = Mathf.Clamp(node.Group, 0, lastGroup);
             }
 
             // step1: layerを作る
-            // 層決めはカラムを跨ぐエッジも含めた全DAGで行う。これで親の層 < 子の層が常に成り立ち、
-            // カラムを跨ぐエッジは必ず下向きになる。
+            // 層決めはグループを跨ぐエッジも含めた全DAGで行う。これで親の層 < 子の層が常に成り立ち、
+            // グループを跨ぐエッジは必ず下向きになる。
             var (layers, layeredNodes) = ConstructLayers(unsortedNodes);
 
-            // 層 -> y。空のレイヤーはyを進めない（カラム分割前と同じ規則）。
-            // 全カラムで共有するので、ここで一度だけ作る。
+            // 層 -> y。空のレイヤーはyを進めない（グループ分割前と同じ規則）。
+            // 全グループで共有するので、ここで一度だけ作る。
             var layerY = new float[layers.Count];
             {
                 var y = 0f;
@@ -86,20 +86,20 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            var columnCount = columns.CurrentCount;
-            var columnLayers = new List<List<ILayeredNode>>[columnCount];
-            columns.BeginLayout();
+            var groupCount = groups.CurrentCount;
+            var groupLayers = new List<List<ILayeredNode>>[groupCount];
+            groups.BeginLayout();
 
             var dummyNodeCount = 0;
             var type1ConflictCount = 0;
             var hasUnresolvedWidth = false;
             var originX = 0f;
 
-            // step2以降はカラムごとに独立して回す。これで並び替えとx圧縮の影響がカラム内に閉じる。
-            for (var c = 0; c < columnCount; c++)
+            // step2以降はグループごとに独立して回す。これで並び替えとx圧縮の影響がグループ内に閉じる。
+            for (var c = 0; c < groupCount; c++)
             {
-                var (colLayers, colNodes) = SplitColumn(layers, layeredNodes, c);
-                columnLayers[c] = colLayers;
+                var (colLayers, colNodes) = SplitGroup(layers, layeredNodes, c);
+                groupLayers[c] = colLayers;
 
                 // step2: layer ごとに並び替え
                 LayerOrderAssigner.AssignOrdering(colLayers);
@@ -134,7 +134,7 @@ namespace Rector.UI.LayeredGraphDrawing
                         maxY = Mathf.Max(maxY, nodeY + node.Height);
 
                         // NodeView.Width/HeightはresolvedStyle由来なので、追加直後のフレームでは0のことがある。
-                        // そのまま確定するとカラムの枠が足りず、ノードが枠をはみ出す。
+                        // そのまま確定するとグループの枠が足りず、ノードが枠をはみ出す。
                         if (!node.IsDummy && node.Width <= 0f) hasUnresolvedWidth = true;
                     }
 
@@ -142,15 +142,15 @@ namespace Rector.UI.LayeredGraphDrawing
                     contentHeight = maxY - minY;
                 }
 
-                var width = columns.Place(originX, contentWidth, minY, contentHeight);
+                var width = groups.Place(originX, contentWidth, minY, contentHeight);
 
                 foreach (var node in colNodes.Values)
                 {
-                    node.Position = new Vector2(x[node.Id] - minX + originX + GraphColumns.Padding, layerY[node.Layer]);
+                    node.Position = new Vector2(x[node.Id] - minX + originX + NodeGroups.Padding, layerY[node.Layer]);
                     if (node.IsDummy) dummyNodeCount++;
                 }
 
-                // カラム同士は隙間なく並べる。区切りは左borderと内側のPaddingで付ける。
+                // グループ同士は隙間なく並べる。区切りは左borderと内側のPaddingで付ける。
                 originX += width;
                 type1ConflictCount += markedEdges.Count;
             }
@@ -161,16 +161,16 @@ namespace Rector.UI.LayeredGraphDrawing
                 edge.Commit();
             }
 
-            // graph.Layers は「カラム順 -> カラム内Index順」で連結する。
+            // graph.Layers は「グループ順 -> グループ内Index順」で連結する。
             // 1行が左から右に並んだノード列であり続けるので、NodeNavigatorの左右移動が
-            // そのままカラムを跨ぐ移動になる。
+            // そのままグループを跨ぐ移動になる。
             graph.Layers.Clear();
             for (var i = 0; i < layers.Count; i++)
             {
                 var merged = new List<ILayeredNode>();
-                for (var c = 0; c < columnCount; c++)
+                for (var c = 0; c < groupCount; c++)
                 {
-                    merged.AddRange(columnLayers[c][i]);
+                    merged.AddRange(groupLayers[c][i]);
                 }
 
                 graph.Layers.Add(merged);
@@ -180,48 +180,48 @@ namespace Rector.UI.LayeredGraphDrawing
         }
 
         /// <summary>
-        /// グローバルなレイヤー構造から1カラム分を切り出す。
+        /// グローバルなレイヤー構造から1グループ分を切り出す。
         /// </summary>
         /// <remarks>
         /// レイヤーの添字はグローバルのまま（空の層はそのまま空リストで残す）。
         /// HorizontalCompaction.PlaceBlock が layers[node.Layer] とグローバル層番号で引くので、
         /// 添字を詰めてはいけない。
         /// </remarks>
-        static (List<List<ILayeredNode>> layers, Dictionary<NodeId, ILayeredNode> nodes) SplitColumn(
+        static (List<List<ILayeredNode>> layers, Dictionary<NodeId, ILayeredNode> nodes) SplitGroup(
             List<List<ILayeredNode>> layers,
             Dictionary<NodeId, ILayeredNode> layeredNodes,
-            int column)
+            int group)
         {
-            var columnLayers = new List<List<ILayeredNode>>(layers.Count);
+            var groupLayers = new List<List<ILayeredNode>>(layers.Count);
             foreach (var layer in layers)
             {
-                var columnLayer = new List<ILayeredNode>();
+                var groupLayer = new List<ILayeredNode>();
                 foreach (var node in layer)
                 {
-                    if (node.Column != column) continue;
+                    if (node.Group != group) continue;
 
-                    // Indexはカラム内ローカルに振り直す。
+                    // Indexはグループ内ローカルに振り直す。
                     // LayerOrderAssignerは隣接ノードを持たないノードの重心にIndexをそのまま使うので、
-                    // グローバルな添字のまま渡すとそのノードだけカラムの右端へ飛ぶ。
-                    node.Index = columnLayer.Count;
-                    columnLayer.Add(node);
+                    // グローバルな添字のまま渡すとそのノードだけグループの右端へ飛ぶ。
+                    node.Index = groupLayer.Count;
+                    groupLayer.Add(node);
                 }
 
-                columnLayers.Add(columnLayer);
+                groupLayers.Add(groupLayer);
             }
 
-            // HorizontalCompactionは第2引数を全走査して root/x/sink を引くので、カラム専用の辞書が要る。
+            // HorizontalCompactionは第2引数を全走査して root/x/sink を引くので、グループ専用の辞書が要る。
             // PlaceBlockのsink伝播は列挙順に依存するため、元の辞書の列挙順を保ったままfilterする。
-            var columnNodes = new Dictionary<NodeId, ILayeredNode>(layeredNodes.Count);
+            var groupNodes = new Dictionary<NodeId, ILayeredNode>(layeredNodes.Count);
             foreach (var (id, node) in layeredNodes)
             {
-                if (node.Column == column)
+                if (node.Group == group)
                 {
-                    columnNodes.Add(id, node);
+                    groupNodes.Add(id, node);
                 }
             }
 
-            return (columnLayers, columnNodes);
+            return (groupLayers, groupNodes);
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace Rector.UI.LayeredGraphDrawing
             var layeredNodes = new Dictionary<NodeId, ILayeredNode>();
 
             // step1: 入力を持たないノード（どこにも繋がっていない孤立ノードを含む）を最上段に置く
-            // 孤立ノードを専用の層に分けると、孤立ノードのないカラムの1行目が丸ごと空になる
+            // 孤立ノードを専用の層に分けると、孤立ノードのないグループの1行目が丸ごと空になる
             var sources = new List<ILayeredNode>();
             for (var i = 0; i < unsortedNodes.Count;)
             {
@@ -523,10 +523,10 @@ namespace Rector.UI.LayeredGraphDrawing
                         {
                             var outputNode = layeredNodes[edge.EdgeView.Edge.OutputSlot.NodeId];
 
-                            // カラムを跨ぐエッジはdummy nodeを作らず、Parents/Childrenにも入れない。
-                            // これでレイヤー内の並び替えとx圧縮がカラム内に閉じ、
+                            // グループを跨ぐエッジはdummy nodeを作らず、Parents/Childrenにも入れない。
+                            // これでレイヤー内の並び替えとx圧縮がグループ内に閉じ、
                             // 跨ぎエッジはスロット同士を結ぶ直線として描かれる。
-                            if (outputNode.Column != node.Column) continue;
+                            if (outputNode.Group != node.Group) continue;
 
                             var outputLayerIndex = outputNode.Layer;
 
@@ -538,7 +538,7 @@ namespace Rector.UI.LayeredGraphDrawing
                                 var dummyNode = new DummyNode(NodeId.Generate())
                                 {
                                     Layer = j,
-                                    Column = node.Column
+                                    Group = node.Group
                                 };
                                 layers[j].Add(dummyNode);
                                 dummyNode.Index = layers[j].Count - 1;

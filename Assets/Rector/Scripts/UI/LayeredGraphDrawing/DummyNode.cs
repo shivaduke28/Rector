@@ -14,7 +14,7 @@ namespace Rector.UI.LayeredGraphDrawing
         public Vector2 Position { get; set; }
         public int Layer { get; set; }
         public int Index { get; set; }
-        public int Column { get; set; }
+        public int Group { get; set; }
         public int InputSlotCount => 1;
         public int OutputSlotCount => 1;
         public List<(ILayeredNode Node, int SlotIndex)> Parents { get; } = new(1);

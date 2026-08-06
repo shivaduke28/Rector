@@ -22,7 +22,7 @@ namespace Rector.UI.LayeredGraphDrawing
 
         public int Layer { get; set; }
         public int Index { get; set; }
-        public int Column { get; set; }
+        public int Group { get; set; }
         public int InputSlotCount { get; }
         public int OutputSlotCount { get; }
 

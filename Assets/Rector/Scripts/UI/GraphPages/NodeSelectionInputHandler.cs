@@ -34,9 +34,9 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public override void MoveColumn(int direction)
+        public override void MoveGroup(int direction)
         {
-            graphPage.MoveActiveColumn(direction);
+            graphPage.MoveActiveGroup(direction);
         }
 
         public override void Submit()

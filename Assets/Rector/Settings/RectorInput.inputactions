@@ -15,7 +15,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "MoveColumn",
+                    "name": "MoveGroup",
                     "type": "PassThrough",
                     "id": "db45d00f-e29c-400f-8261-28f8b94c2f82",
                     "expectedControlType": "Vector2",
@@ -666,7 +666,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "MoveColumn",
+                    "action": "MoveGroup",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -677,7 +677,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "MoveColumn",
+                    "action": "MoveGroup",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -688,7 +688,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "MoveColumn",
+                    "action": "MoveGroup",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -699,7 +699,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "MoveColumn",
+                    "action": "MoveGroup",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

@@ -8,7 +8,7 @@ namespace Rector.UI.Hud
     public sealed class GraphSettingsPageModel : IInitializable, IDisposable, IButtonListPageModel
     {
         readonly ButtonListPageView view;
-        readonly GraphColumns columns;
+        readonly NodeGroups groups;
         readonly ReactiveProperty<bool> isVisible = new(false);
         ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
 
@@ -18,25 +18,25 @@ namespace Rector.UI.Hud
         int index;
         IDisposable disposable;
 
-        public GraphSettingsPageModel(ButtonListPageView view, GraphColumns columns)
+        public GraphSettingsPageModel(ButtonListPageView view, NodeGroups groups)
         {
             this.view = view;
-            this.columns = columns;
+            this.groups = groups;
 
-            for (var count = GraphColumns.MinCount; count <= GraphColumns.MaxCount; count++)
+            for (var count = NodeGroups.MinCount; count <= NodeGroups.MaxCount; count++)
             {
                 var value = count;
-                buttons.Add(new RectorButtonState($"Columns: {value}", () => columns.SetCount(value)));
+                buttons.Add(new RectorButtonState($"Groups: {value}", () => groups.SetCount(value)));
             }
         }
 
         public void Initialize()
         {
-            // 現在のカラム数はハイライトで示す。ButtonListPageViewはEnterのたびにボタンを
+            // 現在のグループ数はハイライトで示す。ButtonListPageViewはEnterのたびにボタンを
             // 作り直すが、RectorButtonStateは使い回されるので状態はここで持てる。
             disposable = new CompositeDisposable(
                 view.Bind(this),
-                columns.Count.Subscribe(UpdateHighlight));
+                groups.Count.Subscribe(UpdateHighlight));
         }
 
         public void Dispose() => disposable?.Dispose();
@@ -46,7 +46,7 @@ namespace Rector.UI.Hud
             onExit = onExitAction;
 
             // 現在の値にカーソルを合わせて開く
-            index = columns.CurrentCount - GraphColumns.MinCount;
+            index = groups.CurrentCount - NodeGroups.MinCount;
             for (var i = 0; i < buttons.Count; i++)
             {
                 buttons[i].IsFocused.Value = i == index;
@@ -59,7 +59,7 @@ namespace Rector.UI.Hud
         {
             for (var i = 0; i < buttons.Count; i++)
             {
-                buttons[i].IsHighlighted.Value = i + GraphColumns.MinCount == count;
+                buttons[i].IsHighlighted.Value = i + NodeGroups.MinCount == count;
             }
         }
 

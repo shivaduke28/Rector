@@ -12,7 +12,7 @@ namespace Rector.UI.GraphPages
         readonly VisualElement mask;
         readonly VisualElement content;
         readonly GraphInputAction graphInputAction;
-        readonly ColumnGuideView columnGuideView;
+        readonly GroupGuideView groupGuideView;
         readonly CompositeDisposable disposable = new();
 
         public const string AnimationClassName = "rector-graph-content-animation";
@@ -29,12 +29,12 @@ namespace Rector.UI.GraphPages
         Vector2 MaskSizeHalf => new(mask.resolvedStyle.width * 0.5f, mask.resolvedStyle.height * 0.5f);
 
         public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction,
-            ColumnGuideView columnGuideView)
+            GroupGuideView groupGuideView)
         {
             this.mask = mask;
             this.content = content;
             this.graphInputAction = graphInputAction;
-            this.columnGuideView = columnGuideView;
+            this.groupGuideView = groupGuideView;
         }
 
         public void Initialize()
@@ -42,9 +42,9 @@ namespace Rector.UI.GraphPages
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ =>
             {
                 ApplyTranslateAndZoom();
-                // カラムガイドはcontentと同じtranslation/scaleから位置を決めるので、
+                // グループガイドはcontentと同じtranslation/scaleから位置を決めるので、
                 // 書き込み口をここ一本に絞る。Layoutは値が変わらなければ何もしない。
-                columnGuideView.Layout(translation, currentScale);
+                groupGuideView.Layout(translation, currentScale);
             }).AddTo(disposable);
             graphInputAction.ResetTransform.Subscribe(_ => Reset()).AddTo(disposable);
             // UIの初期化を待ちたいので1F遅らせる
@@ -58,13 +58,13 @@ namespace Rector.UI.GraphPages
         void DisableAnimation()
         {
             content.RemoveFromClassList(AnimationClassName);
-            columnGuideView.SetAnimationEnabled(false);
+            groupGuideView.SetAnimationEnabled(false);
         }
 
         void EnableAnimation()
         {
             content.AddToClassList(AnimationClassName);
-            columnGuideView.SetAnimationEnabled(true);
+            groupGuideView.SetAnimationEnabled(true);
         }
 
         void SetTranslation(Vector2 value)

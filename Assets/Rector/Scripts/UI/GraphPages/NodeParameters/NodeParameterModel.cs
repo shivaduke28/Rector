@@ -31,8 +31,8 @@ namespace Rector.UI.GraphPages.NodeParameters
             ExposedInputs.Clear();
             if (page.SelectedNode is { } selectedNode)
             {
-                // カラムはスロットではないがどのノードにもあるので先頭に置く
-                ExposedInputs.Add(new ExposedColumnInputModel(page, selectedNode));
+                // グループはスロットではないがどのノードにもあるので先頭に置く
+                ExposedInputs.Add(new ExposedGroupInputModel(page, selectedNode));
 
                 foreach (var inputSlot in selectedNode.NodeView.Node.InputSlots)
                 {
@@ -97,8 +97,8 @@ namespace Rector.UI.GraphPages.NodeParameters
             var input = ExposedInputs[index];
             switch (input)
             {
-                case ExposedColumnInputModel columnInputViewModel:
-                    columnInputViewModel.Increment();
+                case ExposedGroupInputModel groupInputViewModel:
+                    groupInputViewModel.Increment();
                     break;
                 case ExposedFloatInputModel floatInputViewModel:
                     floatInputViewModel.Increment();
@@ -118,8 +118,8 @@ namespace Rector.UI.GraphPages.NodeParameters
             var input = ExposedInputs[index];
             switch (input)
             {
-                case ExposedColumnInputModel columnInputViewModel:
-                    columnInputViewModel.Decrement();
+                case ExposedGroupInputModel groupInputViewModel:
+                    groupInputViewModel.Decrement();
                     break;
                 case ExposedFloatInputModel floatInputViewModel:
                     floatInputViewModel.Decrement();

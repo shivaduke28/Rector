@@ -14,8 +14,8 @@ namespace Rector.UI.GraphPages
         }
 
         /// <remarks>
-        /// フォーカスの移動はカラムを跨ぐ。カラム内に閉じるとカラムを跨いだ確認がしづらい。
-        /// 左スティックの MoveColumn は「隣のカラムへ一気に飛ぶ」ための別経路。
+        /// フォーカスの移動はグループを跨ぐ。グループ内に閉じるとグループを跨いだ確認がしづらい。
+        /// 左スティックの MoveGroup は「隣のグループへ一気に飛ぶ」ための別経路。
         /// </remarks>
         public LayeredNode SelectNextNode(LayeredNode current, Vector2 input)
         {
@@ -26,7 +26,7 @@ namespace Rector.UI.GraphPages
 
             if (direction is Direction.Left or Direction.Right)
             {
-                // レイヤーは全カラムを連結した1行。カラム境界では隣のカラムへそのまま進み、
+                // レイヤーは全グループを連結した1行。グループ境界では隣のグループへそのまま進み、
                 // 行の端まで行ったら反対の端へ回り込む。
                 var step = direction == Direction.Right ? 1 : -1;
                 var count = currentLayer.Count;
@@ -47,7 +47,7 @@ namespace Rector.UI.GraphPages
 
             // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
             // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
-            // カラムを跨ぐエッジはParents/Childrenに入らないので、まずは同一カラムの親子から探す
+            // グループを跨ぐエッジはParents/Childrenに入らないので、まずは同一グループの親子から探す
             var neighbor = (up ? current.Parents : current.Children)
                 .Select(t => t.Node)
                 .OfType<LayeredNode>()
@@ -58,8 +58,8 @@ namespace Rector.UI.GraphPages
                 return neighbor;
             }
 
-            // カラムを跨ぐエッジはParents/Childrenに入らないので、生のエッジ列から実の親子を辿る
-            var crossing = FindAcrossColumns(current, up);
+            // グループを跨ぐエッジはParents/Childrenに入らないので、生のエッジ列から実の親子を辿る
+            var crossing = FindAcrossGroups(current, up);
             if (crossing != null)
             {
                 return crossing;
@@ -82,7 +82,7 @@ namespace Rector.UI.GraphPages
             return current;
         }
 
-        LayeredNode FindAcrossColumns(LayeredNode current, bool up)
+        LayeredNode FindAcrossGroups(LayeredNode current, bool up)
         {
             LayeredNode nearest = null;
             var nearestDistance = float.MaxValue;
@@ -92,7 +92,7 @@ namespace Rector.UI.GraphPages
                 var e = edge.EdgeView.Edge;
                 var nodeId = up ? e.OutputSlot.NodeId : e.InputSlot.NodeId;
                 if (!graph.TryGetNode(nodeId, out var node)) continue;
-                if (node.Column == current.Column) continue;
+                if (node.Group == current.Group) continue;
 
                 var distance = Mathf.Abs(node.TargetPosition.x - current.TargetPosition.x);
                 if (distance < nearestDistance)
@@ -106,16 +106,16 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// 隣のカラムのノードを返す。ノードのないカラムは飛ばし、端まで行ったらループする。
+        /// 隣のグループのノードを返す。ノードのないグループは飛ばし、端まで行ったらループする。
         /// </summary>
-        public LayeredNode FindNodeInAdjacentColumn(LayeredNode current, int direction, int columnCount)
+        public LayeredNode FindNodeInAdjacentGroup(LayeredNode current, int direction, int groupCount)
         {
-            var startColumn = current?.Column ?? 0;
+            var startGroup = current?.Group ?? 0;
 
-            for (var step = 1; step <= columnCount; step++)
+            for (var step = 1; step <= groupCount; step++)
             {
-                var column = ((startColumn + direction * step) % columnCount + columnCount) % columnCount;
-                var candidate = FindNearestInColumn(column, current);
+                var group = ((startGroup + direction * step) % groupCount + groupCount) % groupCount;
+                var candidate = FindNearestInGroup(group, current);
                 if (candidate != null)
                 {
                     return candidate;
@@ -126,9 +126,9 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// カラム内で、レイヤーが近く、次にx座標が近いノードを返す。
+        /// グループ内で、レイヤーが近く、次にx座標が近いノードを返す。
         /// </summary>
-        LayeredNode FindNearestInColumn(int column, LayeredNode from)
+        LayeredNode FindNearestInGroup(int group, LayeredNode from)
         {
             LayeredNode nearest = null;
             var nearestLayerDistance = int.MaxValue;
@@ -138,7 +138,7 @@ namespace Rector.UI.GraphPages
             {
                 foreach (var node in layer)
                 {
-                    if (node is not LayeredNode layeredNode || layeredNode.Column != column) continue;
+                    if (node is not LayeredNode layeredNode || layeredNode.Group != group) continue;
 
                     var layerDistance = from == null ? 0 : Mathf.Abs(layeredNode.Layer - from.Layer);
                     var x = from == null ? 0f : Mathf.Abs(layeredNode.Position.x - from.Position.x);

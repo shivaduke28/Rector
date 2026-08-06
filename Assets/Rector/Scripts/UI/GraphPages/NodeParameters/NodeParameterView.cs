@@ -56,10 +56,10 @@ namespace Rector.UI.GraphPages.NodeParameters
                 {
                     switch (exposedInput)
                     {
-                        case ExposedColumnInputModel columnInput:
-                            var columnInputView = new ExposedColumnInputView(VisualElementFactory.Instance.CreateExposedIntSlot());
-                            columnInputView.AddTo(propertyRoot);
-                            columnInputView.Bind(columnInput).AddTo(disposable);
+                        case ExposedGroupInputModel groupInput:
+                            var groupInputView = new ExposedGroupInputView(VisualElementFactory.Instance.CreateExposedIntSlot());
+                            groupInputView.AddTo(propertyRoot);
+                            groupInputView.Bind(groupInput).AddTo(disposable);
                             break;
                         case ExposedFloatInputModel floatInput:
                             var floatInputView = new ExposedFloatInputView(VisualElementFactory.Instance.CreateExposedFloatSlot());
