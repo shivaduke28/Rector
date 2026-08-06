@@ -194,7 +194,9 @@
 .rector-column {
     position: absolute;
     top: 0;
-    bottom: 0;
+    /* 親ごとズームされるので、縮小したときも下まで届くよう高さを取っておく。
+       はみ出た分は graph-mask の overflow: hidden で切られる。 */
+    height: 4000px;
     border-left-width: 1px;
     border-color: var(--rector-border-color);
     /* ノード (.rector-node) と同じ時間で動かす。瞬間移動させるとレイアウト変更の

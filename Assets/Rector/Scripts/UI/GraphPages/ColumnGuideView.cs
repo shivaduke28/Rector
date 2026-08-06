@@ -9,10 +9,10 @@ namespace Rector.UI.GraphPages
     /// カラムの区切り線とヘッダーを描く。
     /// </summary>
     /// <remarks>
-    /// graph-content の兄弟として graph-mask 直下に置く。transform-origin が left top なので、
-    /// content 内のx座標 x は translation.x + scale * x に描かれる。ヘッダーの文字までズームで
-    /// 拡大されないよう、root は水平方向の平行移動だけを受け、各カラム要素が left/width に
-    /// scale を掛ける。書き込みは GraphContentTransformer からの Layout 一本に絞っている。
+    /// graph-content の兄弟として graph-mask 直下に置き、content と同じ scale と
+    /// 同じ水平方向の平行移動を掛ける。y だけ動かさないことでヘッダーが上に貼り付く。
+    /// カラムの left/width は content と同じ座標系のまま渡すので、ズームでズレようがない。
+    /// 書き込みは GraphContentTransformer からの Layout 一本に絞っている。
     /// </remarks>
     public sealed class ColumnGuideView
     {
@@ -55,14 +55,15 @@ namespace Rector.UI.GraphPages
             lastScale = scale;
 
             root.style.translate = new Vector2(translationX, 0f);
+            root.style.scale = new Vector3(scale, scale, 1f);
 
             EnsureColumnElements(bounds.Count);
 
             for (var i = 0; i < bounds.Count; i++)
             {
                 var element = columnElements[i];
-                element.style.left = bounds[i].OriginX * scale;
-                element.style.width = bounds[i].Width * scale;
+                element.style.left = bounds[i].OriginX;
+                element.style.width = bounds[i].Width;
             }
         }
 
