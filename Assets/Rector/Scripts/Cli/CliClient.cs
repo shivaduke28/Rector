@@ -62,6 +62,7 @@ namespace Rector.Cli
             edgeCount = graphPage.Graph.EdgeCount,
             groupCount = graphPage.Groups.CurrentCount,
             groups = graphPage.Groups.Bounds.Select(b => new { originX = b.OriginX, width = b.Width }).ToArray(),
+            followSelectedNode = graphPage.ViewSettings.FollowSelectedNode.CurrentValue,
             selectedNodeId = graphPage.SelectedNode?.Id.Value,
             pageState = graphPage.State.Value.ToString(),
         };

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using R3;
+using Rector.UI.GraphPages;
 using Rector.UI.LayeredGraphDrawing;
 
 namespace Rector.UI.Hud
@@ -9,6 +10,7 @@ namespace Rector.UI.Hud
     {
         readonly ButtonListPageView view;
         readonly NodeGroups groups;
+        readonly GraphViewSettings viewSettings;
         readonly ReactiveProperty<bool> isVisible = new(false);
         ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
 
@@ -18,10 +20,18 @@ namespace Rector.UI.Hud
         int index;
         IDisposable disposable;
 
-        public GraphSettingsPageModel(ButtonListPageView view, NodeGroups groups)
+        readonly RectorButtonState followButton;
+
+        public GraphSettingsPageModel(ButtonListPageView view, NodeGroups groups, GraphViewSettings viewSettings)
         {
             this.view = view;
             this.groups = groups;
+            this.viewSettings = viewSettings;
+
+            // 真偽値なのでハイライトではなくボタンの文言そのもので今の値を出す
+            var follow = viewSettings.FollowSelectedNode;
+            followButton = new RectorButtonState(string.Empty, () => follow.Value = !follow.Value);
+            buttons.Add(followButton);
 
             for (var count = NodeGroups.MinCount; count <= NodeGroups.MaxCount; count++)
             {
@@ -36,7 +46,8 @@ namespace Rector.UI.Hud
             // 作り直すが、RectorButtonStateは使い回されるので状態はここで持てる。
             disposable = new CompositeDisposable(
                 view.Bind(this),
-                groups.Count.Subscribe(UpdateHighlight));
+                groups.Count.Subscribe(UpdateHighlight),
+                viewSettings.FollowSelectedNode.Subscribe(x => followButton.Text.Value = $"Follow Focus: {(x ? "On" : "Off")}"));
         }
 
         public void Dispose() => disposable?.Dispose();
@@ -45,8 +56,8 @@ namespace Rector.UI.Hud
         {
             onExit = onExitAction;
 
-            // 現在の値にカーソルを合わせて開く
-            index = groups.CurrentCount - NodeGroups.MinCount;
+            // グループ数の現在値にカーソルを合わせて開く
+            index = GroupButtonOffset + groups.CurrentCount - NodeGroups.MinCount;
             for (var i = 0; i < buttons.Count; i++)
             {
                 buttons[i].IsFocused.Value = i == index;
@@ -55,11 +66,14 @@ namespace Rector.UI.Hud
             isVisible.Value = true;
         }
 
+        /// <summary>Groups ボタンの開始位置。手前に Follow Focus が1つ入っている。</summary>
+        const int GroupButtonOffset = 1;
+
         void UpdateHighlight(int count)
         {
-            for (var i = 0; i < buttons.Count; i++)
+            for (var i = GroupButtonOffset; i < buttons.Count; i++)
             {
-                buttons[i].IsHighlighted.Value = i + NodeGroups.MinCount == count;
+                buttons[i].IsHighlighted.Value = i - GroupButtonOffset + NodeGroups.MinCount == count;
             }
         }
 

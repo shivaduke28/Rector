@@ -37,6 +37,7 @@ namespace Rector.UI.GraphPages
 
         public readonly LayeredGraph Graph;
         public readonly NodeGroups Groups = new();
+        public readonly GraphViewSettings ViewSettings = new();
 
         readonly CreateNodeMenuModel createNodeMenuModel;
         readonly CreateNodeMenuView createNodeMenuView;
@@ -80,7 +81,7 @@ namespace Rector.UI.GraphPages
                 () => State.Value = GraphPageState.NodeSelection);
             graphContent1.Add(holdGuideView);
             groupGuideView = new GroupGuideView(graphMask1.Q<VisualElement>(GroupGuideView.RootName), Groups);
-            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView);
+            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView, ViewSettings);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
             graphSorter = new GraphSorter(Graph, Groups);

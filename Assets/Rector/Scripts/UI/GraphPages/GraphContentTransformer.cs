@@ -13,6 +13,7 @@ namespace Rector.UI.GraphPages
         readonly VisualElement content;
         readonly GraphInputAction graphInputAction;
         readonly GroupGuideView groupGuideView;
+        readonly GraphViewSettings viewSettings;
         readonly CompositeDisposable disposable = new();
 
         public const string AnimationClassName = "rector-graph-content-animation";
@@ -29,12 +30,13 @@ namespace Rector.UI.GraphPages
         Vector2 MaskSizeHalf => new(mask.resolvedStyle.width * 0.5f, mask.resolvedStyle.height * 0.5f);
 
         public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction,
-            GroupGuideView groupGuideView)
+            GroupGuideView groupGuideView, GraphViewSettings viewSettings)
         {
             this.mask = mask;
             this.content = content;
             this.graphInputAction = graphInputAction;
             this.groupGuideView = groupGuideView;
+            this.viewSettings = viewSettings;
         }
 
         public void Initialize()
@@ -135,6 +137,8 @@ namespace Rector.UI.GraphPages
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
+            if (!viewSettings.FollowSelectedNode.CurrentValue) return;
+
             // left-top
             var nodePosition = node.TargetPosition * currentScale;
             SetTranslation(-nodePosition + MaskSizeHalf + offset);
