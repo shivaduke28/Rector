@@ -29,9 +29,12 @@ namespace Rector.UI.GraphPages.NodeParameters
         public void Enter()
         {
             ExposedInputs.Clear();
-            if (Node != null)
+            if (page.SelectedNode is { } selectedNode)
             {
-                foreach (var inputSlot in Node.InputSlots)
+                // グループはスロットではないがどのノードにもあるので先頭に置く
+                ExposedInputs.Add(new ExposedGroupInputModel(page, selectedNode));
+
+                foreach (var inputSlot in selectedNode.NodeView.Node.InputSlots)
                 {
                     switch (inputSlot)
                     {
@@ -51,15 +54,15 @@ namespace Rector.UI.GraphPages.NodeParameters
                 }
             }
 
-            if (ExposedInputs.Count > 0)
+            // 先頭はGroup行なので、パラメータを持つノードでは2番目から始める。
+            // ここを0のままにすると、開いて最初の十字キー左右がノードのグループ移動になってしまう。
+            index = ExposedInputs.Count switch
             {
-                index = 0;
-                ExposedInputs[index].Focus();
-            }
-            else
-            {
-                index = -1;
-            }
+                0 => -1,
+                1 => 0,
+                _ => 1
+            };
+            if (index >= 0) ExposedInputs[index].Focus();
 
             IsVisible.Value = true;
         }
@@ -91,60 +94,19 @@ namespace Rector.UI.GraphPages.NodeParameters
         public void Increment()
         {
             if (index == -1) return;
-            var input = ExposedInputs[index];
-            switch (input)
-            {
-                case ExposedFloatInputModel floatInputViewModel:
-                    floatInputViewModel.Increment();
-                    break;
-                case ExposedIntInputModel intInputViewModel:
-                    intInputViewModel.Increment();
-                    break;
-                case ExposedBoolInputModel boolInputViewModel:
-                    boolInputViewModel.Set(true);
-                    break;
-            }
+            ExposedInputs[index].Increment();
         }
 
         public void Decrement()
         {
             if (index == -1) return;
-            var input = ExposedInputs[index];
-            switch (input)
-            {
-                case ExposedFloatInputModel floatInputViewModel:
-                    floatInputViewModel.Decrement();
-                    break;
-                case ExposedIntInputModel intInputViewModel:
-                    intInputViewModel.Decrement();
-                    break;
-                case ExposedBoolInputModel boolInputViewModel:
-                    boolInputViewModel.Set(false);
-                    break;
-            }
+            ExposedInputs[index].Decrement();
         }
 
         public void DoAction()
         {
             if (index == -1) return;
-            var input = ExposedInputs[index];
-            switch (input)
-            {
-                case ExposedFloatInputModel:
-                    stepType.Value = stepType.CurrentValue switch
-                    {
-                        SliderStepType.Times1 => SliderStepType.Times10,
-                        SliderStepType.Times10 => SliderStepType.Times100,
-                        _ => SliderStepType.Times1
-                    };
-                    break;
-                case ExposedBoolInputModel boolInputViewModel:
-                    boolInputViewModel.Toggle();
-                    break;
-                case ExposedCallbackInputModel callbackInputViewModel:
-                    callbackInputViewModel.Invoke();
-                    break;
-            }
+            ExposedInputs[index].DoAction();
         }
     }
 }

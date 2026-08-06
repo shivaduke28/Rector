@@ -28,9 +28,9 @@ namespace Rector.UI.LayeredGraphDrawing
             Layers.Add(new List<ILayeredNode>());
         }
 
-        public void AddNode(NodeView nodeView)
+        public void AddNode(NodeView nodeView, int group)
         {
-            var layeredNode = new LayeredNode(nodeView);
+            var layeredNode = new LayeredNode(nodeView) { Group = group };
             if (nodes.TryAdd(layeredNode.Id, layeredNode))
             {
                 var layer = Layers[0];

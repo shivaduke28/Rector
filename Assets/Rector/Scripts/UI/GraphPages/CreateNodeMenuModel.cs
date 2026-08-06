@@ -73,11 +73,8 @@ namespace Rector.UI.GraphPages
 
                 foreach (var nodeTemplate in nodeTemplates)
                 {
-                    var button = new RectorButtonState(nodeTemplate.Name, () =>
-                    {
-                        graphPage.Graph.AddNode(nodeTemplate.Create(NodeId.Generate()));
-                        graphPage.Sort();
-                    });
+                    var button = new RectorButtonState(nodeTemplate.Name,
+                        () => graphPage.AddNode(nodeTemplate.Create(NodeId.Generate())));
                     buttons.Add(button);
                 }
             }

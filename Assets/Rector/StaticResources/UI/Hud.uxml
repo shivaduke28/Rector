@@ -10,6 +10,7 @@
         <engine:VisualElement class="rector-hud-body-content-internal">
             <engine:VisualElement name="graph-page" class="rector-graph-page rector-page">
                 <engine:VisualElement name="graph-mask" class="rector-graph-mask">
+                    <engine:VisualElement name="group-guide-root" class="rector-group-guide-root rector-graph-content-animation" />
                     <engine:VisualElement name="graph-content" class="rector-graph-content rector-graph-content-animation">
                         <engine:VisualElement name="edge-root" class="rector-node-root" />
                         <engine:VisualElement name="node-root" class="rector-node-root" />
@@ -36,6 +37,9 @@
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
             <engine:VisualElement name="display-settings-page" class="rector-page">
+                <engine:VisualElement name="left-list" class="rector-button-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="graph-settings-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
             <engine:VisualElement name="copyright-notices-page" class="rector-page rector-copyright-notices-page">

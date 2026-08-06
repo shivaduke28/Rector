@@ -6,6 +6,7 @@ namespace Rector.UI.GraphPages
     public sealed class NodeParameterInputHandler : GraphPageInputHandler
     {
         readonly NodeParameterView view;
+
         public NodeParameterInputHandler(NodeParameterView view)
         {
             this.view = view;

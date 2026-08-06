@@ -16,6 +16,7 @@ namespace Rector.UI.Graphs.Nodes
 
         public Node Node { get; }
         public float Width => Root.resolvedStyle.width;
+        public float Height => Root.resolvedStyle.height;
         protected const string NodeSelectedClassName = "rector-node--selected";
         public List<InputSlotView> InputSlotViews { get; }
         public List<OutputSlotView> OutputSlotViews { get; }

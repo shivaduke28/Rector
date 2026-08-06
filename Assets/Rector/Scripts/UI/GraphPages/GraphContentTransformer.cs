@@ -12,9 +12,11 @@ namespace Rector.UI.GraphPages
         readonly VisualElement mask;
         readonly VisualElement content;
         readonly GraphInputAction graphInputAction;
+        readonly GroupGuideView groupGuideView;
+        readonly GraphViewSettings viewSettings;
         readonly CompositeDisposable disposable = new();
 
-        const string AnimationClassName = "rector-graph-content-animation";
+        public const string AnimationClassName = "rector-graph-content-animation";
 
         float currentScale = 1f;
         const float MaxScale = 4f;
@@ -27,16 +29,25 @@ namespace Rector.UI.GraphPages
 
         Vector2 MaskSizeHalf => new(mask.resolvedStyle.width * 0.5f, mask.resolvedStyle.height * 0.5f);
 
-        public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction)
+        public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction,
+            GroupGuideView groupGuideView, GraphViewSettings viewSettings)
         {
             this.mask = mask;
             this.content = content;
             this.graphInputAction = graphInputAction;
+            this.groupGuideView = groupGuideView;
+            this.viewSettings = viewSettings;
         }
 
         public void Initialize()
         {
-            Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ => ApplyTranslateAndZoom()).AddTo(disposable);
+            Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate).Subscribe(_ =>
+            {
+                ApplyTranslateAndZoom();
+                // グループガイドはcontentと同じtranslation/scaleから位置を決めるので、
+                // 書き込み口をここ一本に絞る。Layoutは値が変わらなければ何もしない。
+                groupGuideView.Layout(translation, currentScale);
+            }).AddTo(disposable);
             graphInputAction.ResetTransform.Subscribe(_ => Reset()).AddTo(disposable);
             // UIの初期化を待ちたいので1F遅らせる
             UniTask.Create(async () =>
@@ -49,17 +60,23 @@ namespace Rector.UI.GraphPages
         void DisableAnimation()
         {
             content.RemoveFromClassList(AnimationClassName);
+            groupGuideView.SetAnimationEnabled(false);
         }
 
         void EnableAnimation()
         {
             content.AddToClassList(AnimationClassName);
+            groupGuideView.SetAnimationEnabled(true);
         }
 
         void SetTranslation(Vector2 value)
         {
             translation = value;
             content.style.translate = value;
+            // ここで一緒に書かないと、Reset のように毎フレームのループの外から呼ばれた経路で
+            // content だけ先に動き、グループ枠は次のフレーム（アニメーションを戻したあと）に
+            // 遅れて追いかけることになる。
+            groupGuideView.Layout(translation, currentScale);
         }
 
         void Reset()
@@ -124,6 +141,8 @@ namespace Rector.UI.GraphPages
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
+            if (!viewSettings.FollowSelectedNode.CurrentValue) return;
+
             // left-top
             var nodePosition = node.TargetPosition * currentScale;
             SetTranslation(-nodePosition + MaskSizeHalf + offset);

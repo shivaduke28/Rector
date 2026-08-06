@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using R3;
 using Rector.UI.GraphPages.NodeParameters;
 using Rector.UI.Graphs;
+using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 using UnityEngine;
@@ -35,6 +36,8 @@ namespace Rector.UI.GraphPages
         readonly GraphInputAction graphInputAction;
 
         public readonly LayeredGraph Graph;
+        public readonly NodeGroups Groups = new();
+        public readonly GraphViewSettings ViewSettings = new();
 
         readonly CreateNodeMenuModel createNodeMenuModel;
         readonly CreateNodeMenuView createNodeMenuView;
@@ -44,7 +47,9 @@ namespace Rector.UI.GraphPages
         readonly NodeParameterModel nodeParameterModel;
 
         readonly GraphContentTransformer graphContentTransformer;
+        readonly GroupGuideView groupGuideView;
         readonly GraphSorter graphSorter;
+        readonly NodeNavigator nodeNavigator;
 
         readonly CompositeDisposable disposable = new();
 
@@ -75,14 +80,15 @@ namespace Rector.UI.GraphPages
             createNodeMenuModel = new CreateNodeMenuModel(this, nodeTemplateRepository,
                 () => State.Value = GraphPageState.NodeSelection);
             graphContent1.Add(holdGuideView);
-            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction);
+            groupGuideView = new GroupGuideView(graphMask1.Q<VisualElement>(GroupGuideView.RootName), Groups);
+            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView, ViewSettings);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
-            graphSorter = new GraphSorter(Graph);
+            graphSorter = new GraphSorter(Graph, Groups);
 
 
             // state machine
-            var nodeNavigator = new NodeNavigator(Graph);
+            nodeNavigator = new NodeNavigator(Graph, Groups);
             stateMap.Add(GraphPageState.NodeSelection, new NodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.SlotSelection, new SlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this, nodeNavigator));
@@ -134,7 +140,12 @@ namespace Rector.UI.GraphPages
             State.Where(x => x == GraphPageState.NodeParameter)
                 .Subscribe(_ => nodeParameterModel.Enter()).AddTo(disposable);
 
+            // グループ数が変わったら並べ直す。ノードのGroupは書き換えない（NodeGroups.Foldが畳む）ので、
+            // 数を戻せば元の並びに戻る。
+            Groups.Count.Subscribe(_ => Sort()).AddTo(disposable);
+
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
+            graphInputAction.MoveGroup.Subscribe(x => CurrentInputHandler.MoveGroup(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
@@ -155,6 +166,48 @@ namespace Rector.UI.GraphPages
                 .Subscribe(_ => SortInternal()).AddTo(disposable);
         }
 
+        /// <summary>
+        /// ノードを追加する。新しいノードは選択中のノードと同じグループに入る。
+        /// </summary>
+        public void AddNode(NodeView nodeView)
+        {
+            Graph.AddNode(nodeView, SelectedNode?.Group ?? 0);
+            Sort();
+        }
+
+        /// <summary>
+        /// フォーカスを隣のグループへ移す。directionは-1か1。
+        /// </summary>
+        /// <remarks>
+        /// ノードのないグループは飛ばし、端まで行ったらループする。
+        /// </remarks>
+        public void MoveActiveGroup(int direction)
+        {
+            var next = nodeNavigator.FindNodeInAdjacentGroup(SelectedNode, direction, Groups.CurrentCount);
+            if (next != null)
+            {
+                SelectNode(next);
+            }
+        }
+
+        /// <summary>
+        /// 選択中のノードを隣のグループへ移す。directionは-1か1。
+        /// </summary>
+        public void MoveSelectedNodeToGroup(int direction)
+        {
+            if (SelectedNode is not { } node) return;
+
+            MoveNodeToGroup(node, Groups.Wrap(node.Group + direction));
+        }
+
+        public void MoveNodeToGroup(LayeredNode node, int group)
+        {
+            if (group == node.Group) return;
+
+            node.Group = group;
+            Sort();
+        }
+
         public void SelectNode(LayeredNode? node)
         {
             if (SelectedNode is { } old)
@@ -169,6 +222,7 @@ namespace Rector.UI.GraphPages
             }
 
             SelectedNode = node;
+            groupGuideView.SetActiveGroup(node is null ? -1 : Groups.Fold(node.Group));
         }
 
         public void SelectSlot(ISlot? slot)
@@ -312,6 +366,10 @@ namespace Rector.UI.GraphPages
 
         bool shouldSort;
 
+        /// <summary>幅が解決しないまま毎フレームSortし続けないための上限。</summary>
+        const int MaxWidthRetries = 3;
+        int widthRetryCount;
+
         void SortInternal()
         {
             shouldSort = false;
@@ -322,6 +380,22 @@ namespace Rector.UI.GraphPages
             LayerCount.Value = result.LayerCount;
             DummyNodeCount.Value = result.DummyNodeCount;
             Type1ConflictCount.Value = result.Type1ConflictCount;
+
+            // グループ数を変えて選択ノードの表示先が変わった場合もここで追随する
+            groupGuideView.SetActiveGroup(SelectedNode is null ? -1 : Groups.Fold(SelectedNode.Group));
+
+            // 幅が未解決のまま並べてしまったので、解決を待って次のフレームでやり直す。
+            // 単なるフラグにすると、やり直し待ちの間に足されたノードが2度目のSortをもらえない。
+            // 連続して解決しない場合だけ諦める。
+            if (result.HasUnresolvedWidth && widthRetryCount < MaxWidthRetries)
+            {
+                widthRetryCount++;
+                Sort();
+            }
+            else
+            {
+                widthRetryCount = 0;
+            }
 
             switch (State.Value)
             {

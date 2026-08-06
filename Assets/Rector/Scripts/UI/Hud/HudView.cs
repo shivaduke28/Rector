@@ -27,6 +27,7 @@ namespace Rector.UI.Hud
         public ButtonListPageView SystemPageView { get; }
         public ButtonListPageView AudioInputDevicePageView { get; }
         public ButtonListPageView DisplaySettingsPageView { get; }
+        public ButtonListPageView GraphSettingsPageView { get; }
         public CopyrightNoticesPageView CopyrightNoticesPageView { get; }
 
         public HudView(VisualElement root, UIInputAction uiInputAction, GraphInputAction graphInputAction, NodeTemplateRepository nodeTemplateRepository)
@@ -51,6 +52,7 @@ namespace Rector.UI.Hud
             SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInputAction);
             AudioInputDevicePageView = new ButtonListPageView(root.Q<VisualElement>("audio-input-device-page"), uiInputAction);
             DisplaySettingsPageView = new ButtonListPageView(root.Q<VisualElement>("display-settings-page"), uiInputAction);
+            GraphSettingsPageView = new ButtonListPageView(root.Q<VisualElement>("graph-settings-page"), uiInputAction);
             CopyrightNoticesPageView = new CopyrightNoticesPageView(root.Q<VisualElement>("copyright-notices-page"), uiInputAction);
         }
 

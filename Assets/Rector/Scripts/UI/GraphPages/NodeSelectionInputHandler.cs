@@ -34,6 +34,11 @@ namespace Rector.UI.GraphPages
             }
         }
 
+        public override void MoveGroup(int direction)
+        {
+            graphPage.MoveActiveGroup(direction);
+        }
+
         public override void Submit()
         {
             if (graphPage.SelectedNode is { } selected && (selected.InputSlotCount > 0 || selected.OutputSlotCount > 0))
