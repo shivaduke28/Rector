@@ -39,6 +39,19 @@ namespace Rector.UI.GraphPages
             graphPage.MoveActiveGroup(direction);
         }
 
+        public override void NavigateInGroup(Vector2Int direction)
+        {
+            if (graphPage.SelectedNode is not { } selected) return;
+
+            var next = direction.y != 0
+                ? nodeNavigator.FindVerticalInSameGroup(selected, direction.y > 0)
+                : nodeNavigator.FindHorizontalInSameGroup(selected, direction.x);
+            if (next != null)
+            {
+                graphPage.SelectNode(next);
+            }
+        }
+
         public override void MoveNodeToGroup(int direction)
         {
             graphPage.MoveSelectedNodeToGroup(direction);
@@ -110,12 +123,7 @@ namespace Rector.UI.GraphPages
 
         public override void Mute()
         {
-            if (graphPage.SelectedNode is { NodeView: { Node: var selectedNode } })
-            {
-                var mute = !selectedNode.IsMuted.Value;
-                selectedNode.IsMuted.Value = mute;
-                RectorLogger.ToggleMute(selectedNode, mute);
-            }
+            graphPage.ToggleMute(graphPage.SelectedNode);
         }
 
         public override void OpenNodeParameter()

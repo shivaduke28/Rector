@@ -105,7 +105,8 @@ namespace Rector.UI.GraphPages
         void ApplyZoom(float zoom)
         {
             var beforeScale = currentScale;
-            var delta = Time.deltaTime * Mathf.Sign(zoom);
+            // スティックの倒し量(±1)がそのまま速度になる。キーボード(U/O)は±1で従来速度。
+            var delta = Time.deltaTime * zoom;
             currentScale = Mathf.Clamp(currentScale + delta, MinScale, MaxScale);
             var scale = new Vector3(currentScale, currentScale, 1f);
             content.style.scale = scale;
@@ -155,7 +156,8 @@ namespace Rector.UI.GraphPages
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
-            if (!viewSettings.FollowSelectedNode.CurrentValue) return;
+            // 常時追従の設定に加えて、Lock(L2/Tab)を握っている間だけの一時追従がある
+            if (!viewSettings.FollowSelectedNode.CurrentValue && !graphInputAction.IsLockHeld) return;
 
             // left-top
             var nodePosition = node.TargetPosition * currentScale;

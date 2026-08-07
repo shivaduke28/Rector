@@ -17,7 +17,9 @@ namespace Rector.UI.GraphPages
 
         /// <remarks>
         /// フォーカスの移動はグループを跨ぐ。グループ内に閉じるとグループを跨いだ確認がしづらい。
-        /// 左スティックの MoveGroup は「隣のグループへ一気に飛ぶ」ための別経路。
+        /// 左右はグループ内の行を歩き、グループの端まで来たら隣のグループの最近傍へ入る。
+        /// グループ内に閉じた移動は NavModifier(L1) 側の別経路
+        /// (<see cref="FindHorizontalInSameGroup"/> / <see cref="FindVerticalInSameGroup"/>)。
         /// </remarks>
         public LayeredNode SelectNextNode(LayeredNode current, Vector2 input)
         {
@@ -28,21 +30,30 @@ namespace Rector.UI.GraphPages
 
             if (direction is Direction.Left or Direction.Right)
             {
-                // レイヤーは全グループを連結した1行。グループ境界では隣のグループへそのまま進み、
-                // 行の端まで行ったら反対の端へ回り込む。
                 var step = direction == Direction.Right ? 1 : -1;
-                var count = currentLayer.Count;
+                var group = groups.Fold(current.Group);
+
+                // グループ内では同じ行を歩く。行は全グループを連結した1行なので、
+                // 進んだ先の実ノードが同グループのうちは行内の隣がそのまま次のノード。
                 var start = currentLayer.IndexOf(current);
-                for (var i = 1; i <= count; i++)
+                for (var i = start + step; i >= 0 && i < currentLayer.Count; i += step)
                 {
-                    var next = currentLayer[((start + step * i) % count + count) % count];
-                    if (next is LayeredNode layeredNode)
-                    {
-                        return layeredNode;
-                    }
+                    if (currentLayer[i] is not LayeredNode inRow) continue;
+                    if (groups.Fold(inRow.Group) == group) return inRow;
+                    break; // 実ノードが別グループ = グループの端まで来た
                 }
 
-                return current;
+                // グループの端では行を続けず、隣のグループの最近傍(レイヤー優先、次にx)へ入る。
+                // 隣のグループの同じ行にノードがいればレイヤー距離0で従来の行渡りと同じ遷移になり、
+                // いないときだけ「遠くの行仲間」ではなく空間的に近いノードが選ばれる。
+                var hop = FindNodeInAdjacentGroup(current, step, groups.CurrentCount);
+                if (hop != null && groups.Fold(hop.Group) != group)
+                {
+                    return hop;
+                }
+
+                // 飛べる先が無い(実質1グループ)なら、従来通り行内でラップする
+                return FindHorizontalInSameGroup(current, step) ?? current;
             }
 
             var up = direction == Direction.Up;
@@ -67,6 +78,14 @@ namespace Rector.UI.GraphPages
                 return crossing;
             }
 
+            // つながりが無いときは空間的に近いノードへ。まず同グループ内を優先し、
+            // いなければ全グループから探す(上下移動で気づいたら隣のグループに居る事故を防ぐ)。
+            var inGroup = FindVerticalInSameGroup(current, up);
+            if (inGroup != null)
+            {
+                return inGroup;
+            }
+
             // 隣のレイヤーで一番x座標が近いノードに移動する。ノードのないレイヤーは飛ばす。
             for (var i = 0; i < layers.Count; i++)
             {
@@ -82,6 +101,60 @@ namespace Rector.UI.GraphPages
             }
 
             return current;
+        }
+
+        /// <summary>
+        /// 同じグループ内だけで、同じ行(レイヤー)の隣のノードを返す。グループ内の端まで
+        /// 行ったらグループ内の反対端へ回り込む。行内に自分しかいなければnull。
+        /// </summary>
+        public LayeredNode FindHorizontalInSameGroup(LayeredNode current, int direction)
+        {
+            var row = graph.Layers[current.Layer];
+            var group = groups.Fold(current.Group);
+            var count = row.Count;
+            var start = row.IndexOf(current);
+
+            for (var i = 1; i < count; i++)
+            {
+                var next = row[((start + direction * i) % count + count) % count];
+                if (next is LayeredNode layeredNode && groups.Fold(layeredNode.Group) == group)
+                {
+                    return layeredNode;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 同じグループ内だけで上下に移動する。隣のレイヤーから順に、グループ内のノードが
+        /// いる最初のレイヤーでx座標が一番近いノードを返す。端まで行ったら反対側の端へ
+        /// 回り込む。いなければnull。
+        /// </summary>
+        public LayeredNode FindVerticalInSameGroup(LayeredNode current, bool up)
+        {
+            var layers = graph.Layers;
+            var group = groups.Fold(current.Group);
+            var layerIndex = current.Layer;
+
+            // 自分のいるレイヤーは走査しない(layers.Count - 1回で他レイヤーを一巡)。
+            // 含めると「グループ内に縦の他ノードがいない」ときに横並びの隣人やcurrent自身へ
+            // 「上下移動」してしまう。
+            for (var i = 0; i < layers.Count - 1; i++)
+            {
+                layerIndex = (layerIndex + (up ? -1 : 1) + layers.Count) % layers.Count;
+                var candidate = layers[layerIndex]
+                    .OfType<LayeredNode>()
+                    .Where(x => groups.Fold(x.Group) == group)
+                    .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
+                    .FirstOrDefault();
+                if (candidate != null)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
         }
 
         LayeredNode FindAcrossGroups(LayeredNode current, bool up)

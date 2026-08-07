@@ -78,9 +78,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "NodeModifier",
+                    "name": "NavModifier",
                     "type": "Button",
                     "id": "80adc06a-a353-4f9f-ba4e-33bf59dcefaa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "GrabModifier",
+                    "type": "Button",
+                    "id": "42602014-d6ee-4fa8-be7f-5de191d1a6db",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Lock",
+                    "type": "Button",
+                    "id": "6f985f69-b9b2-4366-b0de-50373d77decf",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -124,7 +142,7 @@
                 },
                 {
                     "name": "Zoom",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "5eb0c98f-5742-4243-8bc9-2687be779826",
                     "expectedControlType": "Axis",
                     "processors": "",
@@ -433,7 +451,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "NodeModifier",
+                    "action": "NavModifier",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -444,7 +462,51 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "NodeModifier",
+                    "action": "NavModifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "20f8af16-4d2c-48ef-9662-510ea1664d47",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GrabModifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "46485fac-71ff-461e-a308-773847cfc799",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GrabModifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "09136dca-c62b-46b9-a3e7-55cd9bb3cb68",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "112e2868-bd45-4429-b6d9-1fe7bba76690",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lock",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -526,37 +588,15 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "1D Axis",
-                    "id": "2f61fea0-52df-4807-88a3-6a4563eceabe",
-                    "path": "1DAxis",
+                    "name": "",
+                    "id": "455117e2-4359-4c37-9607-d91a5845056e",
+                    "path": "<Gamepad>/leftStick/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "AxisDeadzone",
                     "groups": "",
                     "action": "Zoom",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "3145a9a5-5238-4a09-9491-f1fc4623144d",
-                    "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "d0a1707e-9f53-43b9-9bdf-a547ff1cc284",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "1D Axis",
@@ -676,17 +716,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "ResetTransform",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ea5931e7-cf5d-4aec-bae9-65d4c42466fd",
-                    "path": "<Gamepad>/leftStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "MoveGroup",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

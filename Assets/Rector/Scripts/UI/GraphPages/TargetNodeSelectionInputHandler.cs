@@ -25,6 +25,34 @@ namespace Rector.UI.GraphPages
             }
         }
 
+        public override void MoveGroup(int direction)
+        {
+            // MoveActiveGroupはSelectedNode(ソース)を動かしてしまうので、ターゲット用の別経路
+            var next = navigator.FindNodeInAdjacentGroup(graphPage.TargetNode, direction, graphPage.Groups.CurrentCount);
+            if (next != null)
+            {
+                graphPage.SetTargetNode(next);
+            }
+        }
+
+        public override void NavigateInGroup(Vector2Int direction)
+        {
+            if (graphPage.TargetNode is not { } target) return;
+
+            var next = direction.y != 0
+                ? navigator.FindVerticalInSameGroup(target, direction.y > 0)
+                : navigator.FindHorizontalInSameGroup(target, direction.x);
+            if (next != null)
+            {
+                graphPage.SetTargetNode(next);
+            }
+        }
+
+        public override void AddNode()
+        {
+            graphPage.PromoteTargetToSource();
+        }
+
         public override void Cancel()
         {
             graphPage.SetTargetNode(null);
@@ -57,10 +85,7 @@ namespace Rector.UI.GraphPages
 
         public override void Mute()
         {
-            if (graphPage.TargetNode is { NodeView: { Node: var targetNode } })
-            {
-                targetNode.IsMuted.Value = !targetNode.IsMuted.Value;
-            }
+            graphPage.ToggleMute(graphPage.TargetNode);
         }
     }
 }
