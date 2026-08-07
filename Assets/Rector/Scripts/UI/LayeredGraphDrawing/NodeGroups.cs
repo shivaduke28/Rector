@@ -41,8 +41,14 @@ namespace Rector.UI.LayeredGraphDrawing
         /// <summary>グループの最小幅。NodeView.Widthはレイアウト解決前は0なので、その揺れもここで吸収される。</summary>
         public const float MinWidth = 240f;
 
-        /// <summary>グループの左右の内側の余白。左borderとノードがくっついて見えなくなるのを防ぐ。</summary>
+        /// <summary>グループの左右と上の内側の余白。左borderとノードがくっついて見えなくなるのを防ぐ。</summary>
         public const float Padding = 24f;
+
+        /// <summary>グループの下側の内側の余白。ノードが1行だけのとき枠がぺちゃんこに見えないよう、他の辺より広い。</summary>
+        public const float BottomPadding = 48f;
+
+        /// <summary>グループ同士の横の隙間。</summary>
+        public const float Gap = 8f;
 
         const string PrefsKey = "Rector_NodeGroupCount";
 
@@ -89,7 +95,7 @@ namespace Rector.UI.LayeredGraphDrawing
             bounds.Clear();
             for (var i = 0; i < count.Value; i++)
             {
-                bounds.Add(new GroupBounds(i * MinWidth, MinWidth, -Padding, Padding * 2f));
+                bounds.Add(new GroupBounds(i * (MinWidth + Gap), MinWidth, -Padding, Padding + BottomPadding));
             }
 
             Revision++;
@@ -125,7 +131,7 @@ namespace Rector.UI.LayeredGraphDrawing
         public float Place(float originX, float contentWidth, float contentTop, float contentHeight)
         {
             var width = Mathf.Max(MinWidth, contentWidth + Padding * 2f);
-            bounds.Add(new GroupBounds(originX, width, contentTop - Padding, contentHeight + Padding * 2f));
+            bounds.Add(new GroupBounds(originX, width, contentTop - Padding, contentHeight + Padding + BottomPadding));
             return width;
         }
     }
