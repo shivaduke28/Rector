@@ -31,9 +31,6 @@ namespace Rector.UI.GraphPages.NodeParameters
             ExposedInputs.Clear();
             if (page.SelectedNode is { } selectedNode)
             {
-                // グループはスロットではないがどのノードにもあるので先頭に置く
-                ExposedInputs.Add(new ExposedGroupInputModel(page, selectedNode));
-
                 foreach (var inputSlot in selectedNode.NodeView.Node.InputSlots)
                 {
                     switch (inputSlot)
@@ -54,9 +51,7 @@ namespace Rector.UI.GraphPages.NodeParameters
                 }
             }
 
-            // 先頭のGroup行にフォーカスを置く。開いてすぐ左右でグループを振り分けられるのが狙いで、
-            // 「開いて最初の十字キー左右がグループ移動になる」のは避けたい副作用ではなく意図した
-            // 挙動 (#43)。ノードが選ばれていればGroup行は必ずあるので、-1になるのは未選択のときだけ。
+            // 先頭のパラメータにフォーカスを置く。パラメータを持たないノードでは-1のまま。
             index = ExposedInputs.Count > 0 ? 0 : -1;
             if (index >= 0) ExposedInputs[index].Focus();
 

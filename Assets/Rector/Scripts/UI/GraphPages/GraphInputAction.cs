@@ -29,6 +29,7 @@ namespace Rector.UI.GraphPages
         readonly Subject<Unit> openScene = new();
         readonly Subject<Unit> resetTransform = new();
         readonly Subject<int> moveGroup = new();
+        readonly Subject<int> moveNodeToGroup = new();
 
         readonly NavigateInputThrottle navigateInputThrottle = new();
 
@@ -46,6 +47,7 @@ namespace Rector.UI.GraphPages
         public Observable<Unit> ResetTransform => resetTransform;
         public Observable<Vector2> Navigate => navigateInputThrottle.Navigate;
         public Observable<int> MoveGroup => moveGroup;
+        public Observable<int> MoveNodeToGroup => moveNodeToGroup;
 
         public Vector2 Translate { get; private set; }
         public float Zoom { get; private set; }
@@ -53,6 +55,18 @@ namespace Rector.UI.GraphPages
 
         const float MoveGroupThreshold = 0.5f;
         int moveGroupDirection;
+
+        enum NavigateDirection
+        {
+            None,
+            Up,
+            Down,
+            Left,
+            Right,
+        }
+
+        bool nodeModifierHeld;
+        NavigateDirection nodeModifierNavigateDirection;
 
         bool removeNodeHolding;
         int removeNodeHoldId;
@@ -83,12 +97,59 @@ namespace Rector.UI.GraphPages
         {
             if (context.performed)
             {
-                navigateInputThrottle.SetInput(context.ReadValue<Vector2>());
+                HandleNavigate(context.ReadValue<Vector2>());
             }
             else if (context.canceled)
             {
-                navigateInputThrottle.SetInput(Vector2.zero);
+                HandleNavigate(Vector2.zero);
             }
+        }
+
+        void HandleNavigate(Vector2 value)
+        {
+            if (nodeModifierHeld)
+            {
+                HandleNodeModifierNavigate(value);
+                return;
+            }
+
+            navigateInputThrottle.SetInput(value);
+        }
+
+        /// <remarks>
+        /// NodeModifier(L1/Option)を押している間は十字キーを別コマンドとして扱う。
+        /// 左右は選択ノードのグループ移動、下はミュートのトグル。
+        /// どちらも離散的な操作なのでリピートさせず、中立から倒れた瞬間だけ発火させる。
+        /// </remarks>
+        void HandleNodeModifierNavigate(Vector2 value)
+        {
+            var direction = ToNavigateDirection(value);
+            if (direction == nodeModifierNavigateDirection) return;
+
+            nodeModifierNavigateDirection = direction;
+            switch (direction)
+            {
+                case NavigateDirection.Left:
+                    moveNodeToGroup.OnNext(-1);
+                    break;
+                case NavigateDirection.Right:
+                    moveNodeToGroup.OnNext(1);
+                    break;
+                case NavigateDirection.Down:
+                    mute.OnNext(Unit.Default);
+                    break;
+            }
+        }
+
+        static NavigateDirection ToNavigateDirection(Vector2 value)
+        {
+            if (value.sqrMagnitude == 0f) return NavigateDirection.None;
+            if (Mathf.Abs(value.x) > Mathf.Abs(value.y))
+            {
+                return value.x > 0 ? NavigateDirection.Right : NavigateDirection.Left;
+            }
+
+            return value.y > 0 ? NavigateDirection.Up : NavigateDirection.Down;
         }
 
         /// <remarks>
@@ -213,6 +274,29 @@ namespace Rector.UI.GraphPages
             }
         }
 
+        /// <remarks>
+        /// NodeModifierは単押しでは何もしない修飾キー。押している間の十字キーを
+        /// <see cref="HandleNodeModifierNavigate"/> が拾う。
+        /// </remarks>
+        public void OnNodeModifier(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                nodeModifierHeld = true;
+                // 押した時点で既に倒れている十字キーは発火させない。倒し直しを待つ。
+                nodeModifierNavigateDirection = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>());
+                // リピート中のナビゲートも止める
+                navigateInputThrottle.SetInput(Vector2.zero);
+            }
+            else if (context.canceled)
+            {
+                // 離した時点で倒れたままの十字キーはナビゲートに引き継がない。
+                // Navigateは値が変わるまでイベントが来ないので、倒し直すまで移動しない。
+                nodeModifierHeld = false;
+            }
+        }
+
+        /// <remarks>キーボード(V)専用の単押しトグル。ゲームパッドはNodeModifier+下で同じ操作。</remarks>
         public void OnMute(InputAction.CallbackContext context)
         {
             if (context.performed)

@@ -12,11 +12,18 @@ namespace Rector.UI.GraphPages
         /// フォーカスを隣のグループへ移す。directionは-1か1。
         /// </summary>
         /// <remarks>
-        /// ノード自体のグループ移動はパラメータパネルの Group 行が持つ。同じ左スティックの
+        /// ノード自体のグループ移動は <see cref="MoveNodeToGroup"/> が持つ。同じ左スティックの
         /// 操作がStateによって別の意味にならないよう、ここでは移すのはフォーカスだけにする。
         /// 実装しないStateでは何もしない。
         /// </remarks>
         public virtual void MoveGroup(int direction)
+        {
+        }
+
+        /// <summary>
+        /// 選択中のノードを隣のグループへ移す。directionは-1か1。NodeModifier(L1/Option)を押しながらの左右。
+        /// </summary>
+        public virtual void MoveNodeToGroup(int direction)
         {
         }
 
