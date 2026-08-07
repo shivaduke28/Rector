@@ -107,25 +107,28 @@ namespace Rector.UI.LayeredGraphDrawing
 
                 var minX = 0f;
                 var contentWidth = 0f;
+                var contentTop = 0f;
                 var contentBottom = 0f;
                 if (colNodes.Count > 0)
                 {
                     minX = float.MaxValue;
                     var maxX = float.MinValue;
+                    contentTop = float.MaxValue;
                     foreach (var node in colNodes.Values)
                     {
                         var nodeX = x[node.Id];
                         minX = Mathf.Min(minX, nodeX);
                         maxX = Mathf.Max(maxX, nodeX + Resolved(node, node.Width, ref hasUnresolvedWidth));
+                        contentTop = Mathf.Min(contentTop, layerY[node.Layer]);
                         contentBottom = Mathf.Max(contentBottom, layerY[node.Layer] + Resolved(node, node.Height, ref hasUnresolvedWidth));
                     }
 
                     contentWidth = maxX - minX;
                 }
 
-                // 枠の上端は全グループで揃える。グループごとの一番上のノードに合わせると、
-                // 他グループからのエッジでしか繋がらないグループのヘッダーだけ下がってしまう。
-                var width = groups.Place(originX, contentWidth, 0f, contentBottom);
+                // 枠の上端はグループ内の一番上のノード(dummy含む)に合わせる。他グループからの
+                // エッジでしか繋がらないグループはヘッダーごと下がるが、それが意図した見た目 (#47)。
+                var width = groups.Place(originX, contentWidth, contentTop, contentBottom - contentTop);
 
                 foreach (var node in colNodes.Values)
                 {
@@ -133,8 +136,7 @@ namespace Rector.UI.LayeredGraphDrawing
                     if (node.IsDummy) dummyNodeCount++;
                 }
 
-                // グループ同士は隙間なく並べる。区切りは左borderと内側のPaddingで付ける。
-                originX += width;
+                originX += width + NodeGroups.Gap;
                 type1ConflictCount += markedEdges.Count;
             }
 
