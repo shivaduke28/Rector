@@ -23,6 +23,9 @@ namespace Rector.UI.GraphPages
         readonly Subject<HoldState> removeEdge = new();
         readonly Subject<HoldState> removeNode = new();
         readonly Subject<Unit> mute = new();
+        readonly Subject<Unit> muteChord = new();
+        readonly Subject<Vector2Int> navigateInGroup = new();
+        readonly Subject<Unit> lockStarted = new();
         readonly Subject<Unit> openNodeParameter = new();
         readonly Subject<Unit> closeNodeParameter = new();
         readonly Subject<Unit> openSystem = new();
@@ -40,6 +43,9 @@ namespace Rector.UI.GraphPages
         public Observable<HoldState> RemoveEdge => removeEdge;
         public Observable<HoldState> RemoveNode => removeNode;
         public Observable<Unit> Mute => mute;
+        public Observable<Unit> MuteChord => muteChord;
+        public Observable<Vector2Int> NavigateInGroup => navigateInGroup;
+        public Observable<Unit> LockStarted => lockStarted;
         public Observable<Unit> OpenNodeParameter => openNodeParameter;
         public Observable<Unit> CloseNodeParameter => closeNodeParameter;
         public Observable<Unit> OpenSystem => openSystem;
@@ -52,6 +58,7 @@ namespace Rector.UI.GraphPages
         public Vector2 Translate { get; private set; }
         public float Zoom { get; private set; }
         public bool IsNodeParameterOpen => rectorInput.Graph.OpenNodeParameter.IsPressed();
+        public bool IsLockHeld => rectorInput.Graph.Lock.IsPressed();
 
         const float DirectionThreshold = 0.5f;
         int moveGroupDirection;
@@ -65,8 +72,10 @@ namespace Rector.UI.GraphPages
             Right,
         }
 
-        bool nodeModifierHeld;
-        NavigateDirection nodeModifierNavigateDirection;
+        bool navModifierHeld;
+        bool grabModifierHeld;
+        NavigateDirection chordNavigateDirection;
+        bool nodeParameterOpenSuppressed;
 
         bool removeNodeHolding;
         int removeNodeHoldId;
@@ -87,6 +96,7 @@ namespace Rector.UI.GraphPages
         {
             Translate = Vector2.zero;
             Zoom = 0f;
+            nodeParameterOpenSuppressed = false;
             // moveGroupDirection はここでリセットしない。MoveGroup は initialStateCheck 付きなので、
             // 倒したまま抜けて戻ると再有効化時に performed が来る。0に戻しておくと
             // 「中立から倒れた」と誤判定して、触っていないのにグループが1つ飛ぶ。
@@ -107,9 +117,9 @@ namespace Rector.UI.GraphPages
 
         void HandleNavigate(Vector2 value)
         {
-            if (nodeModifierHeld)
+            if (navModifierHeld || grabModifierHeld)
             {
-                HandleNodeModifierNavigate(value);
+                HandleChordNavigate(value);
                 return;
             }
 
@@ -117,30 +127,49 @@ namespace Rector.UI.GraphPages
         }
 
         /// <remarks>
-        /// NodeModifier(L1/Option)を押している間は十字キーを別コマンドとして扱う。
-        /// 左右は選択ノードのグループ移動、下はミュートのトグル。
-        /// どちらも離散的な操作なのでリピートさせず、方向が新しく確定した瞬間だけ発火させる。
+        /// 修飾キーを押している間は十字キーを別コマンドとして扱う。
+        /// NavModifier(L1/Option): 上下左右ともグループ内に閉じたフォーカス移動。
+        /// GrabModifier(L2/Ctrl): 左右は選択ノードのグループ移動。両方押しはGrab優先。
+        /// どれも離散的な操作なのでリピートさせず、方向が新しく確定した瞬間だけ発火させる。
         /// </remarks>
-        void HandleNodeModifierNavigate(Vector2 value)
+        void HandleChordNavigate(Vector2 value)
         {
             // 斜めは判定保留(前の方向を維持)。Noneに落とすと、右→右下→右と転がっただけで
-            // 「倒し直した」ことになりグループ移動が二重発火する。逆に縦横どちらかに寄せると、
-            // 右を押した指が角に転がった瞬間にミュートが誤発火する。
+            // 「倒し直した」ことになりグループ内移動が二重発火する。逆に縦横どちらかに寄せると、
+            // 右を押した指が角に転がった瞬間に別コマンドが誤発火する。
             var direction = ToNavigateDirection(value);
-            if (direction is not { } d || d == nodeModifierNavigateDirection) return;
+            if (direction is not { } d || d == chordNavigateDirection) return;
 
-            nodeModifierNavigateDirection = d;
-            switch (d)
+            chordNavigateDirection = d;
+            if (grabModifierHeld)
             {
-                case NavigateDirection.Left:
-                    moveNodeToGroup.OnNext(-1);
-                    break;
-                case NavigateDirection.Right:
-                    moveNodeToGroup.OnNext(1);
-                    break;
-                case NavigateDirection.Down:
-                    mute.OnNext(Unit.Default);
-                    break;
+                switch (d)
+                {
+                    case NavigateDirection.Left:
+                        moveNodeToGroup.OnNext(-1);
+                        break;
+                    case NavigateDirection.Right:
+                        moveNodeToGroup.OnNext(1);
+                        break;
+                }
+            }
+            else
+            {
+                switch (d)
+                {
+                    case NavigateDirection.Left:
+                        navigateInGroup.OnNext(new Vector2Int(-1, 0));
+                        break;
+                    case NavigateDirection.Right:
+                        navigateInGroup.OnNext(new Vector2Int(1, 0));
+                        break;
+                    case NavigateDirection.Up:
+                        navigateInGroup.OnNext(new Vector2Int(0, 1));
+                        break;
+                    case NavigateDirection.Down:
+                        navigateInGroup.OnNext(new Vector2Int(0, -1));
+                        break;
+                }
             }
         }
 
@@ -283,30 +312,54 @@ namespace Rector.UI.GraphPages
         }
 
         /// <remarks>
-        /// NodeModifierは単押しでは何もしない修飾キー。押している間の十字キーを
-        /// <see cref="HandleNodeModifierNavigate"/> が拾う。
+        /// NavModifierは単押しでは何もしない修飾キー。押している間の十字キーを
+        /// <see cref="HandleChordNavigate"/> が拾う。OpenNodeParameter(R1/Shift)と
+        /// 重ねるとミュートトグルになる(押し順非依存)。
         /// initialStateCheck付きなので、押したままページを出入りしても再有効化時に
         /// performedが来て修飾キー状態が復元される。
         /// </remarks>
-        public void OnNodeModifier(InputAction.CallbackContext context)
+        public void OnNavModifier(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
-                nodeModifierHeld = true;
-                // 押した時点で既に倒れている十字キーは発火させない。倒し直しを待つ。
-                nodeModifierNavigateDirection = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>()) ?? NavigateDirection.None;
-                // リピート中のナビゲートも止める
-                navigateInputThrottle.SetInput(Vector2.zero);
+                navModifierHeld = true;
+                BeginChord();
+                // パネルを開いている指に後から重ねた場合もミュートにする
+                if (rectorInput.Graph.OpenNodeParameter.IsPressed())
+                {
+                    muteChord.OnNext(Unit.Default);
+                }
             }
             else if (context.canceled)
             {
                 // 離した時点で倒れたままの十字キーはナビゲートに引き継がない。
                 // Navigateは値が変わるまでイベントが来ないので、倒し直すまで移動しない。
-                nodeModifierHeld = false;
+                navModifierHeld = false;
             }
         }
 
-        /// <remarks>キーボード(V)専用の単押しトグル。ゲームパッドはNodeModifier+下で同じ操作。</remarks>
+        public void OnGrabModifier(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                grabModifierHeld = true;
+                BeginChord();
+            }
+            else if (context.canceled)
+            {
+                grabModifierHeld = false;
+            }
+        }
+
+        void BeginChord()
+        {
+            // 押した時点で既に倒れている十字キーは発火させない。倒し直しを待つ。
+            chordNavigateDirection = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>()) ?? NavigateDirection.None;
+            // リピート中のナビゲートも止める
+            navigateInputThrottle.SetInput(Vector2.zero);
+        }
+
+        /// <remarks>キーボード(V)専用の単押しトグル。ゲームパッドはL1+R1(MuteChord)で同じ操作。</remarks>
         public void OnMute(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -319,11 +372,34 @@ namespace Rector.UI.GraphPages
         {
             if (context.performed)
             {
+                // NavModifier(L1/Option)を押しながらのときはミュートトグルで、パネルは開かない
+                if (navModifierHeld)
+                {
+                    nodeParameterOpenSuppressed = true;
+                    muteChord.OnNext(Unit.Default);
+                    return;
+                }
+
                 openNodeParameter.OnNext(Unit.Default);
             }
             else if (context.canceled)
             {
+                // ミュートとして消費した押下は、開いていないパネルを閉じない
+                if (nodeParameterOpenSuppressed)
+                {
+                    nodeParameterOpenSuppressed = false;
+                    return;
+                }
+
                 closeNodeParameter.OnNext(Unit.Default);
+            }
+        }
+
+        public void OnLock(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+            {
+                lockStarted.OnNext(Unit.Default);
             }
         }
 

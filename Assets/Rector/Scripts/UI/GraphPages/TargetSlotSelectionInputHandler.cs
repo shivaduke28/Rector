@@ -78,13 +78,14 @@ namespace Rector.UI.GraphPages
             graphPage.TargetNode?.NodeView.Node.DoAction();
         }
 
+        public override void AddNode()
+        {
+            graphPage.PromoteTargetToSource();
+        }
 
         public override void Mute()
         {
-            if (graphPage.TargetNode is { NodeView: { Node: var targetNode } })
-            {
-                targetNode.IsMuted.Value = !targetNode.IsMuted.Value;
-            }
+            graphPage.ToggleMute(graphPage.TargetNode);
         }
     }
 }

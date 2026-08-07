@@ -9,11 +9,11 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// フォーカスを隣のグループへ移す。directionは-1か1。
+        /// フォーカスを隣のグループへ移す。directionは-1か1。キーボードQ/E。
         /// </summary>
         /// <remarks>
-        /// ノード自体のグループ移動は <see cref="MoveNodeToGroup"/> が持つ。同じ左スティックの
-        /// 操作がStateによって別の意味にならないよう、ここでは移すのはフォーカスだけにする。
+        /// ノード自体のグループ移動は <see cref="MoveNodeToGroup"/>(GrabModifier側)が持つ。
+        /// 同じ操作がStateによって別の意味にならないよう、ここで移すのはフォーカスだけにする。
         /// 実装しないStateでは何もしない。
         /// </remarks>
         public virtual void MoveGroup(int direction)
@@ -21,7 +21,15 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// 選択中のノードを隣のグループへ移す。directionは-1か1。NodeModifier(L1/Option)を押しながらの左右。
+        /// フォーカスを同じグループ内だけで動かす。directionは上下左右いずれかの単位ベクトル。
+        /// NavModifier(L1/Option)を押しながらの十字キー。
+        /// </summary>
+        public virtual void NavigateInGroup(Vector2Int direction)
+        {
+        }
+
+        /// <summary>
+        /// 選択中のノードを隣のグループへ移す。directionは-1か1。GrabModifier(L2/Ctrl)を押しながらの左右。
         /// </summary>
         public virtual void MoveNodeToGroup(int direction)
         {

@@ -175,9 +175,29 @@ namespace Rector
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""NodeModifier"",
+                    ""name"": ""NavModifier"",
                     ""type"": ""Button"",
                     ""id"": ""80adc06a-a353-4f9f-ba4e-33bf59dcefaa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""GrabModifier"",
+                    ""type"": ""Button"",
+                    ""id"": ""42602014-d6ee-4fa8-be7f-5de191d1a6db"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Lock"",
+                    ""type"": ""Button"",
+                    ""id"": ""6f985f69-b9b2-4366-b0de-50373d77decf"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -538,7 +558,7 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""NodeModifier"",
+                    ""action"": ""NavModifier"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -549,7 +569,51 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""NodeModifier"",
+                    ""action"": ""NavModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""20f8af16-4d2c-48ef-9662-510ea1664d47"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GrabModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46485fac-71ff-461e-a308-773847cfc799"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GrabModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""09136dca-c62b-46b9-a3e7-55cd9bb3cb68"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""112e2868-bd45-4429-b6d9-1fe7bba76690"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -631,37 +695,15 @@ namespace Rector
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""1D Axis"",
-                    ""id"": ""2f61fea0-52df-4807-88a3-6a4563eceabe"",
-                    ""path"": ""1DAxis"",
+                    ""name"": """",
+                    ""id"": ""455117e2-4359-4c37-9607-d91a5845056e"",
+                    ""path"": ""<Gamepad>/leftStick/y"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""AxisDeadzone"",
                     ""groups"": """",
                     ""action"": ""Zoom"",
-                    ""isComposite"": true,
+                    ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""negative"",
-                    ""id"": ""3145a9a5-5238-4a09-9491-f1fc4623144d"",
-                    ""path"": ""<Gamepad>/leftTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""positive"",
-                    ""id"": ""d0a1707e-9f53-43b9-9bdf-a547ff1cc284"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 },
                 {
                     ""name"": ""1D Axis"",
@@ -781,17 +823,6 @@ namespace Rector
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ResetTransform"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ea5931e7-cf5d-4aec-bae9-65d4c42466fd"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""MoveGroup"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1217,7 +1248,9 @@ namespace Rector
             m_Graph_AddNode = m_Graph.FindAction("AddNode", throwIfNotFound: true);
             m_Graph_RemoveEdge = m_Graph.FindAction("RemoveEdge", throwIfNotFound: true);
             m_Graph_RemoveNode = m_Graph.FindAction("RemoveNode", throwIfNotFound: true);
-            m_Graph_NodeModifier = m_Graph.FindAction("NodeModifier", throwIfNotFound: true);
+            m_Graph_NavModifier = m_Graph.FindAction("NavModifier", throwIfNotFound: true);
+            m_Graph_GrabModifier = m_Graph.FindAction("GrabModifier", throwIfNotFound: true);
+            m_Graph_Lock = m_Graph.FindAction("Lock", throwIfNotFound: true);
             m_Graph_Mute = m_Graph.FindAction("Mute", throwIfNotFound: true);
             m_Graph_OpenNodeParameter = m_Graph.FindAction("OpenNodeParameter", throwIfNotFound: true);
             m_Graph_OpenSystem = m_Graph.FindAction("OpenSystem", throwIfNotFound: true);
@@ -1324,7 +1357,9 @@ namespace Rector
         private readonly InputAction m_Graph_AddNode;
         private readonly InputAction m_Graph_RemoveEdge;
         private readonly InputAction m_Graph_RemoveNode;
-        private readonly InputAction m_Graph_NodeModifier;
+        private readonly InputAction m_Graph_NavModifier;
+        private readonly InputAction m_Graph_GrabModifier;
+        private readonly InputAction m_Graph_Lock;
         private readonly InputAction m_Graph_Mute;
         private readonly InputAction m_Graph_OpenNodeParameter;
         private readonly InputAction m_Graph_OpenSystem;
@@ -1376,9 +1411,17 @@ namespace Rector
             /// </summary>
             public InputAction @RemoveNode => m_Wrapper.m_Graph_RemoveNode;
             /// <summary>
-            /// Provides access to the underlying input action "Graph/NodeModifier".
+            /// Provides access to the underlying input action "Graph/NavModifier".
             /// </summary>
-            public InputAction @NodeModifier => m_Wrapper.m_Graph_NodeModifier;
+            public InputAction @NavModifier => m_Wrapper.m_Graph_NavModifier;
+            /// <summary>
+            /// Provides access to the underlying input action "Graph/GrabModifier".
+            /// </summary>
+            public InputAction @GrabModifier => m_Wrapper.m_Graph_GrabModifier;
+            /// <summary>
+            /// Provides access to the underlying input action "Graph/Lock".
+            /// </summary>
+            public InputAction @Lock => m_Wrapper.m_Graph_Lock;
             /// <summary>
             /// Provides access to the underlying input action "Graph/Mute".
             /// </summary>
@@ -1457,9 +1500,15 @@ namespace Rector
                 @RemoveNode.started += instance.OnRemoveNode;
                 @RemoveNode.performed += instance.OnRemoveNode;
                 @RemoveNode.canceled += instance.OnRemoveNode;
-                @NodeModifier.started += instance.OnNodeModifier;
-                @NodeModifier.performed += instance.OnNodeModifier;
-                @NodeModifier.canceled += instance.OnNodeModifier;
+                @NavModifier.started += instance.OnNavModifier;
+                @NavModifier.performed += instance.OnNavModifier;
+                @NavModifier.canceled += instance.OnNavModifier;
+                @GrabModifier.started += instance.OnGrabModifier;
+                @GrabModifier.performed += instance.OnGrabModifier;
+                @GrabModifier.canceled += instance.OnGrabModifier;
+                @Lock.started += instance.OnLock;
+                @Lock.performed += instance.OnLock;
+                @Lock.canceled += instance.OnLock;
                 @Mute.started += instance.OnMute;
                 @Mute.performed += instance.OnMute;
                 @Mute.canceled += instance.OnMute;
@@ -1516,9 +1565,15 @@ namespace Rector
                 @RemoveNode.started -= instance.OnRemoveNode;
                 @RemoveNode.performed -= instance.OnRemoveNode;
                 @RemoveNode.canceled -= instance.OnRemoveNode;
-                @NodeModifier.started -= instance.OnNodeModifier;
-                @NodeModifier.performed -= instance.OnNodeModifier;
-                @NodeModifier.canceled -= instance.OnNodeModifier;
+                @NavModifier.started -= instance.OnNavModifier;
+                @NavModifier.performed -= instance.OnNavModifier;
+                @NavModifier.canceled -= instance.OnNavModifier;
+                @GrabModifier.started -= instance.OnGrabModifier;
+                @GrabModifier.performed -= instance.OnGrabModifier;
+                @GrabModifier.canceled -= instance.OnGrabModifier;
+                @Lock.started -= instance.OnLock;
+                @Lock.performed -= instance.OnLock;
+                @Lock.canceled -= instance.OnLock;
                 @Mute.started -= instance.OnMute;
                 @Mute.performed -= instance.OnMute;
                 @Mute.canceled -= instance.OnMute;
@@ -1810,12 +1865,26 @@ namespace Rector
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRemoveNode(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "NodeModifier" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "NavModifier" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnNodeModifier(InputAction.CallbackContext context);
+            void OnNavModifier(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "GrabModifier" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnGrabModifier(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Lock" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLock(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Mute" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

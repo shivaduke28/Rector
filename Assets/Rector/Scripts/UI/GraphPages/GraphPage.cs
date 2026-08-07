@@ -94,7 +94,7 @@ namespace Rector.UI.GraphPages
             stateMap.Add(GraphPageState.TargetNodeSelection, new TargetNodeSelectionInputHandler(this, nodeNavigator));
             stateMap.Add(GraphPageState.TargetSlotSelection, new TargetSlotSelectionInputHandler(this));
             stateMap.Add(GraphPageState.NodeCreation, new NodeCreationInputHandler(createNodeMenuView));
-            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(nodeParameterView));
+            stateMap.Add(GraphPageState.NodeParameter, new NodeParameterInputHandler(this, nodeParameterView));
         }
 
         public void Enter()
@@ -146,12 +146,27 @@ namespace Rector.UI.GraphPages
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
             graphInputAction.MoveGroup.Subscribe(x => CurrentInputHandler.MoveGroup(x)).AddTo(disposable);
+            graphInputAction.NavigateInGroup.Subscribe(x => CurrentInputHandler.NavigateInGroup(x)).AddTo(disposable);
             graphInputAction.MoveNodeToGroup.Subscribe(x => CurrentInputHandler.MoveNodeToGroup(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
             graphInputAction.AddNode.Subscribe(_ => CurrentInputHandler.AddNode()).AddTo(disposable);
             graphInputAction.Mute.Subscribe(_ => CurrentInputHandler.Mute()).AddTo(disposable);
+            // L1+R1のミュートはターゲット選択中には流さない。L1を握ったままR1で差し替え接続の
+            // 構えに入る指の流れで、ターゲットを誤ミュートしないため(キーボードVは従来通り届く)。
+            graphInputAction.MuteChord
+                .Where(_ => State.Value is not (GraphPageState.TargetNodeSelection or GraphPageState.TargetSlotSelection))
+                .Subscribe(_ => CurrentInputHandler.Mute()).AddTo(disposable);
+            // ロックは押した瞬間に現在のフォーカスへ寄せる。以後の追従は
+            // MoveContentToMakeNodeVisibleの既存呼び出し(選択・ターゲット変更時)が拾う。
+            graphInputAction.LockStarted.Subscribe(_ =>
+            {
+                if (GetFocusNodeForCurrentState() is { } focus)
+                {
+                    graphContentTransformer.MoveContentToMakeNodeVisible(focus);
+                }
+            }).AddTo(disposable);
             graphInputAction.OpenNodeParameter.Subscribe(_ => CurrentInputHandler.OpenNodeParameter()).AddTo(disposable);
             graphInputAction.CloseNodeParameter.Subscribe(_ => CurrentInputHandler.CloseNodeParameter()).AddTo(disposable);
             graphInputAction.RemoveNode.Subscribe(x => CurrentInputHandler.RemoveNode(x)).AddTo(disposable);
@@ -302,6 +317,55 @@ namespace Rector.UI.GraphPages
             State.Value = GraphPageState.NodeSelection;
         }
 
+        /// <summary>ノードのミュートをトグルしてログを残す。全ハンドラ共通の入り口。</summary>
+        public void ToggleMute(LayeredNode? node)
+        {
+            if (node is not { NodeView: { Node: var target } }) return;
+
+            var mute = !target.IsMuted.Value;
+            target.IsMuted.Value = mute;
+            RectorLogger.ToggleMute(target, mute);
+        }
+
+        /// <summary>
+        /// ターゲットをソースに引き継いでスロット選択へ移る。ターゲット選択中の△/Cで、
+        /// ソース選択まで戻らずに、いま指しているノードから続けて次のエッジを張るための操作。
+        /// </summary>
+        /// <remarks>
+        /// Target系のクリアはセッターを通さない。SetTargetSlot(null)/SetTargetNode(null)は
+        /// 「これからSelectedになるもの」の選択表示を外したり、旧SelectedNodeへ視点を
+        /// 戻したりしてしまう(直接代入は<see cref="SlotSelectionInputHandler.Submit"/>と同じ流儀)。
+        /// </remarks>
+        public void PromoteTargetToSource()
+        {
+            switch (State.Value)
+            {
+                case GraphPageState.TargetNodeSelection:
+                    {
+                        // CLIからStateを直接動かされた場合に備えてnullを弾く
+                        if (TargetNode is not { } target) return;
+                        if (target.InputSlotCount == 0 && target.OutputSlotCount == 0) return;
+
+                        TargetNode = null;
+                        SelectNode(target);
+                        SelectSlot(target.InputSlotCount > 0 ? target.NodeView.Node.InputSlots[0] : target.NodeView.Node.OutputSlots[0]);
+                        State.Value = GraphPageState.SlotSelection;
+                        break;
+                    }
+                case GraphPageState.TargetSlotSelection:
+                    {
+                        if (TargetNode is not { } target || TargetSlot is not { } targetSlot) return;
+
+                        TargetNode = null;
+                        TargetSlot = null;
+                        SelectNode(target);
+                        SelectSlot(targetSlot);
+                        State.Value = GraphPageState.SlotSelection;
+                        break;
+                    }
+            }
+        }
+
         public bool DisconnectSlots(OutputSlot output, InputSlot input)
         {
             if (!Graph.RemoveEdge(new EdgeId(output, input))) return false;
@@ -407,32 +471,19 @@ namespace Rector.UI.GraphPages
                 widthRetryCount = 0;
             }
 
-            switch (State.Value)
+            if (GetFocusNodeForCurrentState() is { } focus)
             {
-                case GraphPageState.NodeSelection:
-                case GraphPageState.SlotSelection:
-                case GraphPageState.NodeParameter:
-                case GraphPageState.NodeCreation:
-                    if (SelectedNode is not null)
-                    {
-                        graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
-                    }
-                    break;
-                case GraphPageState.TargetNodeSelection:
-                case GraphPageState.TargetSlotSelection:
-                    if (TargetNode is not null)
-                    {
-                        graphContentTransformer.MoveContentToMakeNodeVisible(TargetNode);
-                    }
-                    else if (SelectedNode is not null)
-                    {
-                        graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                graphContentTransformer.MoveContentToMakeNodeVisible(focus);
             }
         }
+
+        /// <summary>Stateに応じた「いま操作しているノード」。ターゲット選択中はターゲット側。</summary>
+        LayeredNode? GetFocusNodeForCurrentState() =>
+            State.Value switch
+            {
+                GraphPageState.TargetNodeSelection or GraphPageState.TargetSlotSelection => TargetNode ?? SelectedNode,
+                _ => SelectedNode,
+            };
 
         void IDisposable.Dispose()
         {

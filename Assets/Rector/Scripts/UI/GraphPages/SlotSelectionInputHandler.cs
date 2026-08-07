@@ -126,10 +126,7 @@ namespace Rector.UI.GraphPages
 
         public override void Mute()
         {
-            if (graphPage.SelectedNode is { NodeView: { Node: var selectedNode } })
-            {
-                selectedNode.IsMuted.Value = !selectedNode.IsMuted.Value;
-            }
+            graphPage.ToggleMute(graphPage.SelectedNode);
         }
     }
 }
