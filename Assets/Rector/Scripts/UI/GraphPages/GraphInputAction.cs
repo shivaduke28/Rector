@@ -129,7 +129,7 @@ namespace Rector.UI.GraphPages
         /// <remarks>
         /// 修飾キーを押している間は十字キーを別コマンドとして扱う。
         /// NavModifier(L1/Option): 上下左右ともグループ内に閉じたフォーカス移動。
-        /// GrabModifier(L2/Ctrl): 左右は選択ノードのグループ移動。両方押しはGrab優先。
+        /// GrabModifier(R2/Ctrl): 左右は選択ノードのグループ移動。両方押しはGrab優先。
         /// どれも離散的な操作なのでリピートさせず、方向が新しく確定した瞬間だけ発火させる。
         /// </remarks>
         void HandleChordNavigate(Vector2 value)

@@ -29,7 +29,7 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// 選択中のノードを隣のグループへ移す。directionは-1か1。GrabModifier(L2/Ctrl)を押しながらの左右。
+        /// 選択中のノードを隣のグループへ移す。directionは-1か1。GrabModifier(R2/Ctrl)を押しながらの左右。
         /// </summary>
         public virtual void MoveNodeToGroup(int direction)
         {

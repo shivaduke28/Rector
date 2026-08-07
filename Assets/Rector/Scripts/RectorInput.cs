@@ -576,7 +576,7 @@ namespace Rector
                 {
                     ""name"": """",
                     ""id"": ""20f8af16-4d2c-48ef-9662-510ea1664d47"",
-                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -598,7 +598,7 @@ namespace Rector
                 {
                     ""name"": """",
                     ""id"": ""09136dca-c62b-46b9-a3e7-55cd9bb3cb68"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

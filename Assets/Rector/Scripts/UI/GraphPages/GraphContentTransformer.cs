@@ -156,7 +156,7 @@ namespace Rector.UI.GraphPages
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
-            // 常時追従の設定に加えて、Lock(R2/Tab)を握っている間だけの一時追従がある
+            // 常時追従の設定に加えて、Lock(L2/Tab)を握っている間だけの一時追従がある
             if (!viewSettings.FollowSelectedNode.CurrentValue && !graphInputAction.IsLockHeld) return;
 
             // left-top
