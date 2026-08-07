@@ -200,7 +200,14 @@ namespace Rector.UI.GraphPages
 
             // 起点はFoldした表示上のグループ。生のGroupを起点にすると、グループ数を超えた
             // 番号を持つノードが見た目と違う場所へ飛ぶ。
-            MoveNodeToGroup(node, Groups.Wrap(Groups.Fold(node.Group) + direction));
+            var current = Groups.Fold(node.Group);
+            var target = Groups.Wrap(current + direction);
+
+            // 表示位置が変わらないなら生のGroupを触らない。グループ数1のときに畳んだ値で
+            // 上書きすると、数を戻しても並びが復元できなくなる(Foldが生の値を保存する設計)。
+            if (target == current) return;
+
+            MoveNodeToGroup(node, target);
         }
 
         public void MoveNodeToGroup(LayeredNode node, int group)

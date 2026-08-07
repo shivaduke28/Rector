@@ -53,7 +53,7 @@ namespace Rector.UI.GraphPages
         public float Zoom { get; private set; }
         public bool IsNodeParameterOpen => rectorInput.Graph.OpenNodeParameter.IsPressed();
 
-        const float MoveGroupThreshold = 0.5f;
+        const float DirectionThreshold = 0.5f;
         int moveGroupDirection;
 
         enum NavigateDirection
@@ -119,15 +119,18 @@ namespace Rector.UI.GraphPages
         /// <remarks>
         /// NodeModifier(L1/Option)を押している間は十字キーを別コマンドとして扱う。
         /// 左右は選択ノードのグループ移動、下はミュートのトグル。
-        /// どちらも離散的な操作なのでリピートさせず、中立から倒れた瞬間だけ発火させる。
+        /// どちらも離散的な操作なのでリピートさせず、方向が新しく確定した瞬間だけ発火させる。
         /// </remarks>
         void HandleNodeModifierNavigate(Vector2 value)
         {
+            // 斜めは判定保留(前の方向を維持)。Noneに落とすと、右→右下→右と転がっただけで
+            // 「倒し直した」ことになりグループ移動が二重発火する。逆に縦横どちらかに寄せると、
+            // 右を押した指が角に転がった瞬間にミュートが誤発火する。
             var direction = ToNavigateDirection(value);
-            if (direction == nodeModifierNavigateDirection) return;
+            if (direction is not { } d || d == nodeModifierNavigateDirection) return;
 
-            nodeModifierNavigateDirection = direction;
-            switch (direction)
+            nodeModifierNavigateDirection = d;
+            switch (d)
             {
                 case NavigateDirection.Left:
                     moveNodeToGroup.OnNext(-1);
@@ -141,10 +144,15 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        static NavigateDirection ToNavigateDirection(Vector2 value)
+        /// <summary>優勢軸の方向に丸める。中立はNone、斜めと倒しきっていない入力はnull(判定不能)。</summary>
+        static NavigateDirection? ToNavigateDirection(Vector2 value)
         {
             if (value.sqrMagnitude == 0f) return NavigateDirection.None;
-            if (Mathf.Abs(value.x) > Mathf.Abs(value.y))
+
+            var x = Mathf.Abs(value.x);
+            var y = Mathf.Abs(value.y);
+            if (x == y || Mathf.Max(x, y) < DirectionThreshold) return null;
+            if (x > y)
             {
                 return value.x > 0 ? NavigateDirection.Right : NavigateDirection.Left;
             }
@@ -171,7 +179,7 @@ namespace Rector.UI.GraphPages
         static int ToHorizontalDirection(Vector2 value)
         {
             // 縦入力と、倒しきっていない入力は無視する
-            if (Mathf.Abs(value.x) < MoveGroupThreshold) return 0;
+            if (Mathf.Abs(value.x) < DirectionThreshold) return 0;
             if (Mathf.Abs(value.x) <= Mathf.Abs(value.y)) return 0;
             return value.x > 0 ? 1 : -1;
         }
@@ -277,6 +285,8 @@ namespace Rector.UI.GraphPages
         /// <remarks>
         /// NodeModifierは単押しでは何もしない修飾キー。押している間の十字キーを
         /// <see cref="HandleNodeModifierNavigate"/> が拾う。
+        /// initialStateCheck付きなので、押したままページを出入りしても再有効化時に
+        /// performedが来て修飾キー状態が復元される。
         /// </remarks>
         public void OnNodeModifier(InputAction.CallbackContext context)
         {
@@ -284,7 +294,7 @@ namespace Rector.UI.GraphPages
             {
                 nodeModifierHeld = true;
                 // 押した時点で既に倒れている十字キーは発火させない。倒し直しを待つ。
-                nodeModifierNavigateDirection = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>());
+                nodeModifierNavigateDirection = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>()) ?? NavigateDirection.None;
                 // リピート中のナビゲートも止める
                 navigateInputThrottle.SetInput(Vector2.zero);
             }

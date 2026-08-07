@@ -181,7 +181,7 @@ namespace Rector
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false,
+                    ""initialStateCheck"": true,
                     ""priority"": 0
                 },
                 {
