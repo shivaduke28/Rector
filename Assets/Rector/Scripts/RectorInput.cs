@@ -175,9 +175,19 @@ namespace Rector
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""Mute"",
+                    ""name"": ""NodeModifier"",
                     ""type"": ""Button"",
                     ""id"": ""80adc06a-a353-4f9f-ba4e-33bf59dcefaa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Mute"",
+                    ""type"": ""Button"",
+                    ""id"": ""eb4db8a6-f85b-4bd9-bf90-2af2ab86462d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -528,7 +538,18 @@ namespace Rector
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Mute"",
+                    ""action"": ""NodeModifier"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c610c862-d97f-4805-9c9a-46c1aa507aca"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NodeModifier"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1196,6 +1217,7 @@ namespace Rector
             m_Graph_AddNode = m_Graph.FindAction("AddNode", throwIfNotFound: true);
             m_Graph_RemoveEdge = m_Graph.FindAction("RemoveEdge", throwIfNotFound: true);
             m_Graph_RemoveNode = m_Graph.FindAction("RemoveNode", throwIfNotFound: true);
+            m_Graph_NodeModifier = m_Graph.FindAction("NodeModifier", throwIfNotFound: true);
             m_Graph_Mute = m_Graph.FindAction("Mute", throwIfNotFound: true);
             m_Graph_OpenNodeParameter = m_Graph.FindAction("OpenNodeParameter", throwIfNotFound: true);
             m_Graph_OpenSystem = m_Graph.FindAction("OpenSystem", throwIfNotFound: true);
@@ -1302,6 +1324,7 @@ namespace Rector
         private readonly InputAction m_Graph_AddNode;
         private readonly InputAction m_Graph_RemoveEdge;
         private readonly InputAction m_Graph_RemoveNode;
+        private readonly InputAction m_Graph_NodeModifier;
         private readonly InputAction m_Graph_Mute;
         private readonly InputAction m_Graph_OpenNodeParameter;
         private readonly InputAction m_Graph_OpenSystem;
@@ -1352,6 +1375,10 @@ namespace Rector
             /// Provides access to the underlying input action "Graph/RemoveNode".
             /// </summary>
             public InputAction @RemoveNode => m_Wrapper.m_Graph_RemoveNode;
+            /// <summary>
+            /// Provides access to the underlying input action "Graph/NodeModifier".
+            /// </summary>
+            public InputAction @NodeModifier => m_Wrapper.m_Graph_NodeModifier;
             /// <summary>
             /// Provides access to the underlying input action "Graph/Mute".
             /// </summary>
@@ -1430,6 +1457,9 @@ namespace Rector
                 @RemoveNode.started += instance.OnRemoveNode;
                 @RemoveNode.performed += instance.OnRemoveNode;
                 @RemoveNode.canceled += instance.OnRemoveNode;
+                @NodeModifier.started += instance.OnNodeModifier;
+                @NodeModifier.performed += instance.OnNodeModifier;
+                @NodeModifier.canceled += instance.OnNodeModifier;
                 @Mute.started += instance.OnMute;
                 @Mute.performed += instance.OnMute;
                 @Mute.canceled += instance.OnMute;
@@ -1486,6 +1516,9 @@ namespace Rector
                 @RemoveNode.started -= instance.OnRemoveNode;
                 @RemoveNode.performed -= instance.OnRemoveNode;
                 @RemoveNode.canceled -= instance.OnRemoveNode;
+                @NodeModifier.started -= instance.OnNodeModifier;
+                @NodeModifier.performed -= instance.OnNodeModifier;
+                @NodeModifier.canceled -= instance.OnNodeModifier;
                 @Mute.started -= instance.OnMute;
                 @Mute.performed -= instance.OnMute;
                 @Mute.canceled -= instance.OnMute;
@@ -1776,6 +1809,13 @@ namespace Rector
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRemoveNode(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "NodeModifier" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnNodeModifier(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Mute" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

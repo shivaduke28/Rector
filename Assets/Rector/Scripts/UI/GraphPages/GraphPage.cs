@@ -146,6 +146,7 @@ namespace Rector.UI.GraphPages
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
             graphInputAction.MoveGroup.Subscribe(x => CurrentInputHandler.MoveGroup(x)).AddTo(disposable);
+            graphInputAction.MoveNodeToGroup.Subscribe(x => CurrentInputHandler.MoveNodeToGroup(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
@@ -197,7 +198,16 @@ namespace Rector.UI.GraphPages
         {
             if (SelectedNode is not { } node) return;
 
-            MoveNodeToGroup(node, Groups.Wrap(node.Group + direction));
+            // 起点はFoldした表示上のグループ。生のGroupを起点にすると、グループ数を超えた
+            // 番号を持つノードが見た目と違う場所へ飛ぶ。
+            var current = Groups.Fold(node.Group);
+            var target = Groups.Wrap(current + direction);
+
+            // 表示位置が変わらないなら生のGroupを触らない。グループ数1のときに畳んだ値で
+            // 上書きすると、数を戻しても並びが復元できなくなる(Foldが生の値を保存する設計)。
+            if (target == current) return;
+
+            MoveNodeToGroup(node, target);
         }
 
         public void MoveNodeToGroup(LayeredNode node, int group)

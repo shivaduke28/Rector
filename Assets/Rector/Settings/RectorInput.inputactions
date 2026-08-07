@@ -78,9 +78,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Mute",
+                    "name": "NodeModifier",
                     "type": "Button",
                     "id": "80adc06a-a353-4f9f-ba4e-33bf59dcefaa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Mute",
+                    "type": "Button",
+                    "id": "eb4db8a6-f85b-4bd9-bf90-2af2ab86462d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -424,7 +433,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Mute",
+                    "action": "NodeModifier",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c610c862-d97f-4805-9c9a-46c1aa507aca",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NodeModifier",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
