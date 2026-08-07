@@ -75,6 +75,7 @@ namespace Rector.UI.GraphPages
         bool navModifierHeld;
         bool grabModifierHeld;
         NavigateDirection chordNavigateDirection;
+        bool chordNeutralRequired;
         bool nodeParameterOpenSuppressed;
 
         bool removeNodeHolding;
@@ -96,11 +97,13 @@ namespace Rector.UI.GraphPages
         {
             Translate = Vector2.zero;
             Zoom = 0f;
-            nodeParameterOpenSuppressed = false;
             // moveGroupDirection はここでリセットしない。MoveGroup は initialStateCheck 付きなので、
             // 倒したまま抜けて戻ると再有効化時に performed が来る。0に戻しておくと
             // 「中立から倒れた」と誤判定して、触っていないのにグループが1つ飛ぶ。
             rectorInput.Graph.Disable();
+            // Disable時のOpenNodeParameterのcancelを飲み込ませてから消す。
+            // 先に消すと、L1+R1を握ったままページを抜けたときcloseNodeParameterが漏れる。
+            nodeParameterOpenSuppressed = false;
         }
 
         public void OnNavigate(InputAction.CallbackContext context)
@@ -138,7 +141,19 @@ namespace Rector.UI.GraphPages
             // 「倒し直した」ことになりグループ内移動が二重発火する。逆に縦横どちらかに寄せると、
             // 右を押した指が角に転がった瞬間に別コマンドが誤発火する。
             var direction = ToNavigateDirection(value);
-            if (direction is not { } d || d == chordNavigateDirection) return;
+            if (direction is not { } d) return;
+
+            // 斜めに倒したまま修飾キーを押した場合は、一度中立を観測するまで発火させない。
+            // ここを通すと、押し込んだ指が縦横に転がっただけで「新しい方向」として発火してしまう。
+            if (chordNeutralRequired)
+            {
+                if (d != NavigateDirection.None) return;
+                chordNeutralRequired = false;
+                chordNavigateDirection = NavigateDirection.None;
+                return;
+            }
+
+            if (d == chordNavigateDirection) return;
 
             chordNavigateDirection = d;
             if (grabModifierHeld)
@@ -354,7 +369,10 @@ namespace Rector.UI.GraphPages
         void BeginChord()
         {
             // 押した時点で既に倒れている十字キーは発火させない。倒し直しを待つ。
-            chordNavigateDirection = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>()) ?? NavigateDirection.None;
+            // 斜め(判定不能)のときは方向でシードできないので、中立を観測するまで保留する。
+            var seeded = ToNavigateDirection(rectorInput.Graph.Navigate.ReadValue<Vector2>());
+            chordNeutralRequired = seeded is null;
+            chordNavigateDirection = seeded ?? NavigateDirection.None;
             // リピート中のナビゲートも止める
             navigateInputThrottle.SetInput(Vector2.zero);
         }

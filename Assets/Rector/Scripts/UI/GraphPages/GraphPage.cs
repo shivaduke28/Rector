@@ -383,7 +383,8 @@ namespace Rector.UI.GraphPages
             if (Graph.Edges.ContainsKey(new EdgeId(output, input))) return ConnectResult.AlreadyConnected;
 
             // ValidateLoop を CanConnect より先に見るのは、自分自身への接続を Incompatible ではなく
-            // Loop として返すため。HUD は TargetNodeSelection で自ノードを選べないので影響しない。
+            // Loop として返すため。HUD でも自ノードをターゲットにできる(ターゲットカーソルは
+            // ソースの上から始まる)ので、その場合はこの順序によって Loop として弾かれる。
             if (!Graph.ValidateLoop(output, input))
             {
                 RectorLogger.LoopDetected(output.NodeId, input.NodeId);

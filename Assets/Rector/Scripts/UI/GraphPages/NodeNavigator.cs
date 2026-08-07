@@ -128,7 +128,8 @@ namespace Rector.UI.GraphPages
 
         /// <summary>
         /// 同じグループ内だけで上下に移動する。隣のレイヤーから順に、グループ内のノードが
-        /// いる最初のレイヤーでx座標が一番近いノードを返す。いなければnull。
+        /// いる最初のレイヤーでx座標が一番近いノードを返す。端まで行ったら反対側の端へ
+        /// 回り込む。いなければnull。
         /// </summary>
         public LayeredNode FindVerticalInSameGroup(LayeredNode current, bool up)
         {

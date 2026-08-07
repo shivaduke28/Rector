@@ -246,7 +246,7 @@ namespace Rector
                 },
                 {
                     ""name"": ""Zoom"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""5eb0c98f-5742-4243-8bc9-2687be779826"",
                     ""expectedControlType"": ""Axis"",
                     ""processors"": """",
