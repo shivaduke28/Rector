@@ -26,16 +26,16 @@ MonoBehaviour:
     atlasWidth: 1024
     atlasHeight: 1024
     characterSetSelectionMode: 6
-    characterSequence: 20-7E,B1,25A1,25B3,25B6,25C0,25EF,2715
+    characterSequence: 20-7E,A0,B1,200B,2026,25A1,25B3,25B6,25C0,25EF,2715
     referencedFontAssetGUID: b6ce1c5bdf390407a9ff884d29ed1a80
     referencedTextAssetGUID: 
     fontStyle: 0
     fontStyleModifier: 0
     renderMode: 4165
     includeFontFeatures: 0
-  m_SourceFontFile: {fileID: 0}
+  m_SourceFontFile: {fileID: 12800000, guid: ebe5d1ab2d8e2b44392063ac4c0992e1, type: 3}
   m_SourceFontFilePath: 
-  m_AtlasPopulationMode: 0
+  m_AtlasPopulationMode: 1
   InternalDynamicOS: 0
   IsEditorFont: 0
   m_FaceInfo:
