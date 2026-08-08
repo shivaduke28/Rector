@@ -12,6 +12,7 @@ namespace Rector.UI.Hud
 
         readonly AudioInputDevicePageModel audioInputDevicePageModel;
         readonly MidiInputDevicePageModel midiInputDevicePageModel;
+        readonly OscSettingsPageModel oscSettingsPageModel;
         readonly DisplaySettingsPageModel displaySettingsPageModel;
         readonly GraphSettingsPageModel graphSettingsPageModel;
         readonly CopyrightNoticesPageModel copyrightNoticesPageModel;
@@ -22,6 +23,7 @@ namespace Rector.UI.Hud
         public SystemPageModel(
             AudioInputDevicePageModel audioInputDevicePageModel,
             MidiInputDevicePageModel midiInputDevicePageModel,
+            OscSettingsPageModel oscSettingsPageModel,
             DisplaySettingsPageModel displaySettingsPageModel,
             GraphSettingsPageModel graphSettingsPageModel,
             CopyrightNoticesPageModel copyrightNoticesPageModel,
@@ -30,6 +32,7 @@ namespace Rector.UI.Hud
         {
             this.audioInputDevicePageModel = audioInputDevicePageModel;
             this.midiInputDevicePageModel = midiInputDevicePageModel;
+            this.oscSettingsPageModel = oscSettingsPageModel;
             this.displaySettingsPageModel = displaySettingsPageModel;
             this.graphSettingsPageModel = graphSettingsPageModel;
             this.copyrightNoticesPageModel = copyrightNoticesPageModel;
@@ -38,6 +41,7 @@ namespace Rector.UI.Hud
             {
                 new("Audio Settings", ShowAudioSettings),
                 new("MIDI Settings", ShowMidiSettings),
+                new("OSC Settings", ShowOscSettings),
                 new("Display Settings", ShowDisplaySettings),
                 new("Graph Settings", ShowGraphSettings),
                 new("Copyright Notices", ShowCopyrightNotices),
@@ -99,6 +103,12 @@ namespace Rector.UI.Hud
         {
             isVisible.Value = false;
             midiInputDevicePageModel.Enter(Resume);
+        }
+
+        void ShowOscSettings()
+        {
+            isVisible.Value = false;
+            oscSettingsPageModel.Enter(Resume);
         }
 
         void ShowDisplaySettings()

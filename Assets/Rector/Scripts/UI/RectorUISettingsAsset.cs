@@ -29,6 +29,6 @@ namespace Rector.UI
         public Texture2D @operator;
         public Texture2D scene;
         public Texture2D system;
-        public Texture2D midi;
+        public Texture2D input;
     }
 }

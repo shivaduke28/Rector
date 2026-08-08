@@ -27,6 +27,7 @@ namespace Rector.UI.Hud
         public ButtonListPageView SystemPageView { get; }
         public SettingsPageView AudioInputDevicePageView { get; }
         public SettingsPageView MidiInputDevicePageView { get; }
+        public SettingsPageView OscSettingsPageView { get; }
         public SettingsPageView DisplaySettingsPageView { get; }
         public SettingsPageView GraphSettingsPageView { get; }
         public CopyrightNoticesPageView CopyrightNoticesPageView { get; }
@@ -53,6 +54,7 @@ namespace Rector.UI.Hud
             SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInputAction);
             AudioInputDevicePageView = new SettingsPageView(root.Q<VisualElement>("audio-input-device-page"), uiInputAction);
             MidiInputDevicePageView = new SettingsPageView(root.Q<VisualElement>("midi-input-device-page"), uiInputAction);
+            OscSettingsPageView = new SettingsPageView(root.Q<VisualElement>("osc-settings-page"), uiInputAction);
             DisplaySettingsPageView = new SettingsPageView(root.Q<VisualElement>("display-settings-page"), uiInputAction);
             GraphSettingsPageView = new SettingsPageView(root.Q<VisualElement>("graph-settings-page"), uiInputAction);
             CopyrightNoticesPageView = new CopyrightNoticesPageView(root.Q<VisualElement>("copyright-notices-page"), uiInputAction);

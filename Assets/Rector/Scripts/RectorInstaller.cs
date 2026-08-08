@@ -6,6 +6,7 @@ using Rector.Cameras;
 using Rector.Cli;
 using Rector.Midi;
 using Rector.NodeBehaviours;
+using Rector.Osc;
 using Rector.UI;
 using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
@@ -53,6 +54,10 @@ namespace Rector
             var midiInputDeviceManager = Register(new MidiInputDeviceManager());
             var midiModel = Register(new MidiModel(midiInputDeviceManager));
 
+            // osc
+            var oscInputSetting = Register(new OscInputSetting());
+            var oscModel = Register(new OscModel(oscInputSetting));
+
             // vfx
             var vfxManager = Register(new VfxManager(rectorSettingsAsset.vfxSettings));
 
@@ -74,6 +79,7 @@ namespace Rector
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, bgSceneManager));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
             var midiInputDevicePage = Register(new MidiInputDevicePageModel(midiInputDeviceManager, hudView.MidiInputDevicePageView));
+            var oscSettingsPage = Register(new OscSettingsPageModel(oscInputSetting, oscModel, hudView.OscSettingsPageView));
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
             var graphSettingsPage = Register(new GraphSettingsPageModel(hudView.GraphSettingsPageView, graphPage.Groups, graphPage.GuideSettings));
             var copyrightNoticesPage = Register(new CopyrightNoticesPageModel(hudView.CopyrightNoticesPageView));
@@ -82,6 +88,7 @@ namespace Rector
             var menuPage = Register(new SystemPageModel(
                 audioInputDevicePage,
                 midiInputDevicePage,
+                oscSettingsPage,
                 displaySettingsPage,
                 graphSettingsPage,
                 copyrightNoticesPage,
@@ -95,6 +102,7 @@ namespace Rector
                 beatModel,
                 mixerModel,
                 midiModel,
+                oscModel,
                 cameraManager,
                 hudModel
             ));
@@ -128,6 +136,10 @@ namespace Rector
             // reload last device
             audioInputDeviceManager.ReloadLastDevice();
             midiInputDeviceManager.ReloadSelection();
+
+            // ここで初めて OSC のポートが開く。初期化ループの中で開くと、
+            // listening も bind 失敗も HUD コンソールが購読する前に流れて消える
+            oscInputSetting.Reload();
 
             // set first camera active
             cameraManager.GetCameraBehaviours()[0].IsActive.Value = true;

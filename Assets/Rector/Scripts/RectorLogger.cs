@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using R3;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
@@ -53,9 +54,35 @@ namespace Rector
             LogInternal($"[SYSTEM/MIDI] ignored input from '{portName}'. Enable it in System > MIDI Settings.");
         }
 
-        public static void MidiLearn(Node node, string status)
+        // MIDI と OSC で共通のラーン。タグに MIDI を残すと OSC ノードのログが嘘になる
+        public static void SourceNodeLearn(Node node, string status)
         {
-            LogInternal($"[NODE/MIDI-LEARN] id={node.Id} name='{node.Name}' {status}");
+            LogInternal($"[NODE/LEARN] id={node.Id} name='{node.Name}' {status}");
+        }
+
+        // 受信は IPAddress.Any だが、送信側には宛先を打ち込む必要がある。
+        // 会場でこの行を読むだけで iPad の設定を埋められるようにしておく
+        public static void OscListening(int port, string[] localAddresses)
+        {
+            var targets = localAddresses.Length > 0
+                ? string.Join(", ", localAddresses.Select(a => $"{a}:{port}"))
+                : $"127.0.0.1:{port}";
+            LogInternal($"[SYSTEM/OSC] listening on port {port}. Send to {targets}");
+        }
+
+        public static void OscDisabled()
+        {
+            LogInternal("[SYSTEM/OSC] input is off. Enable it in System > OSC Settings.");
+        }
+
+        public static void OscBindFailed(int port, string message)
+        {
+            LogInternal($"[SYSTEM/OSC] failed to listen on port {port}. {message}");
+        }
+
+        public static void OscInputOverflow()
+        {
+            LogInternal("[SYSTEM/OSC] dropped incoming messages. The receive queue overflowed.");
         }
 
         public static void DisableStackTrace()
