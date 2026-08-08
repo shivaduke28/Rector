@@ -12,7 +12,7 @@ namespace Rector.UI.GraphPages
     /// ステートで場所が動くと目で追えないので、構造と位置は常に固定のまま
     /// 文言と有効/無効(減光)・ホールド中の反転だけを切り替える。
     /// 空きボタンは「記号 -」で「何も無い」ことを見せる。
-    /// 記号はDualShock前提(Xbox対応は設定オプションで後日)。
+    /// ボタン名はDualShock/Xboxを設定で選ぶ(<see cref="InputGuideMode"/>)。位置は同じで表記だけ変わる。
     /// キーボード専用キーとスティック系(ズーム/パン/リセット)は載せない。
     /// </summary>
     public sealed class InputGuideView : VisualElement
@@ -29,7 +29,40 @@ namespace Rector.UI.GraphPages
         const string FaceOffsetClassName = UssClassName + "__face-offset";
         const string ShoulderGutterClassName = UssClassName + "__shoulder-gutter";
 
-        const string DefaultParamLabel = "R1 PARAM";
+        const string ParamLabel = "PARAM";
+        const string ReplaceLabel = "REPLACE";
+
+        /// <summary>
+        /// パッドごとのボタン名。位置(上/左/右/下、ショルダー4種)は共通で、呼び名だけが違う。
+        /// </summary>
+        readonly struct ButtonNames
+        {
+            public readonly string FaceTop;
+            public readonly string FaceLeft;
+            public readonly string FaceRight;
+            public readonly string FaceBottom;
+            public readonly string UpperLeft;
+            public readonly string UpperRight;
+            public readonly string LowerLeft;
+            public readonly string LowerRight;
+
+            public ButtonNames(string faceTop, string faceLeft, string faceRight, string faceBottom,
+                string upperLeft, string upperRight, string lowerLeft, string lowerRight)
+            {
+                FaceTop = faceTop;
+                FaceLeft = faceLeft;
+                FaceRight = faceRight;
+                FaceBottom = faceBottom;
+                UpperLeft = upperLeft;
+                UpperRight = upperRight;
+                LowerLeft = lowerLeft;
+                LowerRight = lowerRight;
+            }
+        }
+
+        // ◯はU+25CBだとJetBrains Monoにグリフが無く豆腐(□)になるので、U+25EFを使う
+        static readonly ButtonNames DualShockNames = new("△", "□", "◯", "✕", "L2", "R2", "L1", "R1");
+        static readonly ButtonNames XboxNames = new("Y", "X", "B", "A", "LT", "RT", "LB", "RB");
 
         sealed class GuideContent
         {
@@ -39,10 +72,13 @@ namespace Rector.UI.GraphPages
             public string FaceBottom;
             public bool Mute;
 
-            /// <summary>R1セルの文言。nullなら無効(減光)。R1+✕のようなコンボもここで表す。</summary>
+            /// <summary>右下ボタンのセルの文言。nullなら無効(減光)。</summary>
             public string Param;
 
-            /// <summary>R1を握っていることが前提のステート(パラメータ表示中)で反転させる。</summary>
+            /// <summary>下面ボタンとの同時押し(差し替え接続)。表記が「R1+✕」のようになる。</summary>
+            public bool ParamCombo;
+
+            /// <summary>右下ボタンを握っていることが前提のステート(パラメータ表示中)で反転させる。</summary>
             public bool ParamActive;
 
             public bool Grab;
@@ -57,7 +93,7 @@ namespace Rector.UI.GraphPages
                 FaceRight = "(CUT)",
                 FaceBottom = "SLOT",
                 Mute = true,
-                Param = DefaultParamLabel,
+                Param = ParamLabel,
                 Grab = true,
             },
             [GraphPageState.SlotSelection] = new GuideContent
@@ -82,7 +118,8 @@ namespace Rector.UI.GraphPages
                 FaceRight = "BACK",
                 FaceBottom = "CONNECT/CUT",
                 Mute = true,
-                Param = "R1+✕ REPLACE",
+                Param = ReplaceLabel,
+                ParamCombo = true,
             },
             [GraphPageState.NodeCreation] = new GuideContent
             {
@@ -94,7 +131,7 @@ namespace Rector.UI.GraphPages
                 FaceLeft = "STEP",
                 FaceRight = "CLOSE",
                 Mute = true,
-                Param = DefaultParamLabel,
+                Param = ParamLabel,
                 ParamActive = true,
             },
         };
@@ -111,6 +148,7 @@ namespace Rector.UI.GraphPages
         GraphPageState currentState;
         bool grabHeld;
         bool lockHeld;
+        ButtonNames names = DualShockNames;
 
         public InputGuideView()
         {
@@ -118,10 +156,10 @@ namespace Rector.UI.GraphPages
             pickingMode = PickingMode.Ignore;
 
             // セルは透明な位置決め箱で、背景の塗りは文字ぴったりの内側チップにだけ載せる
-            var lockCell = CreateCell("L2 LOCK", CellLeftClassName, out lockChip);
-            var grabCell = CreateCell("R2 GRAB", CellRightClassName, out grabChip);
-            var muteCell = CreateCell("L1 MUTE", CellLeftClassName, out muteChip);
-            var paramCell = CreateCell(DefaultParamLabel, CellRightClassName, out paramChip);
+            var lockCell = CreateCell(string.Empty, CellLeftClassName, out lockChip);
+            var grabCell = CreateCell(string.Empty, CellRightClassName, out grabChip);
+            var muteCell = CreateCell(string.Empty, CellLeftClassName, out muteChip);
+            var paramCell = CreateCell(string.Empty, CellRightClassName, out paramChip);
             var faceTopCell = CreateCell(string.Empty, CellRightClassName, out faceTop);
             var faceLeftCell = CreateCell(string.Empty, CellLeftClassName, out faceLeft);
             var faceRightCell = CreateCell(string.Empty, CellRightClassName, out faceRight);
@@ -147,7 +185,7 @@ namespace Rector.UI.GraphPages
             ReadOnlyReactiveProperty<GraphPageState> state,
             ReadOnlyReactiveProperty<bool> grabModifierHeld,
             ReadOnlyReactiveProperty<bool> lockHeldProperty,
-            ReadOnlyReactiveProperty<bool> visible)
+            ReadOnlyReactiveProperty<InputGuideMode> mode)
         {
             return new CompositeDisposable(
                 state.Subscribe(x =>
@@ -165,7 +203,12 @@ namespace Rector.UI.GraphPages
                     lockHeld = x;
                     UpdateContent();
                 }),
-                visible.Subscribe(x => style.display = x ? DisplayStyle.Flex : DisplayStyle.None)
+                mode.Subscribe(x =>
+                {
+                    style.display = x == InputGuideMode.Off ? DisplayStyle.None : DisplayStyle.Flex;
+                    names = x == InputGuideMode.Xbox ? XboxNames : DualShockNames;
+                    UpdateContent();
+                })
             );
         }
 
@@ -173,23 +216,27 @@ namespace Rector.UI.GraphPages
         {
             var content = Contents[currentState];
 
-            // ○はU+25CBだとJetBrains Monoにグリフが無く豆腐(□)になるので、U+25EFを使う
-            SetFace(faceTop, "△", content.FaceTop);
-            SetFace(faceLeft, "□", content.FaceLeft);
-            SetFace(faceRight, "◯", content.FaceRight);
-            SetFace(faceBottom, "✕", content.FaceBottom);
+            SetFace(faceTop, names.FaceTop, content.FaceTop);
+            SetFace(faceLeft, names.FaceLeft, content.FaceLeft);
+            SetFace(faceRight, names.FaceRight, content.FaceRight);
+            SetFace(faceBottom, names.FaceBottom, content.FaceBottom);
 
-            SetChip(muteChip, content.Mute, false);
-            paramChip.text = content.Param ?? DefaultParamLabel;
-            SetChip(paramChip, content.Param != null, content.ParamActive);
-            SetChip(grabChip, content.Grab, grabHeld);
+            lockChip.text = $"{names.UpperLeft} LOCK";
             SetChip(lockChip, true, lockHeld);
+            grabChip.text = $"{names.UpperRight} GRAB";
+            SetChip(grabChip, content.Grab, grabHeld);
+            muteChip.text = $"{names.LowerLeft} MUTE";
+            SetChip(muteChip, content.Mute, false);
+            // 差し替え接続は下面ボタンとの同時押しなので、そのまま「R1+✕」と見せる
+            var paramPrefix = content.ParamCombo ? $"{names.LowerRight}+{names.FaceBottom}" : names.LowerRight;
+            paramChip.text = $"{paramPrefix} {content.Param ?? ParamLabel}";
+            SetChip(paramChip, content.Param != null, content.ParamActive);
         }
 
-        /// <summary>空きポジションは「記号 -」の減光表示にして、何も無いことを見せる。</summary>
-        static void SetFace(Label label, string symbol, string text)
+        /// <summary>空きポジションは「ボタン名 -」の減光表示にして、何も無いことを見せる。</summary>
+        static void SetFace(Label label, string button, string text)
         {
-            label.text = text == null ? $"{symbol} -" : $"{symbol} {text}";
+            label.text = text == null ? $"{button} -" : $"{button} {text}";
             label.EnableInClassList(ChipDisabledClassName, text == null);
         }
 

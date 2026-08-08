@@ -8,25 +8,27 @@ namespace Rector.UI.GraphPages
     /// </summary>
     public sealed class InputGuideSettings
     {
-        const string PrefsKey = "Rector_InputGuideVisible";
+        const string PrefsKey = "Rector_InputGuideMode";
 
-        readonly ReactiveProperty<bool> visible;
+        readonly ReactiveProperty<InputGuideMode> mode;
 
-        /// <summary>操作ガイドを表示するか。既定はオン。</summary>
-        public ReadOnlyReactiveProperty<bool> Visible => visible;
+        /// <summary>ガイドの表記。既定はDualShock。Offなら出さない。</summary>
+        public ReadOnlyReactiveProperty<InputGuideMode> Mode => mode;
 
         public InputGuideSettings()
         {
-            // PlayerPrefs に bool はないので 0/1 で持つ
-            visible = new ReactiveProperty<bool>(PlayerPrefs.GetInt(PrefsKey, 1) != 0);
+            // 保存された値が範囲外でも壊れないようclampして読む
+            var saved = PlayerPrefs.GetInt(PrefsKey, (int)InputGuideMode.DualShock);
+            mode = new ReactiveProperty<InputGuideMode>(
+                (InputGuideMode)Mathf.Clamp(saved, (int)InputGuideMode.Off, (int)InputGuideMode.Xbox));
         }
 
-        public void SetVisible(bool value)
+        public void SetMode(InputGuideMode value)
         {
-            if (value == visible.Value) return;
+            if (value == mode.Value) return;
 
-            visible.Value = value;
-            PlayerPrefs.SetInt(PrefsKey, value ? 1 : 0);
+            mode.Value = value;
+            PlayerPrefs.SetInt(PrefsKey, (int)value);
         }
     }
 }

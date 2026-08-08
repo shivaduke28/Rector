@@ -15,8 +15,7 @@ namespace Rector.UI.Hud
         ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
 
         readonly List<RectorButtonState> buttons = new();
-        readonly RectorButtonState guideOnButton;
-        readonly RectorButtonState guideOffButton;
+        readonly List<(InputGuideMode Mode, RectorButtonState Button)> guideButtons = new();
 
         const int GroupButtonCount = NodeGroups.MaxCount - NodeGroups.MinCount + 1;
 
@@ -30,7 +29,7 @@ namespace Rector.UI.Hud
             this.groups = groups;
             this.guideSettings = guideSettings;
 
-            // ボタン順序: [Groups 1..8][Guide On][Guide Off]。
+            // ボタン順序: [Groups 1..8][Guide: Off][Guide: DualShock][Guide: Xbox]。
             // Enter()のカーソルシードとUpdateGroupHighlightはGroupsが先頭に並ぶ前提。
             for (var count = NodeGroups.MinCount; count <= NodeGroups.MaxCount; count++)
             {
@@ -38,10 +37,13 @@ namespace Rector.UI.Hud
                 buttons.Add(new RectorButtonState($"Groups: {value}", () => groups.SetCount(value)));
             }
 
-            guideOnButton = new RectorButtonState("Guide: On", () => guideSettings.SetVisible(true));
-            guideOffButton = new RectorButtonState("Guide: Off", () => guideSettings.SetVisible(false));
-            buttons.Add(guideOnButton);
-            buttons.Add(guideOffButton);
+            foreach (var mode in new[] { InputGuideMode.Off, InputGuideMode.DualShock, InputGuideMode.Xbox })
+            {
+                var value = mode;
+                var button = new RectorButtonState($"Guide: {value}", () => guideSettings.SetMode(value));
+                guideButtons.Add((value, button));
+                buttons.Add(button);
+            }
         }
 
         public void Initialize()
@@ -51,7 +53,7 @@ namespace Rector.UI.Hud
             disposable = new CompositeDisposable(
                 view.Bind(this),
                 groups.Count.Subscribe(UpdateGroupHighlight),
-                guideSettings.Visible.Subscribe(UpdateGuideHighlight));
+                guideSettings.Mode.Subscribe(UpdateGuideHighlight));
         }
 
         public void Dispose() => disposable?.Dispose();
@@ -79,10 +81,12 @@ namespace Rector.UI.Hud
             }
         }
 
-        void UpdateGuideHighlight(bool visible)
+        void UpdateGuideHighlight(InputGuideMode mode)
         {
-            guideOnButton.IsHighlighted.Value = visible;
-            guideOffButton.IsHighlighted.Value = !visible;
+            foreach (var (value, button) in guideButtons)
+            {
+                button.IsHighlighted.Value = value == mode;
+            }
         }
 
         IEnumerable<RectorButtonState> IButtonListPageModel.GetButtons() => buttons;
