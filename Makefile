@@ -25,8 +25,21 @@ require-unity:
 		exit 1; \
 	}
 
+# `unity open` は既存インスタンスを見ずに毎回新しい Unity を起動するので、
+# すでに開いていると Unity 本体が二重起動を拒否してエラーになる。開いているかは
+# こちらで見て、開いていればウィンドウを前面に出すだけにする。
+# なお複数のエディタが起動している場合、open -a はアプリを前面に出すだけで
+# どのプロジェクトのウィンドウが来るかは選べない。
 unity: require-unity ## Unity エディタでプロジェクトを開く
-	$(UNITY) open
+	@pid=$$($(UNITY) status --format tsv 2>/dev/null \
+		| awk -F'\t' -v p="$(CURDIR)" '$$3 == p { print $$5; exit }'); \
+	if [ -n "$$pid" ]; then \
+		app=$$($(UNITY) editors --format tsv 2>/dev/null \
+			| awk -F'\t' -v v="$(PROJECT_VERSION)" '$$1 == v { print $$4; exit }'); \
+		[ -n "$$app" ] && open -a "$$app" || true; \
+	else \
+		$(UNITY) open; \
+	fi
 
 status: require-unity ## 起動中の Unity エディタの状態を表示
 	$(UNITY) status
