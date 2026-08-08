@@ -5,8 +5,8 @@ using Rector.NodeBehaviours;
 namespace Rector.UI.Graphs.Nodes
 {
     /// <summary>
-    /// MIDI ソースノードの共通基底。ノート/CC 番号の保持と MIDI ラーン（Learn を押した後の
-    /// 最初の MIDI 入力で番号を確定する）をここで面倒みる。
+    /// MIDI ソースノードの共通基底。ノート/CC 番号の保持と MIDI ラーン
+    /// （Learn トグルを on にすると、次の MIDI 入力で番号を確定して自動で off に戻る）をここで面倒みる。
     /// </summary>
     public abstract class MidiSourceNode : SourceNode, IDisposable
     {
@@ -14,9 +14,9 @@ namespace Rector.UI.Graphs.Nodes
         public override NodeCategory Category => GetCategory();
 
         protected readonly IntInput NumberInput;
-        readonly Observable<int> learnSource;
-        readonly ReactiveProperty<bool> isLearning = new(false);
+        protected readonly BoolInput LearnInput;
         readonly SerialDisposable learnSubscription = new();
+        readonly IDisposable learnStateSubscription;
 
         public Observable<string> DisplayLabel { get; }
 
@@ -26,37 +26,35 @@ namespace Rector.UI.Graphs.Nodes
         protected MidiSourceNode(NodeId id, string name, IntInput numberInput, Observable<int> learnSource) : base(id, name)
         {
             NumberInput = numberInput;
-            this.learnSource = learnSource;
-            DisplayLabel = numberInput.Value.CombineLatest(isLearning, (number, learning) => learning ? $"{name} [LEARN]" : $"{name} {number}");
-        }
+            LearnInput = new BoolInput("Learn", false);
+            DisplayLabel = numberInput.Value.Select(number => $"{name} {number}");
 
-        // ラーンはアサイン操作なので Active/Mute に関係なく生ストリームを拾う
-        protected void ToggleLearn()
-        {
-            if (isLearning.Value)
+            // ラーンはアサイン操作なので Active/Mute に関係なく生ストリームを拾う
+            learnStateSubscription = LearnInput.Value.Subscribe(armed =>
             {
-                learnSubscription.Disposable = null;
-                isLearning.Value = false;
-                RectorLogger.MidiLearn(this, "cancelled");
-                return;
-            }
-
-            isLearning.Value = true;
-            RectorLogger.MidiLearn(this, "armed");
-            learnSubscription.Disposable = learnSource
-                .Take(1)
-                .Subscribe(number =>
+                if (armed)
                 {
-                    NumberInput.Value.Value = number;
-                    isLearning.Value = false;
-                    RectorLogger.MidiLearn(this, $"assigned {number}");
-                });
+                    RectorLogger.MidiLearn(this, "armed");
+                    learnSubscription.Disposable = learnSource
+                        .Take(1)
+                        .Subscribe(number =>
+                        {
+                            NumberInput.Value.Value = number;
+                            LearnInput.Value.Value = false;
+                            RectorLogger.MidiLearn(this, $"assigned {number}");
+                        });
+                }
+                else
+                {
+                    learnSubscription.Disposable = null;
+                }
+            });
         }
 
         public void Dispose()
         {
+            learnStateSubscription.Dispose();
             learnSubscription.Dispose();
-            isLearning.Dispose();
         }
     }
 }

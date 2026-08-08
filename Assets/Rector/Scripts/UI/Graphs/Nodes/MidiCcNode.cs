@@ -21,7 +21,7 @@ namespace Rector.UI.Graphs.Nodes
             {
                 SlotConverter.Convert(id, 0, ActiveInput, IsMuted),
                 SlotConverter.Convert(id, 1, NumberInput, IsMuted),
-                new CallbackInputSlot(id, 2, "Learn", ToggleLearn, IsMuted)
+                SlotConverter.Convert(id, 2, LearnInput, IsMuted)
             };
 
             OutputSlots = new OutputSlot[]
