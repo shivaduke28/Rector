@@ -173,5 +173,24 @@ namespace Rector.Tests.EditMode
             Assert.AreEqual(1, selector.SelectedIndex.CurrentValue);
             Assert.AreEqual(1, selector.CursorIndex.CurrentValue);
         }
+
+        [Test]
+        public void Text_ShowsWhatItIsToldAndSwallowsEveryInput()
+        {
+            var text = new TextRowState("label", "before");
+            ISettingRow row = text;
+
+            row.OnHorizontal(1);
+            row.OnVertical(1);
+            row.OnSubmit();
+            row.OnCancel();
+
+            Assert.AreEqual("before", text.Value.CurrentValue);
+            // 占有しないので、ページのカーソル移動と「閉じる」は行に奪われない
+            Assert.IsFalse(row.IsCapturingInput.CurrentValue);
+
+            text.SetText("after");
+            Assert.AreEqual("after", text.Value.CurrentValue);
+        }
     }
 }

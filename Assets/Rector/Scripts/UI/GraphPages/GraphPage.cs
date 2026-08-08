@@ -18,10 +18,10 @@ namespace Rector.UI.GraphPages
         readonly ReactiveProperty<bool> isVisible = new(false);
         public readonly ReactiveProperty<GraphPageState> State = new(GraphPageState.NodeSelection);
 
-        public LayeredNode? SelectedNode;
-        public ISlot? SelectedSlot;
-        public LayeredNode? TargetNode;
-        public ISlot? TargetSlot;
+        public LayeredNode? SelectedNode { get; private set; }
+        public ISlot? SelectedSlot { get; private set; }
+        public LayeredNode? TargetNode { get; private set; }
+        public ISlot? TargetSlot { get; private set; }
 
         public Observable<Unit> OpenScenePage => graphInputAction.OpenScene.Where(_ => State.Value == GraphPageState.NodeSelection);
         public Observable<Unit> OpenSystemPage => graphInputAction.OpenSystem.Where(_ => State.Value == GraphPageState.NodeSelection);
@@ -377,7 +377,7 @@ namespace Rector.UI.GraphPages
                         var node = target.NodeView.Node;
                         // SelectedSlotが無いのもCLI経由の異常系。従来通りinput優先に倒す
                         var direction = SelectedSlot?.Direction ?? SlotDirection.Input;
-                        if (SlotNavigator.PickInDirection(direction, node.InputSlots, node.OutputSlots) is not { } next) return;
+                        if (PickSlotInDirection(direction, node.InputSlots, node.OutputSlots) is not { } next) return;
 
                         node.IsTarget.Value = false;
                         TargetNode = null;
@@ -391,7 +391,7 @@ namespace Rector.UI.GraphPages
                         if (TargetNode is not { } target || TargetSlot is not { } targetSlot) return;
                         var node = target.NodeView.Node;
                         var direction = SelectedSlot?.Direction ?? targetSlot.Direction;
-                        var next = SlotNavigator.PickInDirection(direction, node.InputSlots, node.OutputSlots) ?? targetSlot;
+                        var next = PickSlotInDirection(direction, node.InputSlots, node.OutputSlots) ?? targetSlot;
 
                         node.IsTarget.Value = false;
                         targetSlot.IsTarget.Value = false;
@@ -403,6 +403,22 @@ namespace Rector.UI.GraphPages
                         break;
                     }
             }
+        }
+
+        /// <summary>
+        /// 指定した向きのスロットの先頭を返す。その向きが空なら反対側の先頭に落とし、
+        /// どちらも空なら null。
+        /// </summary>
+        static ISlot? PickSlotInDirection(SlotDirection direction, InputSlot[] inputSlots, OutputSlot[] outputSlots)
+        {
+            if (direction == SlotDirection.Output)
+            {
+                if (outputSlots.Length > 0) return outputSlots[0];
+                return inputSlots.Length > 0 ? inputSlots[0] : null;
+            }
+
+            if (inputSlots.Length > 0) return inputSlots[0];
+            return outputSlots.Length > 0 ? outputSlots[0] : null;
         }
 
         public bool DisconnectSlots(OutputSlot output, InputSlot input)

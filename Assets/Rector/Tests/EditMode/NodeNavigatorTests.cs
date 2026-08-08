@@ -18,15 +18,16 @@ namespace Rector.Tests.EditMode
     /// </summary>
     public sealed class NodeNavigatorTests
     {
-        // NodeGroups.PrefsKey と同じ値。SetCountがPlayerPrefsへ書くので退避・復元する
-        const string GroupCountPrefsKey = "Rector_NodeGroupCount";
+        // SetCountがPlayerPrefsへ書くので退避・復元する。保存キーはNodeGroupsの中の話なので
+        // 触らず、NodeGroups自身に読み書きさせる(コンストラクタがclampするため、
+        // 元の値が範囲外だったときは有効範囲内の値に戻る)
         int savedGroupCount;
 
         [SetUp]
-        public void SetUp() => savedGroupCount = PlayerPrefs.GetInt(GroupCountPrefsKey, NodeGroups.DefaultCount);
+        public void SetUp() => savedGroupCount = new NodeGroups().CurrentCount;
 
         [TearDown]
-        public void TearDown() => PlayerPrefs.SetInt(GroupCountPrefsKey, savedGroupCount);
+        public void TearDown() => new NodeGroups().SetCount(savedGroupCount);
 
         static readonly Vector2 Up = Vector2.up;
         static readonly Vector2 Down = Vector2.down;

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using NUnit.Framework;
 using Rector.UI.Graphs;
@@ -15,12 +16,14 @@ namespace Rector.Tests.EditMode
     /// </summary>
     public sealed class GraphSaveDataTests
     {
+        const string SavedAtRaw = "2026-08-09T00:12:34.0000000+09:00";
+
         static GraphSaveData MakeData()
         {
             return new GraphSaveData
             {
                 version = GraphSaveData.CurrentVersion,
-                savedAt = "2026-08-09T00:12:34.0000000+09:00",
+                savedAt = SavedAtRaw,
                 nodes = new[]
                 {
                     new NodeSaveData
@@ -114,7 +117,12 @@ namespace Rector.Tests.EditMode
                 Assert.That(info.IsEmpty, Is.False);
                 Assert.That(info.NodeCount, Is.EqualTo(2));
                 Assert.That(info.EdgeCount, Is.EqualTo(1));
-                Assert.That(info.SavedAt, Is.EqualTo("2026-08-09 00:12"));
+                // 表示の書式そのものは契約ではないので固定しない。保存時刻がそのまま
+                // 読み取れること(=ISO文字列の素通しではなく、分まで一致する時刻になること)を見る
+                Assert.That(info.SavedAt, Does.Not.Contain("T"));
+                var shown = DateTime.Parse(info.SavedAt, CultureInfo.InvariantCulture);
+                var expected = DateTimeOffset.Parse(SavedAtRaw, CultureInfo.InvariantCulture).LocalDateTime;
+                Assert.That(shown, Is.EqualTo(new DateTime(expected.Year, expected.Month, expected.Day, expected.Hour, expected.Minute, 0)));
             }
             finally
             {
@@ -153,7 +161,9 @@ namespace Rector.Tests.EditMode
                 Directory.CreateDirectory(directory);
                 File.WriteAllText(Path.Combine(directory, "slot1.json"), "{\"version\":99,\"nodes\":[],\"edges\":[]}");
 
-                LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("unsupported version"));
+                // 黙って null を返すのではなくエラーとして報告することまでが振る舞い。
+                // ただし読み取り失敗もエラーを出すので、版の話だと分かる程度にだけ絞る
+                LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("version"));
                 Assert.That(new GraphSlotRepository(directory).Read(1), Is.Null);
             }
             finally
