@@ -10,7 +10,7 @@ namespace Rector.UI.Graphs.Nodes
     /// </summary>
     public abstract class MidiSourceNode : SourceNode, IDisposable
     {
-        public static NodeCategory GetCategory() => NodeCategory.Event;
+        public static NodeCategory GetCategory() => NodeCategory.Midi;
         public override NodeCategory Category => GetCategory();
 
         protected readonly IntInput NumberInput;
@@ -19,6 +19,9 @@ namespace Rector.UI.Graphs.Nodes
         readonly SerialDisposable learnSubscription = new();
 
         public Observable<string> DisplayLabel { get; }
+
+        // ゲージ表示用の [0,1] 値。番号一致でフィルタ済み・Active/Mute は無視（入力が来ていること自体の可視化）
+        public Observable<float> DisplayValue { get; protected set; }
 
         protected MidiSourceNode(NodeId id, string name, IntInput numberInput, Observable<int> learnSource) : base(id, name)
         {

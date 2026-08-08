@@ -14,6 +14,9 @@ namespace Rector.UI.Graphs.Nodes
         public MidiCcNode(NodeId id, MidiModel midiModel)
             : base(id, NodeName, new IntInput("CC", 1, 0, 127), midiModel.ControlChange.Select(e => e.ControlNumber))
         {
+            var matched = midiModel.ControlChange.Where(e => e.ControlNumber == NumberInput.Value.Value);
+            DisplayValue = matched.Select(e => e.Value);
+
             InputSlots = new[]
             {
                 SlotConverter.Convert(id, 0, ActiveInput, IsMuted),
@@ -24,7 +27,7 @@ namespace Rector.UI.Graphs.Nodes
             OutputSlots = new OutputSlot[]
             {
                 new ObservableOutputSlot<float>(id, 0, "Value",
-                    midiModel.ControlChange.Where(e => IsActive && e.ControlNumber == NumberInput.Value.Value).Select(e => e.Value), IsMuted)
+                    matched.Where(_ => IsActive).Select(e => e.Value), IsMuted)
             };
         }
     }

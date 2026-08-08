@@ -183,6 +183,7 @@ namespace Rector.UI.GraphPages
                 NodeCategory.Math => VisualElementFactory.Instance.Icons.math,
                 NodeCategory.Scene => VisualElementFactory.Instance.Icons.scene,
                 NodeCategory.System => VisualElementFactory.Instance.Icons.system,
+                NodeCategory.Midi => VisualElementFactory.Instance.Icons.midi,
                 _ => null
             };
         }

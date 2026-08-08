@@ -14,8 +14,11 @@ namespace Rector.UI.Graphs.Nodes
         public MidiNoteNode(NodeId id, MidiModel midiModel)
             : base(id, NodeName, new IntInput("Note", 60, 0, 127), midiModel.NoteOn.Select(e => e.NoteNumber))
         {
-            var noteOn = midiModel.NoteOn.Where(e => IsActive && e.NoteNumber == NumberInput.Value.Value);
-            var noteOff = midiModel.NoteOff.Where(e => IsActive && e.NoteNumber == NumberInput.Value.Value);
+            var matchedOn = midiModel.NoteOn.Where(e => e.NoteNumber == NumberInput.Value.Value);
+            var matchedOff = midiModel.NoteOff.Where(e => e.NoteNumber == NumberInput.Value.Value);
+            var noteOn = matchedOn.Where(_ => IsActive);
+            var noteOff = matchedOff.Where(_ => IsActive);
+            DisplayValue = matchedOn.Select(e => e.Velocity).Merge(matchedOff.Select(_ => 0f));
 
             InputSlots = new[]
             {

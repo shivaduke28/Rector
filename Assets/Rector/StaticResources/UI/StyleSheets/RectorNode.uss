@@ -92,6 +92,17 @@
     display: flex;
 }
 
+.rector-node-gauge {
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.rector-node-gauge__fill {
+    height: 100%;
+    width: 0;
+    background-color: var(--rector-text-color);
+}
+
 .rector-node-mute {
     height: 1px;
     background-color: rgba(255, 255, 255, 0.5);
