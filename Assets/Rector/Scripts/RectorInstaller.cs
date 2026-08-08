@@ -50,7 +50,8 @@ namespace Rector
             Register(new ThresholdAdjuster(mixerModel));
 
             // midi
-            var midiModel = Register(new MidiModel());
+            var midiInputDeviceManager = Register(new MidiInputDeviceManager());
+            var midiModel = Register(new MidiModel(midiInputDeviceManager));
 
             // vfx
             var vfxManager = Register(new VfxManager(rectorSettingsAsset.vfxSettings));
@@ -72,6 +73,7 @@ namespace Rector
             var bgSceneManager = Register(new BGSceneManager(loadingView, rectorSettingsAsset.sceneSettings, nodeTemplateRepository, nodeBehaviourProxyRepository, graphPage));
             var scenePage = Register(new ScenePageModel(hudView.ScenePageView, bgSceneManager));
             var audioInputDevicePage = Register(new AudioInputDevicePageModel(audioInputDeviceManager, hudView.AudioInputDevicePageView));
+            var midiInputDevicePage = Register(new MidiInputDevicePageModel(midiInputDeviceManager, hudView.MidiInputDevicePageView));
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
             var graphSettingsPage = Register(new GraphSettingsPageModel(hudView.GraphSettingsPageView, graphPage.Groups, graphPage.GuideSettings));
             var copyrightNoticesPage = Register(new CopyrightNoticesPageModel(hudView.CopyrightNoticesPageView));
@@ -79,6 +81,7 @@ namespace Rector
 
             var menuPage = Register(new SystemPageModel(
                 audioInputDevicePage,
+                midiInputDevicePage,
                 displaySettingsPage,
                 graphSettingsPage,
                 copyrightNoticesPage,
@@ -124,6 +127,7 @@ namespace Rector
 
             // reload last device
             audioInputDeviceManager.ReloadLastDevice();
+            midiInputDeviceManager.ReloadSelection();
 
             // set first camera active
             cameraManager.GetCameraBehaviours()[0].IsActive.Value = true;

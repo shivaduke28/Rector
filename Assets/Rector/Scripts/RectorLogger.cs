@@ -43,6 +43,16 @@ namespace Rector
             LogInternal($"[SYSTEM/MIDI] {(connected ? "connected" : "disconnected")} device='{product}' ch={channel + 1}");
         }
 
+        public static void MidiInputDeviceSelection(string portName, bool selected)
+        {
+            LogInternal($"[SYSTEM/MIDI] {(selected ? "selected" : "deselected")} device='{portName}'");
+        }
+
+        public static void MidiInputIgnored(string portName)
+        {
+            LogInternal($"[SYSTEM/MIDI] ignored input from '{portName}'. Enable it in System > MIDI Settings.");
+        }
+
         public static void MidiLearn(Node node, string status)
         {
             LogInternal($"[NODE/MIDI-LEARN] id={node.Id} name='{node.Name}' {status}");
