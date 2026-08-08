@@ -21,14 +21,6 @@ namespace Rector.UI.GraphPages
         }
 
         /// <summary>
-        /// フォーカスを同じグループ内だけで動かす。directionは上下左右いずれかの単位ベクトル。
-        /// NavModifier(L1/Option)を押しながらの十字キー。
-        /// </summary>
-        public virtual void NavigateInGroup(Vector2Int direction)
-        {
-        }
-
-        /// <summary>
         /// 選択中のノードを隣のグループへ移す。directionは-1か1。GrabModifier(R2/Ctrl)を押しながらの左右。
         /// </summary>
         public virtual void MoveNodeToGroup(int direction)

@@ -35,19 +35,6 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public override void NavigateInGroup(Vector2Int direction)
-        {
-            if (graphPage.TargetNode is not { } target) return;
-
-            var next = direction.y != 0
-                ? navigator.FindVerticalInSameGroup(target, direction.y > 0)
-                : navigator.FindHorizontalInSameGroup(target, direction.x);
-            if (next != null)
-            {
-                graphPage.SetTargetNode(next);
-            }
-        }
-
         public override void AddNode()
         {
             graphPage.PromoteTargetToSource();
