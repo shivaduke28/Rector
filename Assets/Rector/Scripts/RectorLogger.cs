@@ -122,6 +122,47 @@ namespace Rector
             }
         }
 
+        public static void GraphSaved(int slot, int nodeCount, int edgeCount, int skippedNodes, int skippedEdges)
+        {
+            var skipped = skippedNodes > 0 || skippedEdges > 0
+                ? $" (skipped {skippedNodes} scene node(s), {skippedEdges} edge(s))"
+                : "";
+            LogInternal($"[GRAPH/SAVE] slot={slot} nodes={nodeCount} edges={edgeCount}{skipped}");
+        }
+
+        public static void GraphLoaded(int slot, int nodeCount, int edgeCount, int skippedNodes, int skippedEdges)
+        {
+            var skipped = skippedNodes > 0 || skippedEdges > 0
+                ? $" (dropped {skippedNodes} node(s), {skippedEdges} edge(s))"
+                : "";
+            LogInternal($"[GRAPH/LOAD] slot={slot} added {nodeCount} node(s), {edgeCount} edge(s){skipped}");
+        }
+
+        public static void GraphCleared(int nodeCount)
+        {
+            LogInternal($"[GRAPH/CLEAR] removed {nodeCount} node(s)");
+        }
+
+        public static void GraphSlotEmpty(int slot)
+        {
+            LogInternal($"[GRAPH/LOAD] slot={slot} is empty.");
+        }
+
+        public static void GraphLoadSkippedNode(string saveKey)
+        {
+            LogInternal($"[GRAPH/LOAD] unknown node template '{saveKey}'. Skipped.");
+        }
+
+        public static void GraphLoadSkippedValue(Node node, int slotIndex, string savedType)
+        {
+            LogInternal($"[GRAPH/LOAD] value dropped: {node.Name}[{slotIndex}] is not a {savedType} input");
+        }
+
+        public static void GraphLoadSkippedEdge(string reason)
+        {
+            LogInternal($"[GRAPH/LOAD] edge dropped: {reason}");
+        }
+
         public static void ActiveCamera(string cameraName)
         {
             LogInternal($"[CAMERA/CHANGE] name='{cameraName}'");

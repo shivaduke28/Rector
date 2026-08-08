@@ -33,7 +33,7 @@ namespace Rector
             {
                 var proxy = proxyRepository.GetOrCreateProxy(nodeBehaviour);
                 var category = nodeBehaviour.Category;
-                var template = NodeTemplate.Create(category, nodeBehaviour.name, id =>
+                var template = NodeTemplate.SceneLocal(nodeBehaviour.Guid, category, nodeBehaviour.name, id =>
                 {
                     var node = new BehaviourNode(id, proxy);
                     var ve = VisualElementFactory.Instance.CreateNode();

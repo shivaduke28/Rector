@@ -52,48 +52,48 @@ namespace Rector.UI.Graphs
         {
             foreach (var vfx in vfxManager.GetAllVfx())
             {
-                nodeTemplateRepository.Add(NodeTemplate.Create(VfxNode.GetCategory(), vfx.Name, id => CreateNodeView(new VfxNode(id, vfx))));
+                nodeTemplateRepository.Add(NodeTemplate.Behaviour(vfx.Guid, VfxNode.GetCategory(), vfx.Name, id => CreateNodeView(new VfxNode(id, vfx))));
             }
 
             foreach (var camera in cameraManager.GetCameraBehaviours())
             {
-                nodeTemplateRepository.Add(NodeTemplate.Create(CameraNode.GetCategory(), camera.Name, id => CreateNodeView(new CameraNode(id, camera))));
+                nodeTemplateRepository.Add(NodeTemplate.Behaviour(camera.Guid, CameraNode.GetCategory(), camera.Name, id => CreateNodeView(new CameraNode(id, camera))));
             }
 
-            nodeTemplateRepository.Add(NodeTemplate.Create(CameraBlendNode.GetCategory(), CameraBlendNode.NodeName, id => CreateNodeView(new CameraBlendNode(id, cameraManager))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<CameraBlendNode>(CameraBlendNode.GetCategory(), CameraBlendNode.NodeName, id => CreateNodeView(new CameraBlendNode(id, cameraManager))));
 
-            nodeTemplateRepository.Add(NodeTemplate.Create(AudioThresholdNode.GetCategory(), AudioThresholdNode.NodeName, id => CreateNodeView(new AudioThresholdNode(id, audioMixerModel))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(LevelNode.GetCategory(), LevelNode.NodeName, id => CreateNodeView(new LevelNode(id, audioMixerModel))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(BeatNode.GetCategory(), BeatNode.NodeName, id => CreateNodeView(new BeatNode(id, beatModel))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(MidiNoteNode.GetCategory(), MidiNoteNode.NodeName, id => CreateNodeView(new MidiNoteNode(id, midiModel))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(MidiCcNode.GetCategory(), MidiCcNode.NodeName, id => CreateNodeView(new MidiCcNode(id, midiModel))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(OscNode.GetCategory(), OscNode.NodeName, id => CreateNodeView(new OscNode(id, oscModel))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(UpdateNode.GetCategory(), UpdateNode.NodeName, id => CreateNodeView(new UpdateNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(TimeNode.GetCategory(), TimeNode.NodeName, id => CreateNodeView(new TimeNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(ButtonNode.GetCategory(), ButtonNode.NodeName, id => CreateNodeView(new ButtonNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<AudioThresholdNode>(AudioThresholdNode.GetCategory(), AudioThresholdNode.NodeName, id => CreateNodeView(new AudioThresholdNode(id, audioMixerModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<LevelNode>(LevelNode.GetCategory(), LevelNode.NodeName, id => CreateNodeView(new LevelNode(id, audioMixerModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<BeatNode>(BeatNode.GetCategory(), BeatNode.NodeName, id => CreateNodeView(new BeatNode(id, beatModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<MidiNoteNode>(MidiNoteNode.GetCategory(), MidiNoteNode.NodeName, id => CreateNodeView(new MidiNoteNode(id, midiModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<MidiCcNode>(MidiCcNode.GetCategory(), MidiCcNode.NodeName, id => CreateNodeView(new MidiCcNode(id, midiModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<OscNode>(OscNode.GetCategory(), OscNode.NodeName, id => CreateNodeView(new OscNode(id, oscModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<UpdateNode>(UpdateNode.GetCategory(), UpdateNode.NodeName, id => CreateNodeView(new UpdateNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<TimeNode>(TimeNode.GetCategory(), TimeNode.NodeName, id => CreateNodeView(new TimeNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<ButtonNode>(ButtonNode.GetCategory(), ButtonNode.NodeName, id => CreateNodeView(new ButtonNode(id))));
 
-            nodeTemplateRepository.Add(NodeTemplate.Create(Switch2Node.GetCategory(), Switch2Node.NodeName, id => CreateNodeView(new Switch2Node(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(Switch4Node.GetCategory(), Switch4Node.NodeName, id => CreateNodeView(new Switch4Node(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(Switch16Node.GetCategory(), Switch16Node.NodeName, id => CreateNodeView(new Switch16Node(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(Switch4By4Node.GetCategory(), Switch4By4Node.NodeName, id => CreateNodeView(new Switch4By4Node(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(AndNode.GetCategory(), AndNode.NodeName, id => CreateNodeView(new AndNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(OrNode.GetCategory(), OrNode.NodeName, id => CreateNodeView(new OrNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(GateNode.GetCategory(), GateNode.NodeName, id => CreateNodeView(new GateNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(NegateNode.GetCategory(), NegateNode.NodeName, id => CreateNodeView(new NegateNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(WithNode.GetCategory(), WithNode.NodeName, id => CreateNodeView(new WithNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Switch2Node>(Switch2Node.GetCategory(), Switch2Node.NodeName, id => CreateNodeView(new Switch2Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Switch4Node>(Switch4Node.GetCategory(), Switch4Node.NodeName, id => CreateNodeView(new Switch4Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Switch16Node>(Switch16Node.GetCategory(), Switch16Node.NodeName, id => CreateNodeView(new Switch16Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Switch4By4Node>(Switch4By4Node.GetCategory(), Switch4By4Node.NodeName, id => CreateNodeView(new Switch4By4Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<AndNode>(AndNode.GetCategory(), AndNode.NodeName, id => CreateNodeView(new AndNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<OrNode>(OrNode.GetCategory(), OrNode.NodeName, id => CreateNodeView(new OrNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<GateNode>(GateNode.GetCategory(), GateNode.NodeName, id => CreateNodeView(new GateNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<NegateNode>(NegateNode.GetCategory(), NegateNode.NodeName, id => CreateNodeView(new NegateNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<WithNode>(WithNode.GetCategory(), WithNode.NodeName, id => CreateNodeView(new WithNode(id))));
 
-            nodeTemplateRepository.Add(NodeTemplate.Create(MadNode.GetCategory(), MadNode.NodeName, id => CreateNodeView(new MadNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(FloatNode.GetCategory(), FloatNode.NodeName, id => CreateNodeView(new FloatNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(Vector3Node.GetCategory(), Vector3Node.NodeName, id => CreateNodeView(new Vector3Node(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(SinNode.GetCategory(), SinNode.NodeName, id => CreateNodeView(new SinNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(CosNode.GetCategory(), CosNode.NodeName, id => CreateNodeView(new CosNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(MinNode.GetCategory(), MinNode.NodeName, id => CreateNodeView(new MinNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(MaxNode.GetCategory(), MaxNode.NodeName, id => CreateNodeView(new MaxNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(FractNode.GetCategory(), FractNode.NodeName, id => CreateNodeView(new FractNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(StepNode.GetCategory(), StepNode.NodeName, id => CreateNodeView(new StepNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Create(CircleNode.GetCategory(), CircleNode.NodeName, id => CreateNodeView(new CircleNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<MadNode>(MadNode.GetCategory(), MadNode.NodeName, id => CreateNodeView(new MadNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<FloatNode>(FloatNode.GetCategory(), FloatNode.NodeName, id => CreateNodeView(new FloatNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Vector3Node>(Vector3Node.GetCategory(), Vector3Node.NodeName, id => CreateNodeView(new Vector3Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<SinNode>(SinNode.GetCategory(), SinNode.NodeName, id => CreateNodeView(new SinNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<CosNode>(CosNode.GetCategory(), CosNode.NodeName, id => CreateNodeView(new CosNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<MinNode>(MinNode.GetCategory(), MinNode.NodeName, id => CreateNodeView(new MinNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<MaxNode>(MaxNode.GetCategory(), MaxNode.NodeName, id => CreateNodeView(new MaxNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<FractNode>(FractNode.GetCategory(), FractNode.NodeName, id => CreateNodeView(new FractNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<StepNode>(StepNode.GetCategory(), StepNode.NodeName, id => CreateNodeView(new StepNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<CircleNode>(CircleNode.GetCategory(), CircleNode.NodeName, id => CreateNodeView(new CircleNode(id))));
 
-            nodeTemplateRepository.Add(NodeTemplate.Create(HudStyleNode.GetCategory(), HudStyleNode.NodeName, id => CreateNodeView(new HudStyleNode(id, hudModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<HudStyleNode>(HudStyleNode.GetCategory(), HudStyleNode.NodeName, id => CreateNodeView(new HudStyleNode(id, hudModel))));
 
             /* Add your custom node here  */
         }
