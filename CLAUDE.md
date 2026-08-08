@@ -70,6 +70,71 @@ The main codebase is located at `/Assets/Rector/Scripts/`.
   - Check compilation errors with `unity command recompile` — see the Unity CLI
     section below
 
+### Testing Rules
+
+**Rectorの境界は「プロセス外の何を、どう掴んでいるか」で決まる。**
+Presentation / Domain のような一般的な層分けはこのプロジェクトには当てはまらない。
+ほとんどが Presentation であり、グラフの見え方に本質があるからだ。
+テストを書くかどうかは、クラスが外の世界とどう繋がっているかで決める。
+
+| | 掴み方 | 方針 | 例 |
+|---|---|---|---|
+| **A** | 外部を掴まない | EditModeテストを書く | `ISettingRow` 実装, `NodeNavigator`, `GraphSaveData`, `NodeTemplateId`, `MidiPortName`, `LayerOrderAssigner` |
+| **B** | 外部を掴むが、宛先をコンストラクタで受け取れる（ディレクトリ、ポート、prefsキー） | 偽の宛先を渡してEditModeテストを書く | `GraphSlotRepository`（`new GraphSlotRepository(directory)`） |
+| **C1** | Unityのランタイムが要る（UXMLツリー、プレイループ、レイアウト解決、ループバック通信） | PlayModeテスト、またはCLI/実機で確認する | `GraphPage`, `GraphSerializer`, `LayeredGraph`, `*View`, `OscModel` |
+| **C2** | 本物のデバイスが要る | テストを書かない。実機で確認する | `MidiInputDeviceManager`, `AudioInputStream`, `CameraManager` |
+
+- **Cに落ちたら、まず設計を疑う。** `GraphSerializer` がCなのは `GraphPage` を丸ごと
+  受け取っているからで、「Unityだからテストできない」のではなく「握りすぎ」のサイン。
+  Bへ動かせないか（宛先や協調相手をコンストラクタで受け取れないか）を先に考える。
+- **「テストが書けない」で止めない。** EditModeで書けないものはPlayModeテストで
+  書けることが多い。書かないと決めたなら、なぜ書かないのかをコメントかissueに残す。
+
+テストの書き方:
+
+- テストは**振る舞い**に対して書く。振る舞いとはクラスの責務を外から見たときの
+  期待値であって、メソッド名ではない。
+- **テスト名の主語はクラス・役割にする。メソッド名を主語にしない。**
+  良い: `Selector_CommitsOnlyOnSubmitInsideMenu`（Selectorが主語、述部が振る舞いの文）
+  悪い: `PickInDirection_Output_ReturnsFirstOutput`（メソッドが主語）
+- **テストを書くためだけにクラスや関数を切り出さない。** 切り出すなら、その境界が
+  A か B として説明できること。説明できないなら元の場所に置いたままにする。
+- 挙動を変えないリファクタで落ちるテストは書き直すか消す。**契約でない文字列を
+  アサーションに焼き込まない**（ログ文言、表示フォーマット、PlayerPrefsのキー）。
+- 同じ境界の仲間には揃ってテストがある状態を保つ（`ISettingRow` の実装なら全部）。
+
+### Comment Rules
+
+- 書くのは**コードを読んでもわからないこと**。サードパーティの仕様・罠、
+  一見不要に見える処理が必要な理由、選ばなかった選択肢とその理由。
+- **自分が直接依存していない他クラスの内部について書かない。** そのクラスが
+  変わってもコンパイラは何も言わないので確実に腐る。同じ理由を2箇所に書かない。
+- コードを読めばわかることは書かない。セクションラベル（`// logger` の直下に
+  `RectorLogger...`）や `// 初期化` の類は消す。
+- TODO/FIXME を残すならissue番号を添える。添えられないなら消す。
+- 模範例:
+  - `Osc/OscModel.cs` — ABBAデッドロックの回避理由、受信スレッドの制約
+  - `Editor/BuildSceneSetupRestorer.cs` — パッケージのバグと、回避をここに置いた理由
+  - `UI/Graphs/Serialization/GraphSaveData.cs` — JsonUtility が空のキーを無視する罠
+  - `UI/GraphPages/InputGuideView.cs` — フォントにグリフが無いので別のコードポイントを使う
+
+### Structural Conventions
+
+守られていて効いているもの。崩さないこと。
+
+- **名前空間 = フォルダ。例外なし。**
+- **`UI/` の外から `UI/` に依存しない。** `Audio`/`Midi`/`Osc`/`Cameras`/`Vfx` は
+  上を見ない。共有したい語彙（`NodeCategory` など）はルート名前空間 `Rector` に置く。
+- **入力ソースの型**（Audio/Midi/Osc で3回反復されている）:
+  `XxxInputDeviceManager` がデバイスハンドルと `PlayerPrefs` を持ち、
+  `XxxModel` が `IInitializable, IDisposable` でR3ストリームを公開し、
+  UIは Model しか見ない。次の入力ソースもこの型に従う。
+- **`IInitializable` + `RectorInstaller.Register<T>`** で寿命を揃える。
+  ただし `LayeredGraph` には実行時に足したノード用の別のディスパッチャがある
+  （同じインターフェースだが別のライフサイクル）。
+- ノードは `public const string NodeName` + `static GetCategory()` を持ち、
+  `NodeTemplateRegisterer` の登録行が導出できる形にする。
+
 ### Async/Await Guidelines
 - **Never use `async void`** - Use `UniTaskVoid` instead
   - Exception: Unity event handlers that must be `async void`
