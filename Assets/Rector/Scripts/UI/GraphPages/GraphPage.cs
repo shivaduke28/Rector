@@ -357,10 +357,14 @@ namespace Rector.UI.GraphPages
         /// <summary>
         /// ターゲットをソースに引き継いでスロット選択へ移る。ターゲット選択中の△/Cで、
         /// ソース選択まで戻らずに、いま指しているノードから続けて次のエッジを張るための操作。
+        /// 昇格後のスロットは昇格前のソーススロットと同じ向きに揃える。A.out→B.inと繋いだ流れなら
+        /// 昇格後もoutputを指すので、B→CをCONTINUEの連打だけで伸ばせる。
         /// </summary>
         /// <remarks>
         /// Target系のクリアはセッターを通さない。SetTargetNode(null)は旧SelectedNodeへ視点を
         /// 戻してしまうため。代わりにIsTargetはここで明示的に降ろす(降ろし忘れると表示が残留する)。
+        /// 途中で抜けるとIsTargetが残留するので、早期returnは状態を書き換える前に済ませること。
+        /// 向きの読み取りもSelectSlotより前に。SelectSlotは旧SelectedSlotを潰す。
         /// </remarks>
         public void PromoteTargetToSource()
         {
@@ -370,25 +374,31 @@ namespace Rector.UI.GraphPages
                     {
                         // CLIからStateを直接動かされた場合に備えてnullを弾く
                         if (TargetNode is not { } target) return;
-                        if (target.InputSlotCount == 0 && target.OutputSlotCount == 0) return;
+                        var node = target.NodeView.Node;
+                        // SelectedSlotが無いのもCLI経由の異常系。従来通りinput優先に倒す
+                        var direction = SelectedSlot?.Direction ?? SlotDirection.Input;
+                        if (SlotNavigator.PickInDirection(direction, node.InputSlots, node.OutputSlots) is not { } next) return;
 
-                        target.NodeView.Node.IsTarget.Value = false;
+                        node.IsTarget.Value = false;
                         TargetNode = null;
                         SelectNode(target);
-                        SelectSlot(target.InputSlotCount > 0 ? target.NodeView.Node.InputSlots[0] : target.NodeView.Node.OutputSlots[0]);
+                        SelectSlot(next);
                         State.Value = GraphPageState.SlotSelection;
                         break;
                     }
                 case GraphPageState.TargetSlotSelection:
                     {
                         if (TargetNode is not { } target || TargetSlot is not { } targetSlot) return;
+                        var node = target.NodeView.Node;
+                        var direction = SelectedSlot?.Direction ?? targetSlot.Direction;
+                        var next = SlotNavigator.PickInDirection(direction, node.InputSlots, node.OutputSlots) ?? targetSlot;
 
-                        target.NodeView.Node.IsTarget.Value = false;
+                        node.IsTarget.Value = false;
                         targetSlot.IsTarget.Value = false;
                         TargetNode = null;
                         TargetSlot = null;
                         SelectNode(target);
-                        SelectSlot(targetSlot);
+                        SelectSlot(next);
                         State.Value = GraphPageState.SlotSelection;
                         break;
                     }
