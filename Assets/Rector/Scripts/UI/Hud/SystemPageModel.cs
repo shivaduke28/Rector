@@ -11,6 +11,7 @@ namespace Rector.UI.Hud
         int index;
 
         readonly AudioInputDevicePageModel audioInputDevicePageModel;
+        readonly MidiInputDevicePageModel midiInputDevicePageModel;
         readonly DisplaySettingsPageModel displaySettingsPageModel;
         readonly GraphSettingsPageModel graphSettingsPageModel;
         readonly CopyrightNoticesPageModel copyrightNoticesPageModel;
@@ -20,6 +21,7 @@ namespace Rector.UI.Hud
 
         public SystemPageModel(
             AudioInputDevicePageModel audioInputDevicePageModel,
+            MidiInputDevicePageModel midiInputDevicePageModel,
             DisplaySettingsPageModel displaySettingsPageModel,
             GraphSettingsPageModel graphSettingsPageModel,
             CopyrightNoticesPageModel copyrightNoticesPageModel,
@@ -27,6 +29,7 @@ namespace Rector.UI.Hud
         )
         {
             this.audioInputDevicePageModel = audioInputDevicePageModel;
+            this.midiInputDevicePageModel = midiInputDevicePageModel;
             this.displaySettingsPageModel = displaySettingsPageModel;
             this.graphSettingsPageModel = graphSettingsPageModel;
             this.copyrightNoticesPageModel = copyrightNoticesPageModel;
@@ -34,6 +37,7 @@ namespace Rector.UI.Hud
             buttons = new RectorButtonState[]
             {
                 new("Audio Settings", ShowAudioSettings),
+                new("MIDI Settings", ShowMidiSettings),
                 new("Display Settings", ShowDisplaySettings),
                 new("Graph Settings", ShowGraphSettings),
                 new("Copyright Notices", ShowCopyrightNotices),
@@ -89,6 +93,12 @@ namespace Rector.UI.Hud
         {
             isVisible.Value = false;
             audioInputDevicePageModel.Enter(Resume);
+        }
+
+        void ShowMidiSettings()
+        {
+            isVisible.Value = false;
+            midiInputDevicePageModel.Enter(Resume);
         }
 
         void ShowDisplaySettings()

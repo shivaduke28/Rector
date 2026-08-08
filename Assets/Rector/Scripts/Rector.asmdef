@@ -11,6 +11,7 @@
         "R3.Unity",
         "Lasp.Runtime",
         "Minis",
+        "RtMidi.Runtime",
         "Unity.Pipeline"
     ],
     "includePlatforms": [],

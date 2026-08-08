@@ -36,6 +36,9 @@
             <engine:VisualElement name="audio-input-device-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
+            <engine:VisualElement name="midi-input-device-page" class="rector-page">
+                <engine:VisualElement name="left-list" class="rector-button-list" />
+            </engine:VisualElement>
             <engine:VisualElement name="display-settings-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
