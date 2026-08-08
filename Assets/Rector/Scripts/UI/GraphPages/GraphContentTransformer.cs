@@ -13,7 +13,6 @@ namespace Rector.UI.GraphPages
         readonly VisualElement content;
         readonly GraphInputAction graphInputAction;
         readonly GroupGuideView groupGuideView;
-        readonly GraphViewSettings viewSettings;
         readonly CompositeDisposable disposable = new();
 
         public const string AnimationClassName = "rector-graph-content-animation";
@@ -21,7 +20,6 @@ namespace Rector.UI.GraphPages
         float currentScale = 1f;
         const float MaxScale = 4f;
         const float MinScale = 0.5f;
-        Vector2 offset;
 
         // Lock(L2/Tab)ホールド中のアンカー追従。押した瞬間のフォーカスノードの画面位置を
         // アンカーとして記憶し、ホールド中はフォーカスノードがそこに来るように追従する。
@@ -47,16 +45,13 @@ namespace Rector.UI.GraphPages
         // 加減算で読み戻さずに済むよう平行移動量を保持する。
         Vector2 translation;
 
-        Vector2 MaskSizeHalf => new(mask.resolvedStyle.width * 0.5f, mask.resolvedStyle.height * 0.5f);
-
         public GraphContentTransformer(VisualElement mask, VisualElement content, GraphInputAction graphInputAction,
-            GroupGuideView groupGuideView, GraphViewSettings viewSettings)
+            GroupGuideView groupGuideView)
         {
             this.mask = mask;
             this.content = content;
             this.graphInputAction = graphInputAction;
             this.groupGuideView = groupGuideView;
-            this.viewSettings = viewSettings;
         }
 
         public void Initialize()
@@ -103,7 +98,6 @@ namespace Rector.UI.GraphPages
         {
             DisableAnimation();
             currentScale = 1f;
-            offset = Vector2.zero;
             SetTranslation(ResetTranslation);
             content.style.scale = Vector3.one;
             // ロック中のリセットは、リセット後の位置を新しいアンカーとして追認する。
@@ -173,7 +167,6 @@ namespace Rector.UI.GraphPages
         {
             var delta = new Vector2(translate.x, -translate.y) * 10f;
             SetTranslation(translation + delta);
-            offset += delta;
             // ロック中の手動パンはアンカーごと動かす(次のフォーカス移動と喧嘩させない)
             if (lockNode != null)
             {
@@ -200,30 +193,25 @@ namespace Rector.UI.GraphPages
             lockNode = null;
         }
 
-        public void MoveContentToMakeNodeVisible(LayeredNode node)
+        /// <summary>
+        /// フォーカスの移動をロック追従へ伝える。ロック(L2/Tab)を握っていなければ何もしない。
+        /// </summary>
+        public void FollowLockedNode(LayeredNode node)
         {
-            if (lockHeld)
-            {
-                if (lockNode == null)
-                {
-                    // フォーカス無しでロックを握り、後からノードを選んだ。画面は動かさず
-                    // そのノードのいまの位置をアンカーにする
-                    lockNode = node;
-                    RederiveLockAnchor();
-                    return;
-                }
+            if (!lockHeld) return;
 
-                // 新しいフォーカスがアンカー位置に来るように追従する(常時追従の設定より優先)
+            if (lockNode == null)
+            {
+                // フォーカス無しでロックを握り、後からノードを選んだ。画面は動かさず
+                // そのノードのいまの位置をアンカーにする
                 lockNode = node;
-                SetTranslation(lockAnchor - node.TargetPosition * currentScale);
+                RederiveLockAnchor();
                 return;
             }
 
-            if (!viewSettings.FollowSelectedNode.CurrentValue) return;
-
-            // left-top
-            var nodePosition = node.TargetPosition * currentScale;
-            SetTranslation(-nodePosition + MaskSizeHalf + offset);
+            // 新しいフォーカスがアンカー位置に来るように追従する
+            lockNode = node;
+            SetTranslation(lockAnchor - node.TargetPosition * currentScale);
         }
 
         public void Dispose()
