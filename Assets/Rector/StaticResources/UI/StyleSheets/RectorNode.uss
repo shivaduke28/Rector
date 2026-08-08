@@ -15,7 +15,14 @@
 
 .rector-node-content {
     flex-direction: row;
-    background-color: var(--rector-text-background-color);
+    /* ラベルが .rector-label で同じ黒0.2を重ねていてテキスト側だけ濃かったので、下地はここ1枚に集約する。
+       0.36 は黒0.2を2枚重ねた合成値 (1 - 0.8 * 0.8) */
+    background-color: rgba(0, 0, 0, 0.36);
+}
+
+/* .rector-label(RectorCommon) の背景を消す。同スペシフィシティだとそちらが勝つので子セレクタで上書きする */
+.rector-node-content > .rector-node-name-label {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .rector-node-icon {
