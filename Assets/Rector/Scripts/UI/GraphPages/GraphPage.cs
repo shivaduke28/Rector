@@ -174,7 +174,7 @@ namespace Rector.UI.GraphPages
 
             holdGuideView.Bind(holdGuideModel).AddTo(disposable);
             nodeParameterView.Bind(nodeParameterModel).AddTo(disposable);
-            inputGuideView.Bind(State, graphInputAction.GrabModifierHeld, graphInputAction.LockHeld, GuideSettings.Visible).AddTo(disposable);
+            inputGuideView.Bind(State, graphInputAction.GrabModifierHeld, graphInputAction.LockHeld, GuideSettings.Mode).AddTo(disposable);
 
             // SortでNodeViewのWidthを使用するので1F待機する
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate)
