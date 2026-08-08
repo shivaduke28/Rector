@@ -37,7 +37,6 @@ namespace Rector.UI.GraphPages
 
         public readonly LayeredGraph Graph;
         public readonly NodeGroups Groups = new();
-        public readonly GraphViewSettings ViewSettings = new();
 
         readonly CreateNodeMenuModel createNodeMenuModel;
         readonly CreateNodeMenuView createNodeMenuView;
@@ -81,7 +80,7 @@ namespace Rector.UI.GraphPages
                 () => State.Value = GraphPageState.NodeSelection);
             graphContent1.Add(holdGuideView);
             groupGuideView = new GroupGuideView(graphMask1.Q<VisualElement>(GroupGuideView.RootName), Groups);
-            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView, ViewSettings);
+            graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
             graphSorter = new GraphSorter(Graph, Groups);
@@ -146,27 +145,18 @@ namespace Rector.UI.GraphPages
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
             graphInputAction.MoveGroup.Subscribe(x => CurrentInputHandler.MoveGroup(x)).AddTo(disposable);
-            graphInputAction.NavigateInGroup.Subscribe(x => CurrentInputHandler.NavigateInGroup(x)).AddTo(disposable);
             graphInputAction.MoveNodeToGroup.Subscribe(x => CurrentInputHandler.MoveNodeToGroup(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
             graphInputAction.AddNode.Subscribe(_ => CurrentInputHandler.AddNode()).AddTo(disposable);
             graphInputAction.Mute.Subscribe(_ => CurrentInputHandler.Mute()).AddTo(disposable);
-            // L1+R1のミュートはターゲット選択中には流さない。L1を握ったままR1で差し替え接続の
-            // 構えに入る指の流れで、ターゲットを誤ミュートしないため(キーボードVは従来通り届く)。
-            graphInputAction.MuteChord
-                .Where(_ => State.Value is not (GraphPageState.TargetNodeSelection or GraphPageState.TargetSlotSelection))
-                .Subscribe(_ => CurrentInputHandler.Mute()).AddTo(disposable);
-            // ロックは押した瞬間に現在のフォーカスへ寄せる。以後の追従は
-            // MoveContentToMakeNodeVisibleの既存呼び出し(選択・ターゲット変更時)が拾う。
-            graphInputAction.LockStarted.Subscribe(_ =>
-            {
-                if (GetFocusNodeForCurrentState() is { } focus)
-                {
-                    graphContentTransformer.MoveContentToMakeNodeVisible(focus);
-                }
-            }).AddTo(disposable);
+            // ロックは押した瞬間の画面位置をアンカーにする(中央へは寄せない)。以後の追従は
+            // FollowLockedNodeの既存呼び出し(選択・ターゲット変更時)が拾う。
+            graphInputAction.LockStarted
+                .Subscribe(_ => graphContentTransformer.BeginLockFollow(GetFocusNodeForCurrentState())).AddTo(disposable);
+            graphInputAction.LockEnded
+                .Subscribe(_ => graphContentTransformer.EndLockFollow()).AddTo(disposable);
             graphInputAction.OpenNodeParameter.Subscribe(_ => CurrentInputHandler.OpenNodeParameter()).AddTo(disposable);
             graphInputAction.CloseNodeParameter.Subscribe(_ => CurrentInputHandler.CloseNodeParameter()).AddTo(disposable);
             graphInputAction.RemoveNode.Subscribe(x => CurrentInputHandler.RemoveNode(x)).AddTo(disposable);
@@ -243,7 +233,7 @@ namespace Rector.UI.GraphPages
             if (node != null)
             {
                 node.NodeView.Node.Selected.Value = true;
-                graphContentTransformer.MoveContentToMakeNodeVisible(node);
+                graphContentTransformer.FollowLockedNode(node);
             }
 
             SelectedNode = node;
@@ -275,11 +265,11 @@ namespace Rector.UI.GraphPages
             if (node != null)
             {
                 node.NodeView.Node.Selected.Value = true;
-                graphContentTransformer.MoveContentToMakeNodeVisible(node);
+                graphContentTransformer.FollowLockedNode(node);
             }
             else if (SelectedNode is not null)
             {
-                graphContentTransformer.MoveContentToMakeNodeVisible(SelectedNode);
+                graphContentTransformer.FollowLockedNode(SelectedNode);
             }
 
             TargetNode = node;
@@ -306,7 +296,7 @@ namespace Rector.UI.GraphPages
         /// <remarks>
         /// SelectNode を SetTargetNode より先に呼ぶこと。逆にすると SetTargetNode(null) の
         /// else 分岐が、これから外す（あるいは削除する）SelectedNode に向けて
-        /// MoveContentToMakeNodeVisible してしまう。
+        /// FollowLockedNode してしまう。
         /// </remarks>
         public void EnterNodeSelection(LayeredNode? node)
         {
@@ -474,7 +464,7 @@ namespace Rector.UI.GraphPages
 
             if (GetFocusNodeForCurrentState() is { } focus)
             {
-                graphContentTransformer.MoveContentToMakeNodeVisible(focus);
+                graphContentTransformer.FollowLockedNode(focus);
             }
         }
 

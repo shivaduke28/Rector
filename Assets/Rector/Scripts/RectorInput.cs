@@ -175,16 +175,6 @@ namespace Rector
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""NavModifier"",
-                    ""type"": ""Button"",
-                    ""id"": ""80adc06a-a353-4f9f-ba4e-33bf59dcefaa"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true,
-                    ""priority"": 0
-                },
-                {
                     ""name"": ""GrabModifier"",
                     ""type"": ""Button"",
                     ""id"": ""42602014-d6ee-4fa8-be7f-5de191d1a6db"",
@@ -553,28 +543,6 @@ namespace Rector
                 },
                 {
                     ""name"": """",
-                    ""id"": ""19a43804-cd1c-49c8-bd19-2f5f90f907b1"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""NavModifier"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c610c862-d97f-4805-9c9a-46c1aa507aca"",
-                    ""path"": ""<Keyboard>/alt"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""NavModifier"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""20f8af16-4d2c-48ef-9662-510ea1664d47"",
                     ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
@@ -621,6 +589,17 @@ namespace Rector
                     ""name"": """",
                     ""id"": ""d6c9b53e-cdb8-45d5-a10d-19b5fb3223d9"",
                     ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mute"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ada450f2-a095-4e98-92b3-8af97af5fa5d"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -1248,7 +1227,6 @@ namespace Rector
             m_Graph_AddNode = m_Graph.FindAction("AddNode", throwIfNotFound: true);
             m_Graph_RemoveEdge = m_Graph.FindAction("RemoveEdge", throwIfNotFound: true);
             m_Graph_RemoveNode = m_Graph.FindAction("RemoveNode", throwIfNotFound: true);
-            m_Graph_NavModifier = m_Graph.FindAction("NavModifier", throwIfNotFound: true);
             m_Graph_GrabModifier = m_Graph.FindAction("GrabModifier", throwIfNotFound: true);
             m_Graph_Lock = m_Graph.FindAction("Lock", throwIfNotFound: true);
             m_Graph_Mute = m_Graph.FindAction("Mute", throwIfNotFound: true);
@@ -1357,7 +1335,6 @@ namespace Rector
         private readonly InputAction m_Graph_AddNode;
         private readonly InputAction m_Graph_RemoveEdge;
         private readonly InputAction m_Graph_RemoveNode;
-        private readonly InputAction m_Graph_NavModifier;
         private readonly InputAction m_Graph_GrabModifier;
         private readonly InputAction m_Graph_Lock;
         private readonly InputAction m_Graph_Mute;
@@ -1410,10 +1387,6 @@ namespace Rector
             /// Provides access to the underlying input action "Graph/RemoveNode".
             /// </summary>
             public InputAction @RemoveNode => m_Wrapper.m_Graph_RemoveNode;
-            /// <summary>
-            /// Provides access to the underlying input action "Graph/NavModifier".
-            /// </summary>
-            public InputAction @NavModifier => m_Wrapper.m_Graph_NavModifier;
             /// <summary>
             /// Provides access to the underlying input action "Graph/GrabModifier".
             /// </summary>
@@ -1500,9 +1473,6 @@ namespace Rector
                 @RemoveNode.started += instance.OnRemoveNode;
                 @RemoveNode.performed += instance.OnRemoveNode;
                 @RemoveNode.canceled += instance.OnRemoveNode;
-                @NavModifier.started += instance.OnNavModifier;
-                @NavModifier.performed += instance.OnNavModifier;
-                @NavModifier.canceled += instance.OnNavModifier;
                 @GrabModifier.started += instance.OnGrabModifier;
                 @GrabModifier.performed += instance.OnGrabModifier;
                 @GrabModifier.canceled += instance.OnGrabModifier;
@@ -1565,9 +1535,6 @@ namespace Rector
                 @RemoveNode.started -= instance.OnRemoveNode;
                 @RemoveNode.performed -= instance.OnRemoveNode;
                 @RemoveNode.canceled -= instance.OnRemoveNode;
-                @NavModifier.started -= instance.OnNavModifier;
-                @NavModifier.performed -= instance.OnNavModifier;
-                @NavModifier.canceled -= instance.OnNavModifier;
                 @GrabModifier.started -= instance.OnGrabModifier;
                 @GrabModifier.performed -= instance.OnGrabModifier;
                 @GrabModifier.canceled -= instance.OnGrabModifier;
@@ -1864,13 +1831,6 @@ namespace Rector
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnRemoveNode(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "NavModifier" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnNavModifier(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "GrabModifier" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

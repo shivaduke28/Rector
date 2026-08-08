@@ -16,10 +16,10 @@ namespace Rector.UI.GraphPages
         }
 
         /// <remarks>
-        /// フォーカスの移動はグループを跨ぐ。グループ内に閉じるとグループを跨いだ確認がしづらい。
+        /// エッジは辿らず、視覚的な近さだけで行き先が決まる。
         /// 左右はグループ内の行を歩き、グループの端まで来たら隣のグループの最近傍へ入る。
-        /// グループ内に閉じた移動は NavModifier(L1) 側の別経路
-        /// (<see cref="FindHorizontalInSameGroup"/> / <see cref="FindVerticalInSameGroup"/>)。
+        /// 上下はグループ内のレイヤー跨ぎを優先し、グループ内に縦の相手がいないときだけ
+        /// 他グループも含めて近いレイヤーのノードへ移動する。
         /// </remarks>
         public LayeredNode SelectNextNode(LayeredNode current, Vector2 input)
         {
@@ -56,38 +56,17 @@ namespace Rector.UI.GraphPages
                 return FindHorizontalInSameGroup(current, step) ?? current;
             }
 
+            // 上下はまずグループ内のレイヤー跨ぎ。エッジは辿らない(視覚的な近さで行き先が決まる)。
             var up = direction == Direction.Up;
-
-            // REMARK: Parents/Children はSortを実行しないと値が入らない情報なのに注意
-            // Dummy Nodeを加味しているのでOfTypeでフィルタをする必要がある
-            // グループを跨ぐエッジはParents/Childrenに入らないので、まずは同一グループの親子から探す
-            var neighbor = (up ? current.Parents : current.Children)
-                .Select(t => t.Node)
-                .OfType<LayeredNode>()
-                .OrderBy(x => Mathf.Abs(x.TargetPosition.x - current.TargetPosition.x))
-                .FirstOrDefault();
-            if (neighbor != null)
-            {
-                return neighbor;
-            }
-
-            // グループを跨ぐエッジはParents/Childrenに入らないので、生のエッジ列から実の親子を辿る
-            var crossing = FindAcrossGroups(current, up);
-            if (crossing != null)
-            {
-                return crossing;
-            }
-
-            // つながりが無いときは空間的に近いノードへ。まず同グループ内を優先し、
-            // いなければ全グループから探す(上下移動で気づいたら隣のグループに居る事故を防ぐ)。
             var inGroup = FindVerticalInSameGroup(current, up);
             if (inGroup != null)
             {
                 return inGroup;
             }
 
-            // 隣のレイヤーで一番x座標が近いノードに移動する。ノードのないレイヤーは飛ばす。
-            for (var i = 0; i < layers.Count; i++)
+            // グループ内に縦の相手がいなければ、他グループも含めて隣のレイヤーから順に
+            // x座標が一番近いノードへ移動する。ノードのないレイヤーは飛ばす。
+            for (var i = 0; i < layers.Count - 1; i++)
             {
                 currentLayerIndex = (currentLayerIndex + (up ? -1 : 1) + layers.Count) % layers.Count;
                 var candidate = layers[currentLayerIndex]
@@ -107,7 +86,7 @@ namespace Rector.UI.GraphPages
         /// 同じグループ内だけで、同じ行(レイヤー)の隣のノードを返す。グループ内の端まで
         /// 行ったらグループ内の反対端へ回り込む。行内に自分しかいなければnull。
         /// </summary>
-        public LayeredNode FindHorizontalInSameGroup(LayeredNode current, int direction)
+        LayeredNode FindHorizontalInSameGroup(LayeredNode current, int direction)
         {
             var row = graph.Layers[current.Layer];
             var group = groups.Fold(current.Group);
@@ -131,7 +110,7 @@ namespace Rector.UI.GraphPages
         /// いる最初のレイヤーでx座標が一番近いノードを返す。端まで行ったら反対側の端へ
         /// 回り込む。いなければnull。
         /// </summary>
-        public LayeredNode FindVerticalInSameGroup(LayeredNode current, bool up)
+        LayeredNode FindVerticalInSameGroup(LayeredNode current, bool up)
         {
             var layers = graph.Layers;
             var group = groups.Fold(current.Group);
@@ -155,29 +134,6 @@ namespace Rector.UI.GraphPages
             }
 
             return null;
-        }
-
-        LayeredNode FindAcrossGroups(LayeredNode current, bool up)
-        {
-            LayeredNode nearest = null;
-            var nearestDistance = float.MaxValue;
-
-            foreach (var edge in up ? current.EdgesToParent : current.EdgesToChild)
-            {
-                var e = edge.EdgeView.Edge;
-                var nodeId = up ? e.OutputSlot.NodeId : e.InputSlot.NodeId;
-                if (!graph.TryGetNode(nodeId, out var node)) continue;
-                if (groups.Fold(node.Group) == groups.Fold(current.Group)) continue;
-
-                var distance = Mathf.Abs(node.TargetPosition.x - current.TargetPosition.x);
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearest = node;
-                }
-            }
-
-            return nearest;
         }
 
         /// <summary>

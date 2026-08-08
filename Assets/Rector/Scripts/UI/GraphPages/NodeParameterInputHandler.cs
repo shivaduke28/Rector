@@ -19,7 +19,7 @@ namespace Rector.UI.GraphPages
         public override void CloseNodeParameter() => view.CloseNodeParameter();
         public override void Cancel() => view.CloseNodeParameter();
 
-        // パネルを開いたままL1を重ねたミュート(MuteChord)がここに届く
+        // パネル表示中のミュート(L1/V)がここに届く
         public override void Mute() => graphPage.ToggleMute(graphPage.SelectedNode);
     }
 }
