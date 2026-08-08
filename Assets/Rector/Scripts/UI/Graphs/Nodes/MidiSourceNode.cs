@@ -10,7 +10,7 @@ namespace Rector.UI.Graphs.Nodes
     /// </summary>
     public abstract class MidiSourceNode : SourceNode, IDisposable
     {
-        public static NodeCategory GetCategory() => NodeCategory.Midi;
+        public static NodeCategory GetCategory() => NodeCategory.MIDI;
         public override NodeCategory Category => GetCategory();
 
         protected readonly IntInput NumberInput;

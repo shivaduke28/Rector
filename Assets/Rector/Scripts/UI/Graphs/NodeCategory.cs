@@ -9,6 +9,6 @@ namespace Rector.UI.Graphs
         Math,
         Scene,
         System,
-        Midi
+        MIDI
     }
 }
