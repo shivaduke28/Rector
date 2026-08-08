@@ -3,40 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using R3;
 using Rector.Audio;
+using Rector.UI.Settings;
 
 namespace Rector.UI.Hud
 {
-    public sealed class AudioInputDevicePageModel : IInitializable, IDisposable, IButtonListPageModel
+    public sealed class AudioInputDevicePageModel : IInitializable, IDisposable, ISettingsPageModel
     {
         readonly ReactiveProperty<bool> isVisible = new(false);
         readonly AudioInputDeviceManager audioInputDeviceManager;
-        readonly ButtonListPageView view;
-        readonly List<RectorButtonState> buttons = new();
-        readonly SerialDisposable enterDisposable = new();
+        readonly SettingsPageView view;
+
+        // 1つだけ選ぶ設定なので、送るたびに入力が切り替わらないメニュー行にする
+        readonly SelectorRowState deviceRow;
+        readonly ISettingRow[] rows;
+
+        /// <summary>行の候補と対で持つ。確定したインデックスから実体を引く。</summary>
+        readonly List<AudioInputDeviceInfo> devices = new();
+
         readonly CompositeDisposable disposable = new();
         Action onExit;
 
-        ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
-        IEnumerable<RectorButtonState> IButtonListPageModel.GetButtons() => buttons;
-
-        int index;
+        ReadOnlyReactiveProperty<bool> ISettingsPageModel.IsVisible => isVisible;
+        IReadOnlyList<ISettingRow> ISettingsPageModel.GetRows() => rows;
 
         public AudioInputDevicePageModel(AudioInputDeviceManager audioInputDeviceManager,
-            ButtonListPageView view)
+            SettingsPageView view)
         {
             this.audioInputDeviceManager = audioInputDeviceManager;
             this.view = view;
+
+            deviceRow = new SelectorRowState("Input Device", Select);
+            rows = new ISettingRow[] { deviceRow };
         }
 
         public void Enter(Action onExitAction)
         {
             RefreshDevices();
-
-            index = 0;
-            if (buttons.Count > 0)
-            {
-                buttons[index].IsFocused.Value = true;
-            }
 
             onExit = onExitAction;
             isVisible.Value = true;
@@ -49,49 +51,36 @@ namespace Rector.UI.Hud
 
         void RefreshDevices()
         {
-            buttons.Clear();
-            var d = new CompositeDisposable();
-            foreach (var inputDevice in audioInputDeviceManager.GetInputDevices().OrderBy(x => x.Name))
+            devices.Clear();
+            devices.AddRange(audioInputDeviceManager.GetInputDevices().OrderBy(x => x.Name));
+
+            // 入力デバイスが無いのは起こり得る。空のページだと壊れたのと区別が付かない
+            if (devices.Count == 0)
             {
-                var button = new RectorButtonState(inputDevice.Name, () => audioInputDeviceManager.SwitchDevice(inputDevice));
-                buttons.Add(button);
-                audioInputDeviceManager.CurrentInputDevice
-                    .Where(x => x.IsValid)
-                    .Subscribe(currentDevice => button.IsHighlighted.Value = currentDevice.Equals(inputDevice))
-                    .AddTo(d);
+                deviceRow.SetOptions(new[] { "None" }, 0);
+                return;
             }
 
-            enterDisposable.Disposable = d;
+            var current = audioInputDeviceManager.CurrentInputDevice.CurrentValue;
+            deviceRow.SetOptions(
+                devices.Select(x => x.Name).ToArray(),
+                current.IsValid ? devices.IndexOf(current) : -1);
         }
 
-        void IButtonListPageModel.Submit()
+        void Select(int index)
         {
-            if (buttons.Count == 0) return;
-            buttons[index].OnClick();
+            if (index < 0 || index >= devices.Count) return;
+
+            audioInputDeviceManager.SwitchDevice(devices[index]);
         }
 
-        void IButtonListPageModel.Cancel()
+        void ISettingsPageModel.Cancel()
         {
-            enterDisposable.Disposable = null;
             isVisible.Value = false;
             onExit?.Invoke();
+            onExit = null;
         }
 
-        void IButtonListPageModel.Navigate(bool next)
-        {
-            if (buttons.Count == 0) return;
-            buttons[index].IsFocused.Value = false;
-
-            index += next ? 1 : -1;
-            index = (index + buttons.Count) % buttons.Count;
-
-            buttons[index].IsFocused.Value = true;
-        }
-
-        void IDisposable.Dispose()
-        {
-            enterDisposable.Dispose();
-            disposable.Dispose();
-        }
+        void IDisposable.Dispose() => disposable.Dispose();
     }
 }

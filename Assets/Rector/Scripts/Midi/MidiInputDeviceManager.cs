@@ -61,11 +61,15 @@ namespace Rector.Midi
         {
             if (string.IsNullOrEmpty(portName)) return;
 
-            var isSelected = !selected.Remove(portName);
-            if (isSelected)
-            {
-                selected.Add(portName);
-            }
+            SetSelected(portName, !selected.Contains(portName));
+        }
+
+        public void SetSelected(string portName, bool isSelected)
+        {
+            if (string.IsNullOrEmpty(portName)) return;
+
+            var changed = isSelected ? selected.Add(portName) : selected.Remove(portName);
+            if (!changed) return;
 
             Publish();
             PlayerPrefs.SetString(PrefsKey, string.Join(Separator, selected));

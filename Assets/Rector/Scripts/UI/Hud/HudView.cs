@@ -25,10 +25,10 @@ namespace Rector.UI.Hud
         public GraphPage GraphPage { get; }
         public ButtonListPageView ScenePageView { get; }
         public ButtonListPageView SystemPageView { get; }
-        public ButtonListPageView AudioInputDevicePageView { get; }
-        public ButtonListPageView MidiInputDevicePageView { get; }
-        public ButtonListPageView DisplaySettingsPageView { get; }
-        public ButtonListPageView GraphSettingsPageView { get; }
+        public SettingsPageView AudioInputDevicePageView { get; }
+        public SettingsPageView MidiInputDevicePageView { get; }
+        public SettingsPageView DisplaySettingsPageView { get; }
+        public SettingsPageView GraphSettingsPageView { get; }
         public CopyrightNoticesPageView CopyrightNoticesPageView { get; }
 
         public HudView(VisualElement root, UIInputAction uiInputAction, GraphInputAction graphInputAction, NodeTemplateRepository nodeTemplateRepository)
@@ -51,10 +51,10 @@ namespace Rector.UI.Hud
             GraphPage = new GraphPage(root.Q<VisualElement>("graph-page"), graphInputAction, nodeTemplateRepository);
             ScenePageView = new ButtonListPageView(root.Q<VisualElement>("scene-page"), uiInputAction);
             SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInputAction);
-            AudioInputDevicePageView = new ButtonListPageView(root.Q<VisualElement>("audio-input-device-page"), uiInputAction);
-            MidiInputDevicePageView = new ButtonListPageView(root.Q<VisualElement>("midi-input-device-page"), uiInputAction);
-            DisplaySettingsPageView = new ButtonListPageView(root.Q<VisualElement>("display-settings-page"), uiInputAction);
-            GraphSettingsPageView = new ButtonListPageView(root.Q<VisualElement>("graph-settings-page"), uiInputAction);
+            AudioInputDevicePageView = new SettingsPageView(root.Q<VisualElement>("audio-input-device-page"), uiInputAction);
+            MidiInputDevicePageView = new SettingsPageView(root.Q<VisualElement>("midi-input-device-page"), uiInputAction);
+            DisplaySettingsPageView = new SettingsPageView(root.Q<VisualElement>("display-settings-page"), uiInputAction);
+            GraphSettingsPageView = new SettingsPageView(root.Q<VisualElement>("graph-settings-page"), uiInputAction);
             CopyrightNoticesPageView = new CopyrightNoticesPageView(root.Q<VisualElement>("copyright-notices-page"), uiInputAction);
         }
 
