@@ -169,6 +169,8 @@
     position: absolute;
     top: 0;
     bottom: 0;
+    /* Labelの既定margin(2px)を消して縦センターを正確にする */
+    margin: 0;
     -unity-text-align: middle-center;
     font-size: 12px;
     color: var(--rector-text-color);

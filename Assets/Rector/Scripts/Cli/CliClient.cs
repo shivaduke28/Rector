@@ -339,6 +339,8 @@ namespace Rector.Cli
             name = slot.Name,
             type = slot.Type.ToString(),
             connected = slot.ConnectedCount,
+            selected = slot.Selected.Value,
+            isTarget = slot.IsTarget.Value,
         };
 
         static object Failure(string code, string message) => new { success = false, error = code, message };

@@ -106,8 +106,10 @@ namespace Rector.UI.Graphs.Nodes
             Root.EnableInClassList(NodeGrabbedClassName, grabbed);
             if (grabbed)
             {
-                // 点滅はUSSのopacityトランジションと組み合わせて柔らかく明滅させる
-                grabBlinkVisible = true;
+                // 点滅はUSSのopacityトランジションと組み合わせて柔らかく明滅させる。
+                // スケジューラの初回tickは位相がずれて即発火することがあるので、
+                // falseから始めて最初のtickが「表示」側に倒れるようにする
+                grabBlinkVisible = false;
                 SetGrabArrowOpacity(1f);
                 grabBlinkItem ??= Root.schedule.Execute(BlinkGrabArrows).Every(GrabBlinkIntervalMs);
                 grabBlinkItem.Resume();
@@ -130,7 +132,13 @@ namespace Rector.UI.Graphs.Nodes
             rightGrabArrow.style.opacity = value;
         }
 
-        public void Dispose() => Disposables.Dispose();
+        public void Dispose()
+        {
+            // 現状はRemoveFrom→Disposeの順で呼ばれてパネルから外れた時点で止まるが、
+            // 呼び順に依存しないよう明示的に止めておく
+            grabBlinkItem?.Pause();
+            Disposables.Dispose();
+        }
         public void AddTo(VisualElement parent) => parent.Add(Root);
         public void RemoveFrom(VisualElement parent) => parent.Remove(Root);
 

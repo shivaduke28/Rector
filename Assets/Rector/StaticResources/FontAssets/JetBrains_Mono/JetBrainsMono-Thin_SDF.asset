@@ -2002,7 +2002,6 @@ MonoBehaviour:
     m_Scale: 1
   m_AtlasTextures:
   - {fileID: 4682215172493484886}
-  - {fileID: 0}
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 1
   m_GetFontFeatures: 1

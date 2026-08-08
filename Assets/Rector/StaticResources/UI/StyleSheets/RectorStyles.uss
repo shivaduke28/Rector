@@ -351,6 +351,8 @@
 .rector-input-guide__chip {
     font-size: 10px;
     letter-spacing: 2px;
+    /* Labelの既定margin(2px)を消さないと軸吸着が2pxずれる */
+    margin: 0;
     padding: 1px 6px;
     color: var(--rector-text-color);
     background-color: var(--rector-text-background-color);

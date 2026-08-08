@@ -84,7 +84,8 @@ namespace Rector.UI.GraphPages
             groupGuideView = new GroupGuideView(graphMask1.Q<VisualElement>(GroupGuideView.RootName), Groups);
             graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView);
             // maskではなくページ基準の右下に固定する。mask基準だとパラメータパネルの
-            // 開閉でmask幅が変わりガイドが左右に動いてしまう(パネル表示中はその下に並ぶ)
+            // 開閉でmask幅が変わりガイドが左右に動いてしまう。描画順はガイドが
+            // node-detailより上だが、パネルは背景無し・コンテンツ高なので実害はない
             root.Add(inputGuideView);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
