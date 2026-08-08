@@ -64,7 +64,7 @@ namespace Rector.UI.Graphs
                     disposable = input.Type switch
                     {
                         SlotValueType.Unit =>
-                            // TODO: trueの場合だけ通知で良いのか考える
+                            // boolをイベントに繋いだときはtrueへの変化だけを通知とみなす
                             outputBool.Observable().Where(x => x).AsUnitObservable().Subscribe(((InputSlot<Unit>)input).Send),
                         SlotValueType.Boolean => outputBool.Observable().Subscribe(((InputSlot<bool>)input).Send),
                         SlotValueType.Float => outputBool.Observable().Select(x => x ? 1f : 0f).Subscribe(((InputSlot<float>)input).Send),

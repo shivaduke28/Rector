@@ -26,7 +26,7 @@ namespace Rector.UI.LayeredGraphDrawing
         public int InputSlotCount { get; }
         public int OutputSlotCount { get; }
 
-        // 16は勘
+        // 容量は実測ではなく当て推量。ノードあたりの接続数が増えたら見直す
         public List<(ILayeredNode Node, int SlotIndex)> Parents { get; } = new(16);
         public List<(ILayeredNode Node, int SlotIndex)> Children { get; } = new(16);
 

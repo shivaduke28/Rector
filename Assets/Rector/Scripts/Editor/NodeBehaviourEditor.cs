@@ -6,7 +6,7 @@ namespace Rector.Editor
 {
     [CustomEditor(typeof(NodeBehaviour), true)]
     [CanEditMultipleObjects]
-    public class NodeBehaviourEditor : UnityEditor.Editor
+    public sealed class NodeBehaviourEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

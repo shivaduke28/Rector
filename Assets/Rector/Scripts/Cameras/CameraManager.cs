@@ -48,7 +48,6 @@ namespace Rector.Cameras
             {
                 camera.IsActive.Where(x => x).Subscribe(camera, (_, c) =>
                 {
-                    // RectorLogger.ActiveCamera(c.Name);
                     currentCamera.Value = c.Name;
                     DisableOthers(c);
                 }).AddTo(disposables);

@@ -13,7 +13,6 @@ namespace Rector.UI.Graphs.Nodes
 
         public Vector3Node(NodeId id) : base(id, NodeName)
         {
-            // negative infinity, positive infinity
             var inputX = new FloatInput("X", 0, float.NegativeInfinity, float.PositiveInfinity);
             var inputY = new FloatInput("Y", 0, float.NegativeInfinity, float.PositiveInfinity);
             var inputZ = new FloatInput("Z", 0, float.NegativeInfinity, float.PositiveInfinity);

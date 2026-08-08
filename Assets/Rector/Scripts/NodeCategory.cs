@@ -1,5 +1,9 @@
-namespace Rector.UI.Graphs
+namespace Rector
 {
+    /// <summary>
+    /// ノードの分類。ノードエディタの表示だけでなく、シーン上の NodeBehaviour も持つので
+    /// UI 側ではなくここに置く。
+    /// </summary>
     public enum NodeCategory
     {
         Vfx,

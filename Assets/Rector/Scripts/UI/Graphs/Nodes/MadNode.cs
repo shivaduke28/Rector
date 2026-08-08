@@ -5,7 +5,7 @@ using Rector.UI.Graphs.Slots;
 namespace Rector.UI.Graphs.Nodes
 {
     // multiply and add
-    public class MadNode : Node
+    public sealed class MadNode : Node
     {
         public const string NodeName = "MAD";
         public static NodeCategory GetCategory() => NodeCategory.Math;

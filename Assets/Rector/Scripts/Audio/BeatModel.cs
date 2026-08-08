@@ -18,7 +18,7 @@ namespace Rector.Audio
         readonly List<float> tapTempIntervals = new(TapTempoCapacity);
         int tapCount;
 
-        // とりあえず0~3
+        /// <summary>4拍子の拍番号。0..3を繰り返す。</summary>
         public ReadOnlyReactiveProperty<int> BeatProperty => beatProperty;
         public ReadOnlyReactiveProperty<float> BpmProperty => bpmProperty;
 

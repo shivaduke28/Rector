@@ -257,7 +257,6 @@ namespace Rector.UI.LayeredGraphDrawing
                 }
             }
 
-            // 何やってるか理解してない...
             for (var layerIndex = 0; layerIndex < layers.Count; layerIndex++)
             {
                 var layer = layers[layerIndex];
@@ -298,7 +297,7 @@ namespace Rector.UI.LayeredGraphDrawing
             return x;
 
             // block内のnodeのxとsinkを決める
-            // blockとsinkが共通のblockがある場合は先にそれを計算する（ので再起処理になってる）
+            // blockとsinkが共通のblockがある場合は先にそれを計算する（ので再帰処理になってる）
             void PlaceBlock(ILayeredNode rootNode)
             {
                 if (x.TryAdd(rootNode.Id, 0f))
@@ -411,8 +410,6 @@ namespace Rector.UI.LayeredGraphDrawing
         /// Type 1 conflict (non-inner edgeがinner edgeと交差するケース）をmarkする
         /// inner edge同士の交差はすでに解消されている前提なので、片方がinnerならmarkしているのに注意
         /// </summary>
-        /// <param name="layers"></param>
-        /// <returns></returns>
         static HashSet<(NodeId up, NodeId down)> MarkType1ConflictEdges(List<List<ILayeredNode>> layers)
         {
             var markedEdges = new HashSet<(NodeId up, NodeId down)>();
@@ -511,7 +508,6 @@ namespace Rector.UI.LayeredGraphDrawing
                     if (edgesToNode.All(e => layeredNodes.TryGetValue(e.EdgeView.Edge.OutputSlot.NodeId, out var parent)
                                              && parent.Layer < layerIndex))
                     {
-                        // Debug.Log($"layer:{layerIndex}, {node.Name}");
                         node.Layer = layerIndex;
                         layer.Add(node);
                         node.Index = layer.Count - 1;
@@ -545,7 +541,6 @@ namespace Rector.UI.LayeredGraphDrawing
                                 layeredNodes.Add(dummyNode.Id, dummyNode);
                                 dummyNode.Parents.Add((parent, parentSlotIndex));
                                 parent.Children.Add((dummyNode, 0));
-                                // Debug.Log($"- add dummy node: {dummyNode.LayerIndex}");
                                 edge.DummyNodes.Add(dummyNode);
                                 parent = dummyNode;
                                 parentSlotIndex = 0;

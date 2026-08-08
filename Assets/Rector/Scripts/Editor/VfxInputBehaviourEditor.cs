@@ -6,13 +6,14 @@ namespace Rector.Editor
 {
     [CustomEditor(typeof(VfxInputSlotBehaviour))]
     [CanEditMultipleObjects]
-    public class VfxInputBehaviourEditor : UnityEditor.Editor
+    public sealed class VfxInputBehaviourEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            // FIXME: VFXGraphのエディタを開かないとうまく反映できない
+            // VFXGraphのエディタを一度開かないと反映されない。VFXアセットの内部状態が
+            // エディタウィンドウ側で構築されるため
             if (GUILayout.Button("Reset Properties and Events"))
             {
                 foreach (var t in targets)

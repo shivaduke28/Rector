@@ -85,7 +85,6 @@ namespace Rector.UI.GraphPages
 
         public override void Action()
         {
-            // ちょっと難しすぎるかも
             switch (graphPage.SelectedSlot)
             {
                 case CallbackInputSlot callbackInputSlot:

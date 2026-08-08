@@ -42,7 +42,7 @@ namespace Rector.Editor
                     }
                 }
 
-                // Second pass: fix empty GUIDs and duplicates
+                // Second pass: fix empty GUIDs
                 foreach (var sceneGuid in sceneGuids)
                 {
                     var scenePath = AssetDatabase.GUIDToAssetPath(sceneGuid);
@@ -118,7 +118,7 @@ namespace Rector.Editor
                     {
                         EditorSceneManager.MarkSceneDirty(scene);
                         EditorSceneManager.SaveScene(scene);
-                        if (!sceneModified) modifiedSceneCount++; // Count only if not already counted
+                        modifiedSceneCount++;
                         Debug.Log($"Saved scene: {scenePath}");
                     }
                 }

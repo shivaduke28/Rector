@@ -72,7 +72,7 @@ namespace Rector.UI.Hud
                 buttons.Add(new RectorButtonState(ToLabel(info), () => Submit(slot)));
             }
 
-            // 空リストは ButtonListPageView も Navigate も想定していない
+            // 行を1つも持たないページは作らない。Loadモードで全枠が空のときはここに来る
             if (buttons.Count == 0) buttons.Add(new RectorButtonState("(no saved graphs)", () => { }));
         }
 

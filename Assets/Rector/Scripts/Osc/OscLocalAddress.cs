@@ -15,6 +15,16 @@ namespace Rector.Osc
     /// </summary>
     public static class OscLocalAddress
     {
+        /// <summary>
+        /// 送信側に案内する宛先。表に出せる口が1つも無いときはループバックに落とす。
+        /// 同じマシンからなら必ず届くので、案内が空欄になるよりは役に立つ。
+        /// </summary>
+        public static string[] GetDestinationAddresses()
+        {
+            var addresses = GetIPv4Addresses();
+            return addresses.Length > 0 ? addresses : new[] { "127.0.0.1" };
+        }
+
         public static string[] GetIPv4Addresses()
         {
             try

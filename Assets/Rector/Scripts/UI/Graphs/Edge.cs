@@ -66,7 +66,7 @@ namespace Rector.UI.Graphs
             Assert.IsTrue(inputSlot.Direction == SlotDirection.Input);
             OutputSlot = outputSlot;
             InputSlot = inputSlot;
-            // ctorで呼ぶのちょっと渋い気もするがDisconnectedと同じ場所で呼びたい
+            // Disconnectedと対称にするため接続もここで通知する
             InputSlot.OnConnected();
             OutputSlot.OnConnected();
             this.disposable = disposable;

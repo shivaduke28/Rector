@@ -4,43 +4,38 @@ using UnityEngine;
 
 namespace Rector.UI.LayeredGraphDrawing
 {
+    /// <remarks>
+    /// Id/InputSlotCount/OutputSlotCount/IsDummy はノードの生涯変わらない。
+    /// Width/Height はレイアウトが解決されるまで確定しない(解決前は NaN)。
+    /// Position/Layer/Index/Group/Parents/Children は Sort が書き込む。
+    /// </remarks>
     public interface ILayeredNode
     {
-        // static
         NodeId Id { get; }
 
-        // static
         int InputSlotCount { get; }
 
-        // static
         int OutputSlotCount { get; }
 
-        // static
         bool IsDummy { get; }
 
-        // nealy static
         float Width { get; }
 
-        // nealy static
         float Height { get; }
 
-        // dynamic
         Vector2 Position { get; set; }
 
-        // dynamic
         int Layer { get; set; }
 
         /// <summary>
         /// レイヤー内の位置。Sort中はグループ内ローカルの添字になる。
         /// </summary>
-        // dynamic
         int Index { get; set; }
 
         /// <summary>
         /// 所属するグループ。並び替えとx圧縮はこの単位で閉じる。
         /// Dummy Nodeは同一グループ内のエッジにしか作られないので、エッジのグループを引き継ぐ。
         /// </summary>
-        // dynamic
         int Group { get; set; }
 
         /// <summary>

@@ -13,7 +13,6 @@ namespace Rector.Cameras
 
         Vector3 lastPosition;
 
-        // control fov based on velocity
         protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state,
             float deltaTime)
         {

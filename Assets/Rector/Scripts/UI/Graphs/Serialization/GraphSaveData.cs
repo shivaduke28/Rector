@@ -32,32 +32,6 @@ namespace Rector.UI.Graphs.Serialization
         public bool IsSupportedVersion => version == CurrentVersion;
     }
 
-    /// <summary>NodeTemplateId と保存用フィールドの相互変換。</summary>
-    public static class NodeTemplateIdSaveData
-    {
-        public static void Write(NodeTemplateId id, NodeSaveData data)
-        {
-            data.templateKind = id.Kind.ToString();
-            data.nodeType = id.Kind == NodeTemplateKind.Code ? id.TypeName : "";
-            data.behaviourGuid = id.Kind == NodeTemplateKind.Behaviour ? id.Guid.ToString() : "";
-        }
-
-        /// <summary>読めなければ IsValid が false の値を返す。呼び出し側はそのノードを捨てる。</summary>
-        public static NodeTemplateId Read(NodeSaveData data)
-        {
-            if (!Enum.TryParse<NodeTemplateKind>(data.templateKind, out var kind)) return default;
-
-            switch (kind)
-            {
-                case NodeTemplateKind.Code:
-                    return string.IsNullOrEmpty(data.nodeType) ? default : NodeTemplateId.Code(data.nodeType);
-                case NodeTemplateKind.Behaviour:
-                    return Guid.TryParse(data.behaviourGuid, out var guid) ? NodeTemplateId.Behaviour(guid) : default;
-                default:
-                    return default;
-            }
-        }
-    }
 
     /// <remarks>
     /// 配列の初期化子は必須。JsonUtility は JSON にキーが無いフィールドを初期値のままにするので、
@@ -68,7 +42,7 @@ namespace Rector.UI.Graphs.Serialization
     {
         // --- NodeTemplateId。直和なので、templateKind が示すフィールドだけが埋まる ---
 
-        /// <summary>NodeTemplateKind の名前。"Code" または "Behaviour"。</summary>
+        /// <summary>NodeTemplateKind の名前。</summary>
         public string templateKind = "";
 
         /// <summary>templateKind == Code のとき、ノードクラスの Type.Name。</summary>

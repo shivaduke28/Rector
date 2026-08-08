@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Rector.Audio
 {
-    // TODO: 最適化とか色々...
     public sealed class ThresholdAdjuster : IInitializable, IDisposable
     {
         readonly AudioMixerModel audioMixerModel;

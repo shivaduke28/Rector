@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Rector.SlotBehaviours
 {
     [AddComponentMenu("Rector/Scale Input Slot")]
-    public class ScaleInputSlotBehaviour : InputSlotBehaviour
+    public sealed class ScaleInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] FloatInput size = new("Size", 1f, 0f, 10f);
         [SerializeField] Vector3Input scale = new("Scale", Vector3.one);

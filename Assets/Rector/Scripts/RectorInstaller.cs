@@ -41,34 +41,26 @@ namespace Rector
 
             var audioInputDeviceManager = Register(new AudioInputDeviceManager(transform));
 
-            // input
             rectorInput = Register(new RectorInput());
             rectorInput.Enable();
 
-            // audio
             var beatModel = Register(new BeatModel());
             var mixerModel = Register(new AudioMixerModel(audioInputDeviceManager));
 
             Register(new ThresholdAdjuster(mixerModel));
 
-            // midi
             var midiInputDeviceManager = Register(new MidiInputDeviceManager());
             var midiModel = Register(new MidiModel(midiInputDeviceManager));
 
-            // osc
             var oscInputSetting = Register(new OscInputSetting());
             var oscModel = Register(new OscModel(oscInputSetting));
 
-            // vfx
             var vfxManager = Register(new VfxManager(rectorSettingsAsset.vfxSettings));
 
-            // camera
             var cameraManager = Register(new CameraManager(cinemachineBrain, cameraBehaviours));
 
-            // node system
             var nodeBehaviourProxyRepository = Register(new NodeBehaviourProxyRepository());
             var nodeTemplateRepository = Register(new NodeTemplateRepository());
-            Register(nodeTemplateRepository);
 
             var uiInputAction = Register(new UIInputAction(rectorInput));
             var graphInputAction = Register(new GraphInputAction(rectorInput));
@@ -124,22 +116,18 @@ namespace Rector
             )));
 
 #if !UNITY_EDITOR
-            // disable stack trace
             RectorLogger.DisableStackTrace();
 #endif
 
-            // initialize
             foreach (var initializable in initializables)
             {
                 initializable.Initialize();
             }
 
-            // logger
             disposables.Add(RectorLogger.SubscribeDebugLog());
             RectorLogger.WelcomeMessage();
             RectorLogger.Resolution(Screen.width, Screen.height, Screen.fullScreenMode);
 
-            // reload last device
             audioInputDeviceManager.ReloadLastDevice();
             midiInputDeviceManager.ReloadSelection();
 
@@ -147,7 +135,6 @@ namespace Rector
             // listening も bind 失敗も HUD コンソールが購読する前に流れて消える
             oscInputSetting.Reload();
 
-            // set first camera active
             cameraManager.GetCameraBehaviours()[0].IsActive.Value = true;
             bgSceneManager.Load(rectorSettingsAsset.sceneSettings.sceneNames[0]);
         }

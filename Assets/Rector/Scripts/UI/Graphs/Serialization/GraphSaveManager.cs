@@ -13,21 +13,16 @@ namespace Rector.UI.Graphs.Serialization
         readonly GraphSlotRepository repository;
 
         public GraphSaveManager(GraphPage graphPage, NodeTemplateRepository nodeTemplateRepository)
-            : this(new GraphSerializer(graphPage, nodeTemplateRepository), new GraphSlotRepository())
         {
-        }
-
-        public GraphSaveManager(GraphSerializer serializer, GraphSlotRepository repository)
-        {
-            this.serializer = serializer;
-            this.repository = repository;
+            serializer = new GraphSerializer(graphPage, nodeTemplateRepository);
+            repository = new GraphSlotRepository();
         }
 
         public GraphSlotInfo[] GetAllSlotInfo() => repository.GetAllInfo();
 
         public GraphSlotInfo GetSlotInfo(int slot) => repository.GetInfo(slot);
 
-        public bool Save(int slot, out GraphSaveResult result)
+        public bool Save(int slot, out GraphTransferResult result)
         {
             var data = serializer.Capture(out result);
             if (!repository.Write(slot, data)) return false;
@@ -37,7 +32,7 @@ namespace Rector.UI.Graphs.Serialization
         }
 
         /// <summary>空のスロットや壊れたファイルでは false を返し、グラフには触らない。</summary>
-        public bool Load(int slot, out GraphLoadResult result)
+        public bool Load(int slot, out GraphTransferResult result)
         {
             result = default;
 

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Rector.Editor
 {
     [CustomEditor(typeof(BGScene))]
-    public class BGSceneEditor : UnityEditor.Editor
+    public sealed class BGSceneEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

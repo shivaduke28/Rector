@@ -48,7 +48,8 @@ namespace Rector.UI.LayeredGraphDrawing
         /// </summary>
         public static void AssignOrdering(List<List<ILayeredNode>> layers)
         {
-            // 何回か繰り返すとよいらしいので２往復させる
+            // 重心法(Sugiyama法の層内順序付け)は反復するほど交差が減る。
+            // 2往復で見た目が安定したのでここで止めている
             SortByParent(layers);
             SortByChild(layers);
             SortByParent(layers);
@@ -59,15 +60,8 @@ namespace Rector.UI.LayeredGraphDrawing
 
             static void SortByParent(List<List<ILayeredNode>> layers)
             {
-                // Debug.Log("--------------SortByParent-----------------");
                 foreach (var layer in layers)
                 {
-                    // foreach (var node in layer)
-                    // {
-                    //     var bc = GetBaryCenter(node, true);
-                    //     Debug.Log($"{node.Name}: slot={bc.slot}, leftMost:{bc.leftMost}");
-                    // }
-
                     layer.Sort(ParentComparison);
                     for (var i = 0; i < layer.Count; i++)
                     {
@@ -78,16 +72,9 @@ namespace Rector.UI.LayeredGraphDrawing
 
             static void SortByChild(List<List<ILayeredNode>> layers)
             {
-                // Debug.Log("--------------SortByChild-----------------");
                 for (var l = layers.Count - 1; l >= 0; l--)
                 {
                     var layer = layers[l];
-                    // foreach (var node in layer)
-                    // {
-                    //     var bc = GetBaryCenter(node, false);
-                    //     Debug.Log($"{node.Name}: slot={bc.slot}, leftMost:{bc.leftMost}");
-                    // }
-
                     layer.Sort(ChildComparison);
                     for (var i = 0; i < layer.Count; i++)
                     {

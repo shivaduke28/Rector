@@ -17,7 +17,6 @@ namespace Rector.Vfx
             this.vfxSettings = vfxSettings;
         }
 
-        // 初期化
         public void Initialize()
         {
             initialized = true;

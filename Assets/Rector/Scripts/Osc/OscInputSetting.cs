@@ -24,15 +24,9 @@ namespace Rector.Osc
         public ReadOnlyReactiveProperty<OscInputConfig> Config => config;
 
         /// <summary>
-        /// 保存値を読んで公開する。AudioInputDeviceManager.ReloadLastDevice と同じく、
-        /// RectorInstaller の初期化ループが終わったあとに呼ぶこと。
+        /// 保存値を読んで公開する。これを呼ぶまでポートは開かない。
+        /// 呼ぶタイミングは RectorInstaller が決める。
         /// </summary>
-        /// <remarks>
-        /// 公開をここまで遅らせるのは、bind の成否をコンソールに出したいから。
-        /// RectorLogger.Log は素の Subject で過去を再生せず、HUD の購読は
-        /// HudModel.Initialize() で張られる。初期化ループの中で bind すると、
-        /// listening も bind 失敗も誰にも届かないまま消える。
-        /// </remarks>
         public void Reload()
         {
             var port = PlayerPrefs.GetInt(PortKey, DefaultPort);

@@ -9,7 +9,7 @@ namespace Rector.Cameras
 {
     [AddComponentMenu("Rector/Cinemachine Dolly Input Slot")]
     [RequireComponent(typeof(CinemachineSplineDolly))]
-    public class CinemachineDollyInputSlotBehaviour : InputSlotBehaviour
+    public sealed class CinemachineDollyInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CinemachineSplineDolly dolly;
         [SerializeField] FloatInput speed;

@@ -7,7 +7,7 @@ namespace Rector.NodeBehaviours
         string Name { get; }
     }
 
-    public class ObservableOutput<T> : IObservableOutput<T>
+    public sealed class ObservableOutput<T> : IObservableOutput<T>
     {
         public string Name { get; }
         public Observable<T> Observable { get; }

@@ -11,32 +11,17 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.Serialization
 {
-    /// <summary>グラフのロード結果。何が復元できて何が落ちたかを呼び出し側へ返す。</summary>
-    public readonly struct GraphLoadResult
+    /// <summary>
+    /// 保存・読み込みの結果。何を運べて何が落ちたかを呼び出し側へ返す。
+    /// </summary>
+    public readonly struct GraphTransferResult
     {
         public readonly int NodeCount;
         public readonly int EdgeCount;
         public readonly int SkippedNodeCount;
         public readonly int SkippedEdgeCount;
 
-        public GraphLoadResult(int nodeCount, int edgeCount, int skippedNodeCount, int skippedEdgeCount)
-        {
-            NodeCount = nodeCount;
-            EdgeCount = edgeCount;
-            SkippedNodeCount = skippedNodeCount;
-            SkippedEdgeCount = skippedEdgeCount;
-        }
-    }
-
-    /// <summary>グラフの保存結果。</summary>
-    public readonly struct GraphSaveResult
-    {
-        public readonly int NodeCount;
-        public readonly int EdgeCount;
-        public readonly int SkippedNodeCount;
-        public readonly int SkippedEdgeCount;
-
-        public GraphSaveResult(int nodeCount, int edgeCount, int skippedNodeCount, int skippedEdgeCount)
+        public GraphTransferResult(int nodeCount, int edgeCount, int skippedNodeCount, int skippedEdgeCount)
         {
             NodeCount = nodeCount;
             EdgeCount = edgeCount;
@@ -61,7 +46,7 @@ namespace Rector.UI.Graphs.Serialization
 
         // ---------------------------------------------------------------- 保存
 
-        public GraphSaveData Capture(out GraphSaveResult result)
+        public GraphSaveData Capture(out GraphTransferResult result)
         {
             var graph = graphPage.Graph;
 
@@ -107,7 +92,7 @@ namespace Rector.UI.Graphs.Serialization
                 });
             }
 
-            result = new GraphSaveResult(nodes.Count, edges.Count, skippedNodeCount, skippedEdgeCount);
+            result = new GraphTransferResult(nodes.Count, edges.Count, skippedNodeCount, skippedEdgeCount);
 
             return new GraphSaveData
             {
@@ -180,7 +165,7 @@ namespace Rector.UI.Graphs.Serialization
         /// メニューを開く前に選んでおいたノードが行き先になる。
         /// 丸ごと入れ替えたいときは、呼ぶ側が先に GraphPage.ClearGraph を通すこと。
         /// </remarks>
-        public GraphLoadResult Restore(GraphSaveData data)
+        public GraphTransferResult Restore(GraphSaveData data)
         {
             var nodeIds = new NodeId?[data.nodes.Length];
             var skippedNodeCount = 0;
@@ -219,7 +204,7 @@ namespace Rector.UI.Graphs.Serialization
             SelectFirstLoadedNode(firstNodeId);
 
             graphPage.Sort();
-            return new GraphLoadResult(data.nodes.Length - skippedNodeCount, edgeCount, skippedNodeCount, skippedEdgeCount);
+            return new GraphTransferResult(data.nodes.Length - skippedNodeCount, edgeCount, skippedNodeCount, skippedEdgeCount);
         }
 
         /// <remarks>

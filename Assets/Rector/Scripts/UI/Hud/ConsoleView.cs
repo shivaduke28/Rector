@@ -60,7 +60,6 @@ namespace Rector.UI.Hud
                 poolLabels.Enqueue(oldLabel);
                 if (!translated)
                 {
-                    // consoleContent.transform.position = new Vector3(0, 6, 0);
                     translated = true;
                 }
             }

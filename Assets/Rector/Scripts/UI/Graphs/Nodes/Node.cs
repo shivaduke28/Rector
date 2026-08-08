@@ -9,7 +9,6 @@ namespace Rector.UI.Graphs.Nodes
         public string Name { get; }
 
         /// <summary>このノードを生んだ NodeTemplate の Id。</summary>
-        /// <remarks>NodeTemplate.Create(NodeId) が刻むので、ノード側から設定することはない。</remarks>
         public NodeTemplateId TemplateId { get; internal set; }
 
         /// <summary>グラフの保存に含めてよいか。テンプレートから引き継ぐ。</summary>

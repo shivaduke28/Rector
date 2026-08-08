@@ -6,7 +6,7 @@ namespace Rector.Vfx
 {
     [AddComponentMenu("Rector/VFX Node Behaviour")]
     [RequireComponent(typeof(VfxInputSlotBehaviour))]
-    public class VfxNodeBehaviour : NodeBehaviour
+    public sealed class VfxNodeBehaviour : NodeBehaviour
     {
         [SerializeField] VfxInputSlotBehaviour vfxInputSlot;
 

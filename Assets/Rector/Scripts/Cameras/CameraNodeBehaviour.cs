@@ -7,7 +7,7 @@ namespace Rector.Cameras
 {
     [AddComponentMenu("Rector/Camera Node Behaviour")]
     [RequireComponent(typeof(CameraInputSlotBehaviour))]
-    public class CameraNodeBehaviour : NodeBehaviour
+    public sealed class CameraNodeBehaviour : NodeBehaviour
     {
         [SerializeField] CameraInputSlotBehaviour cameraInputSlot;
 

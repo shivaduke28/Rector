@@ -7,15 +7,6 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Hud
 {
-    public interface ISettingsPageModel
-    {
-        IReadOnlyList<ISettingRow> GetRows();
-        ReadOnlyReactiveProperty<bool> IsVisible { get; }
-
-        /// <summary>ページを閉じる。行がメニューを開いている間は呼ばれない。</summary>
-        void Cancel();
-    }
-
     /// <summary>
     /// 1設定1行の設定ページ。行カーソルと入力の振り分けだけを持ち、
     /// 値の持ち方と反映のタイミングは行(<see cref="ISettingRow"/>)に任せる。

@@ -74,7 +74,6 @@ namespace Rector.UI.Hud
 
             receiveRow.SetIndexWithoutNotify(config.Enabled ? 1 : 0);
 
-            // SelectorRowState は候補を自分で持たない。流し込まないと行が無反応になる
             portRow.SetOptions(
                 OscInputSetting.PortCandidates.Select(x => x.ToString()).ToArray(),
                 Array.IndexOf(OscInputSetting.PortCandidates, config.Port));
@@ -92,8 +91,7 @@ namespace Rector.UI.Hud
             // ここで宛先を見せると届かないアドレスを打たせることになる
             if (!oscModel.IsListening.CurrentValue) return $"port {config.Port} unavailable";
 
-            var addresses = OscLocalAddress.GetIPv4Addresses();
-            if (addresses.Length == 0) return $"127.0.0.1:{config.Port}";
+            var addresses = OscLocalAddress.GetDestinationAddresses();
 
             // 値列は1行で、溢れると末尾が省略記号に落ちる。宛先を読ませる行なのに
             // 途中で切れては意味が無いので、並べるのは2つまでにして残りは数で示す。

@@ -35,7 +35,6 @@ namespace Rector.Cameras
 
         void UpdateDutch(float dutch)
         {
-            // wrap -180 to 180
             while (dutch < -180)
             {
                 dutch += 360;

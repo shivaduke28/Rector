@@ -11,7 +11,7 @@ namespace Rector.UI.Graphs.Nodes
         public static NodeCategory GetCategory() => NodeCategory.Math;
         public override NodeCategory Category => GetCategory();
 
-        // normalized
+        // tは回転量。1で一周する(内部で2πを掛ける)
         readonly FloatInput theta = new("t", 0, -1f, 1f);
         readonly FloatInput radius = new("r", 1f, 0, 100f);
 

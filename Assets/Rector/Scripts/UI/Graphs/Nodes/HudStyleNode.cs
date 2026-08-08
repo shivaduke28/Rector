@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public class HudStyleNode : Node, IInitializable, IDisposable
+    public sealed class HudStyleNode : Node, IInitializable, IDisposable
     {
         public const string NodeName = "HUD Style";
         public static NodeCategory GetCategory() => NodeCategory.System;

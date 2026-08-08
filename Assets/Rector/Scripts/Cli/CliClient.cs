@@ -132,9 +132,7 @@ namespace Rector.Cli
             return new { success = true, node = ToNodeSummaryDto(node) };
         }
 
-        // HUD ではノード削除だけが長押し (NodeSelectionInputHandler)。エッジ削除も
-        // シーン切替も単押しなので、Rector 自身が「慎重にやる操作」と決めているのは
-        // これだけ。undo もないため CLI からも一手間かける。
+        // ノード削除には undo が無い。CLI は誤爆しても取り返しがつかないので confirm を要求する。
         object RemoveNode(uint id, bool confirm)
         {
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
@@ -142,8 +140,8 @@ namespace Rector.Cli
             if (!confirm)
                 return Failure("confirm_required", $"Removing node {id} ({node.NodeView.Node.Name}) cannot be undone. Pass confirm=true.");
 
-            // HUD と同じ経路を通す。RemoveSelectedNode が選択・ターゲット・State の
-            // 後始末までまとめて行うので、ここで個別に真似すると取りこぼす。
+            // RemoveSelectedNode が選択・ターゲット・State の後始末までまとめて行うので、
+            // ここで個別に真似すると取りこぼす。
             graphPage.EnterNodeSelection(node);
             graphPage.RemoveSelectedNode();
             return new { success = true, removed = id };
@@ -153,9 +151,8 @@ namespace Rector.Cli
         {
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);
 
-            // HUD はノード選択を NodeSelection / TargetNodeSelection でしか行わない。
-            // 他の State のまま差し替えると SelectedSlot が前のノードのスロットを指したままに
-            // なるので、State ごと揃える EnterNodeSelection を通す。
+            // 選択だけ差し替えると SelectedSlot が前のノードのスロットを指したままになるので、
+            // State ごと揃える EnterNodeSelection を通す。
             graphPage.EnterNodeSelection(node);
             return new { success = true, selected = id };
         }
@@ -176,9 +173,8 @@ namespace Rector.Cli
             return new { success = true, id };
         }
 
-        // HUD は「繋がっていれば外す」トグルなので、繋がっている組に接続処理が届くことがない。
-        // CLI は connect と disconnect を分けているぶんその保護がないが、既接続の判定も
-        // GraphPage 側にあるので、両者で検証がずれることはない。
+        // CLI は connect と disconnect を分けているので、既接続の組にも接続処理が届く。
+        // 判定は TryConnectSlots に任せ、CLI 側で検証を持たない。
         object Connect(uint fromNode, int fromSlot, uint toNode, int toSlot)
         {
             if (!TryGetSlots(fromNode, fromSlot, toNode, toSlot, out var output, out var input, out var error)) return error;
