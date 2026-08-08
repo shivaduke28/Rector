@@ -10,14 +10,11 @@ namespace Rector.UI.Graphs.Nodes
         {
             midiNode.DisplayLabel.Subscribe(text => NameLabel.text = text).AddTo(Disposables);
 
-            var gauge = new VisualElement();
-            gauge.AddToClassList("rector-node-gauge");
+            // ノード背景を値のスライダーとして使う。最初の子として挿すことで icon/label の下に描く
             var fill = new VisualElement();
-            fill.AddToClassList("rector-node-gauge__fill");
-            gauge.Add(fill);
-
+            fill.AddToClassList("rector-node-value-fill");
             var content = Root.Q<VisualElement>("content");
-            Root.Insert(Root.IndexOf(content) + 1, gauge);
+            content.Insert(0, fill);
 
             midiNode.DisplayValue
                 .Subscribe(value => fill.style.width = Length.Percent(Mathf.Clamp01(value) * 100f))
