@@ -43,6 +43,131 @@
     -unity-text-align: middle-center;
 }
 
+/* 設定ページの1行。ラベル列と値列の2カラムで、値列の左端は行の種類が変わっても動かない。 */
+.rector-setting-row {
+    flex-direction: row;
+    align-items: center;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    margin-bottom: 2px;
+}
+
+.rector-setting-row--focused {
+    border-color: var(--rector-border-color);
+}
+
+/*
+ * 2列の幅は、どのページでも同じ配分で決める。MIDIはポート名がラベルに、
+ * Audioはデバイス名が値に来るので、どちらの列も長くなりうる。
+ * 全行が同じ規則で割るため、列の境目はページ内で必ず揃う。
+ */
+.rector-setting-row__label {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 320px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--rector-text-color);
+    background-color: var(--rector-text-background-color);
+    margin: 0;
+    padding: 0 8px;
+    -unity-text-align: middle-left;
+}
+
+.rector-setting-row__value {
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 400px;
+    background-color: var(--rector-text-background-color);
+    /* メニューを絶対配置でぶら下げるための基準 */
+    position: relative;
+}
+
+.rector-setting-row__value-label {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--rector-text-color);
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+/* フォーカスは枠 + 中身の黒背景。rector-button と同じ見せ方に揃える */
+.rector-setting-row--focused .rector-setting-row__label,
+.rector-setting-row--focused .rector-setting-row__value {
+    background-color: black;
+}
+
+/* ステッパー: これ以上送れない側の矢印を減光して行き止まりを見せる */
+.rector-setting-stepper__arrow {
+    width: 16px;
+    color: var(--rector-text-color);
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+.rector-setting-stepper__arrow--disabled {
+    opacity: 0.25;
+}
+
+/* セレクター: メニューは値列の下に絶対配置し、開いても行を押し出さない */
+.rector-setting-selector__caret {
+    width: 16px;
+    color: var(--rector-text-color);
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+.rector-setting-selector__caret--expanded {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 行を全部並べたあとに重ねる、メニュー専用の面。行と同じ座標系にする */
+.rector-setting-menu-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/*
+ * 位置と幅は行に合わせてコードから入れる。
+ * 下の行に重なるので半透明にはできないが、黒はフォーカスの色なので使わない。
+ * 下地は不透明のダークグレーにして、黒は中のカーソルだけに残す。
+ */
+.rector-setting-selector__menu {
+    position: absolute;
+    display: none;
+    background-color: rgb(26, 26, 26);
+    border-width: 1px;
+    border-color: var(--rector-border-color);
+}
+
+/* 候補は行の値と同じ中央揃え。メニューは値の列と同じ幅なので、真上の現在値と中心が揃う */
+.rector-setting-selector__item {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--rector-text-color);
+    margin: 0;
+    padding: 1px 8px;
+    -unity-text-align: middle-center;
+}
+
+.rector-setting-selector__item--focused {
+    color: rgba(255, 255, 255, 0.9);
+    background-color: black;
+}
+
 .rector-slider {
     flex-grow: 1;
 }
