@@ -15,7 +15,10 @@ namespace Rector.Editor
             var usedGuids = new HashSet<string>();
             var totalEmptyFixed = 0;
             var totalDuplicatesFixed = 0;
-            var modifiedSceneCount = 0;
+
+            // 空GUIDの修正と重複の修正は別々にシーンを開き直すので、両方で直したシーンは
+            // 2回通る。件数として数えたいのは「保存したシーンの数」なのでパスで集める
+            var modifiedScenePaths = new HashSet<string>();
 
             var sceneGuids = AssetDatabase.FindAssets("t:Scene", new[] { "Assets/Rector" });
             var originalSceneSetup = EditorSceneManager.GetSceneManagerSetup();
@@ -76,7 +79,7 @@ namespace Rector.Editor
                     {
                         EditorSceneManager.MarkSceneDirty(scene);
                         EditorSceneManager.SaveScene(scene);
-                        modifiedSceneCount++;
+                        modifiedScenePaths.Add(scenePath);
                         Debug.Log($"Saved scene: {scenePath}");
                     }
                 }
@@ -118,7 +121,7 @@ namespace Rector.Editor
                     {
                         EditorSceneManager.MarkSceneDirty(scene);
                         EditorSceneManager.SaveScene(scene);
-                        modifiedSceneCount++;
+                        modifiedScenePaths.Add(scenePath);
                         Debug.Log($"Saved scene: {scenePath}");
                     }
                 }
@@ -166,7 +169,7 @@ namespace Rector.Editor
             if (totalFixed > 0)
             {
                 Debug.Log($"NodeBehaviour GUID initialization complete. Fixed {totalFixed} NodeBehaviours " +
-                          $"({totalEmptyFixed} empty, {totalDuplicatesFixed} duplicates) in {modifiedSceneCount} scenes.");
+                          $"({totalEmptyFixed} empty, {totalDuplicatesFixed} duplicates) in {modifiedScenePaths.Count} scenes.");
             }
             else
             {

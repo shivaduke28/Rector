@@ -191,7 +191,7 @@ namespace Rector.UI.Hud
 
         void ExitApplication()
         {
-            // TODO: Add a confirmation dialog?
+            // 確認は挟まない。SystemページはSELECT長押しでしか開かないので誤爆しにくい
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.ExitPlaymode();
 #else

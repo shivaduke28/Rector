@@ -86,7 +86,7 @@ namespace Rector.Osc
                 created.MessageDispatcher.AddCallback(MonitorAddress, OnMessage);
                 server = created;
                 isListening.Value = true;
-                RectorLogger.OscListening(config.Port, OscLocalAddress.GetIPv4Addresses());
+                RectorLogger.OscListening(config.Port, OscLocalAddress.GetDestinationAddresses());
             }
             catch (Exception e)
             {

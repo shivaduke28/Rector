@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs
 {
-    // FIXME: 型ベースの接続可能性とグラフ構造による接続可能性は別の話なのでこのクラスはGraphsに移動してcycleの検知を別のクラスとして作る
+    // FIXME(#95): 型ベースの接続可能性とグラフ構造による接続可能性は別の話なので、
+    // このクラスはGraphsに移動してcycleの検知を別のクラスとして作る
     public static class EdgeConnector
     {
         public static bool CanConnect(ISlot slot, Node node)

@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Rector.SlotBehaviours;
-using Rector.UI.Graphs;
 using UnityEngine;
 
 namespace Rector.NodeBehaviours

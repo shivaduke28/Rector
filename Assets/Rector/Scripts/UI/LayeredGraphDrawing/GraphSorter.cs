@@ -467,7 +467,6 @@ namespace Rector.UI.LayeredGraphDrawing
 
         (List<List<ILayeredNode>> layers, Dictionary<NodeId, ILayeredNode> nodeSet) ConstructLayers(List<LayeredNode> unsortedNodes)
         {
-            // TODO: pool list
             var layers = new List<List<ILayeredNode>>();
             var layeredNodes = new Dictionary<NodeId, ILayeredNode>();
 
@@ -530,7 +529,6 @@ namespace Rector.UI.LayeredGraphDrawing
                             var parentSlotIndex = edge.EdgeView.Edge.OutputSlot.Index;
                             for (var j = outputLayerIndex + 1; j < layerIndex; j++)
                             {
-                                // TODO: pool dummy node
                                 var dummyNode = new DummyNode(NodeId.Generate())
                                 {
                                     Layer = j,

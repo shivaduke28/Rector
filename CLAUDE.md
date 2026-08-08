@@ -79,14 +79,24 @@ Presentation / Domain のような一般的な層分けはこのプロジェク�
 
 | | 掴み方 | 方針 | 例 |
 |---|---|---|---|
-| **A** | 外部を掴まない | EditModeテストを書く | `ISettingRow` 実装, `NodeNavigator`, `GraphSaveData`, `NodeTemplateId`, `MidiPortName`, `LayerOrderAssigner` |
-| **B** | 外部を掴むが、宛先をコンストラクタで受け取れる（ディレクトリ、ポート、prefsキー） | 偽の宛先を渡してEditModeテストを書く | `GraphSlotRepository`（`new GraphSlotRepository(directory)`） |
-| **C1** | Unityのランタイムが要る（UXMLツリー、プレイループ、レイアウト解決、ループバック通信） | PlayModeテスト、またはCLI/実機で確認する | `GraphPage`, `GraphSerializer`, `LayeredGraph`, `*View`, `OscModel` |
-| **C2** | 本物のデバイスが要る | テストを書かない。実機で確認する | `MidiInputDeviceManager`, `AudioInputStream`, `CameraManager` |
+| **A** | 何も掴まない | EditModeテストを書く | `ISettingRow` 実装, `NodeNavigator`, `LayeredGraph`, `GraphSaveData`, `NodeTemplateId`, `MidiPortName`, `LayerOrderAssigner` |
+| **B** | 外部を掴むが、宛先をコンストラクタで受け取れる（ディレクトリ、ポート、パス） | 偽の宛先を渡してEditModeテストを書く | `GraphSlotRepository`（`new GraphSlotRepository(directory)`） |
+| **P** | プロセス内の環境を掴む（PlayerPrefs、static、時刻） | EditModeテストを書く。ただし隔離はできないので、**所有者の公開API経由で退避・復元する**（キーを複製しない） | `NodeGroups`, `OscInputSetting`, `InputGuideSettings`, `RectorLogger` |
+| **C** | 実行にUnityのランタイムか実機が要る | 組み立てられるならPlayModeテスト、無理なら実機かCLIで確認する | `GraphPage`, `GraphSerializer`, `*View`, `OscModel`, `MidiInputDeviceManager`, `AudioInputStream`, `CameraManager` |
 
+判定のルール:
+
+- **分類は、自分自身と、コンストラクタで受け取るものの中で一番厳しいものになる。**
+  `GraphSerializer` 自体は変換をするだけだが、`GraphPage` を受け取るのでC。
+- **「`VisualElement` に触る＝テストできない」ではない。** `VisualElement` は
+  EditModeでも `new` できる。効かないのはレイアウト解決だけで、パネルが無い間
+  `resolvedStyle` は0ではなく **NaN** を返す。`NodeNavigatorTests` は実際に
+  `LayeredGraph` と `NodeView` を手で組んでEditModeで回っている。
+  Cに落ちるのは「レイアウト確定後の値が要る」「UXMLアセットが要る」
+  「プレイループ・スレッド・実デバイスが要る」場合。
 - **Cに落ちたら、まず設計を疑う。** `GraphSerializer` がCなのは `GraphPage` を丸ごと
   受け取っているからで、「Unityだからテストできない」のではなく「握りすぎ」のサイン。
-  Bへ動かせないか（宛先や協調相手をコンストラクタで受け取れないか）を先に考える。
+  A/Bへ動かせないか（宛先や協調相手をコンストラクタで受け取れないか）を先に考える。
 - **「テストが書けない」で止めない。** EditModeで書けないものはPlayModeテストで
   書けることが多い。書かないと決めたなら、なぜ書かないのかをコメントかissueに残す。
 
@@ -111,7 +121,9 @@ Presentation / Domain のような一般的な層分けはこのプロジェク�
   変わってもコンパイラは何も言わないので確実に腐る。同じ理由を2箇所に書かない。
 - コードを読めばわかることは書かない。セクションラベル（`// logger` の直下に
   `RectorLogger...`）や `// 初期化` の類は消す。
-- TODO/FIXME を残すならissue番号を添える。添えられないなら消す。
+- **`TODO:` / `FIXME:` は grep した結果が実際の作業リストになる状態を保つ。**
+  issue番号を添えられないなら、キーワードを外して普通の説明コメントにする
+  （情報としては有用なことが多いので、消す必要はない）。
 - 模範例:
   - `Osc/OscModel.cs` — ABBAデッドロックの回避理由、受信スレッドの制約
   - `Editor/BuildSceneSetupRestorer.cs` — パッケージのバグと、回避をここに置いた理由
@@ -123,8 +135,11 @@ Presentation / Domain のような一般的な層分けはこのプロジェク�
 守られていて効いているもの。崩さないこと。
 
 - **名前空間 = フォルダ。例外なし。**
-- **`UI/` の外から `UI/` に依存しない。** `Audio`/`Midi`/`Osc`/`Cameras`/`Vfx` は
-  上を見ない。共有したい語彙（`NodeCategory` など）はルート名前空間 `Rector` に置く。
+- **入力ソースとシーン側の部品は `UI/` を見ない。** `Audio`/`Midi`/`Osc`/`Cameras`/
+  `Vfx`/`NodeBehaviours`/`SlotBehaviours` から `UI/` への依存はゼロで、この向きを守る。
+  共有したい語彙（`NodeCategory` など）はルート名前空間 `Rector` に置く。
+  `UI/` を見てよいのはコンポジションルート（`RectorInstaller`, `BGScene*`）、
+  `RectorLogger`、そして `Cli/`（グラフモデルの2つ目の入り口）だけ。
 - **入力ソースの型**（Audio/Midi/Osc で3回反復されている）:
   `XxxInputDeviceManager` がデバイスハンドルと `PlayerPrefs` を持ち、
   `XxxModel` が `IInitializable, IDisposable` でR3ストリームを公開し、
