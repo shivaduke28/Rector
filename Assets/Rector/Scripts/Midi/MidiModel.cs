@@ -11,7 +11,9 @@ namespace Rector.Midi
         readonly Subject<MidiNoteEvent> noteOn = new();
         readonly Subject<MidiNoteEvent> noteOff = new();
         readonly Subject<MidiCcEvent> controlChange = new();
-        readonly List<MidiDevice> devices = new();
+
+        // 接続中デバイスの登録簿を兼ねる。値は押しっぱなしのノート番号。
+        readonly Dictionary<MidiDevice, HashSet<int>> heldNotes = new();
 
         public Observable<MidiNoteEvent> NoteOn => noteOn;
         public Observable<MidiNoteEvent> NoteOff => noteOff;
@@ -51,30 +53,53 @@ namespace Rector.Midi
 
         void AddDevice(MidiDevice device)
         {
-            if (devices.Contains(device)) return;
+            if (heldNotes.ContainsKey(device)) return;
             device.onWillNoteOn += HandleNoteOn;
             device.onWillNoteOff += HandleNoteOff;
             device.onWillControlChange += HandleControlChange;
-            devices.Add(device);
+            heldNotes.Add(device, new HashSet<int>());
             RectorLogger.MidiInputDevice(device.description.product, device.channel, connected: true);
         }
 
         void RemoveDevice(MidiDevice device)
         {
-            if (!devices.Remove(device)) return;
+            if (!heldNotes.TryGetValue(device, out var held)) return;
+            Unsubscribe(device);
+            heldNotes.Remove(device);
+            RectorLogger.MidiInputDevice(device.description.product, device.channel, connected: false);
+
+            // 切断後は note-off が二度と来ないので、押しっぱなしのノートはここで解放する。
+            // これをしないと Gate 出力が true のまま固着する。
+            foreach (var noteNumber in held)
+            {
+                noteOff.OnNext(new MidiNoteEvent(device.channel, noteNumber, 0f));
+            }
+        }
+
+        void Unsubscribe(MidiDevice device)
+        {
             device.onWillNoteOn -= HandleNoteOn;
             device.onWillNoteOff -= HandleNoteOff;
             device.onWillControlChange -= HandleControlChange;
-            RectorLogger.MidiInputDevice(device.description.product, device.channel, connected: false);
         }
 
         void HandleNoteOn(MidiNoteControl note, float velocity)
         {
+            if (note.device is MidiDevice device && heldNotes.TryGetValue(device, out var held))
+            {
+                held.Add(note.noteNumber);
+            }
+
             noteOn.OnNext(new MidiNoteEvent(GetChannel(note), note.noteNumber, velocity));
         }
 
         void HandleNoteOff(MidiNoteControl note)
         {
+            if (note.device is MidiDevice device && heldNotes.TryGetValue(device, out var held))
+            {
+                held.Remove(note.noteNumber);
+            }
+
             noteOff.OnNext(new MidiNoteEvent(GetChannel(note), note.noteNumber, 0f));
         }
 
@@ -88,14 +113,12 @@ namespace Rector.Midi
         public void Dispose()
         {
             InputSystem.onDeviceChange -= OnDeviceChange;
-            foreach (var device in devices)
+            foreach (var device in heldNotes.Keys)
             {
-                device.onWillNoteOn -= HandleNoteOn;
-                device.onWillNoteOff -= HandleNoteOff;
-                device.onWillControlChange -= HandleControlChange;
+                Unsubscribe(device);
             }
 
-            devices.Clear();
+            heldNotes.Clear();
             noteOn.Dispose();
             noteOff.Dispose();
             controlChange.Dispose();
