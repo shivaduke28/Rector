@@ -34,8 +34,8 @@ namespace Rector.UI.Hud
             buttons = new RectorButtonState[]
             {
                 new("Audio Settings", ShowAudioSettings),
-                new("Display settings", ShowDisplaySettings),
-                new("Graph settings", ShowGraphSettings),
+                new("Display Settings", ShowDisplaySettings),
+                new("Graph Settings", ShowGraphSettings),
                 new("Copyright Notices", ShowCopyrightNotices),
                 new("Exit", ExitApplication),
             };
