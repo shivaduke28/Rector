@@ -135,3 +135,58 @@
     transition-duration: 0.3s;
     transition-timing-function: linear;
 }
+
+/* ターゲットは色ではなく、一回り大きいアウトラインで示す */
+.rector-node-target-outline {
+    position: absolute;
+    left: -5px;
+    right: -5px;
+    top: -5px;
+    bottom: -5px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.5);
+    display: none;
+}
+
+.rector-node--target > .rector-node-target-outline {
+    display: flex;
+}
+
+.rector-node--target > .rector-node-content {
+    background-color: black;
+}
+
+.rector-node-slot--target {
+    background-color: white;
+}
+
+.rector-node-slot--target > .rector-node-slot-name-label {
+    display: flex;
+}
+
+/* R2で掴んでいる間、ノードの左右に点滅する塗りつぶし三角(◀▶)を出す */
+.rector-node-grab-arrow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    -unity-text-align: middle-center;
+    font-size: 12px;
+    color: var(--rector-text-color);
+    display: none;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+}
+
+.rector-node-grab-arrow-left {
+    right: 100%;
+    margin-right: 6px;
+}
+
+.rector-node-grab-arrow-right {
+    left: 100%;
+    margin-left: 6px;
+}
+
+.rector-node--grabbed > .rector-node-grab-arrow {
+    display: flex;
+}

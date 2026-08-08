@@ -44,6 +44,8 @@ namespace Rector.UI.GraphPages
         public Observable<Unit> Mute => mute;
         public Observable<Unit> LockStarted => lockStarted;
         public Observable<Unit> LockEnded => lockEnded;
+        public ReadOnlyReactiveProperty<bool> GrabModifierHeld => grabModifierHeld;
+        public ReadOnlyReactiveProperty<bool> LockHeld => lockHeld;
         public Observable<Unit> OpenNodeParameter => openNodeParameter;
         public Observable<Unit> CloseNodeParameter => closeNodeParameter;
         public Observable<Unit> OpenSystem => openSystem;
@@ -69,7 +71,9 @@ namespace Rector.UI.GraphPages
             Right,
         }
 
-        bool grabModifierHeld;
+        // ガイドバー等が購読できるようReactivePropertyで持つ
+        readonly ReactiveProperty<bool> grabModifierHeld = new(false);
+        readonly ReactiveProperty<bool> lockHeld = new(false);
         NavigateDirection chordNavigateDirection;
         bool chordNeutralRequired;
 
@@ -112,7 +116,7 @@ namespace Rector.UI.GraphPages
 
         void HandleNavigate(Vector2 value)
         {
-            if (grabModifierHeld)
+            if (grabModifierHeld.Value)
             {
                 HandleChordNavigate(value);
                 return;
@@ -306,14 +310,14 @@ namespace Rector.UI.GraphPages
         {
             if (context.performed)
             {
-                grabModifierHeld = true;
+                grabModifierHeld.Value = true;
                 BeginChord();
             }
             else if (context.canceled)
             {
                 // 離した時点で倒れたままの十字キーはナビゲートに引き継がない。
                 // Navigateは値が変わるまでイベントが来ないので、倒し直すまで移動しない。
-                grabModifierHeld = false;
+                grabModifierHeld.Value = false;
             }
         }
 
@@ -353,10 +357,12 @@ namespace Rector.UI.GraphPages
         {
             if (context.performed)
             {
+                lockHeld.Value = true;
                 lockStarted.OnNext(Unit.Default);
             }
             else if (context.canceled)
             {
+                lockHeld.Value = false;
                 lockEnded.OnNext(Unit.Default);
             }
         }

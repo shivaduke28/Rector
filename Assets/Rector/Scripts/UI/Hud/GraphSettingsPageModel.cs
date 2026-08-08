@@ -10,34 +10,48 @@ namespace Rector.UI.Hud
     {
         readonly ButtonListPageView view;
         readonly NodeGroups groups;
+        readonly InputGuideSettings guideSettings;
         readonly ReactiveProperty<bool> isVisible = new(false);
         ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
 
         readonly List<RectorButtonState> buttons = new();
+        readonly RectorButtonState guideOnButton;
+        readonly RectorButtonState guideOffButton;
+
+        const int GroupButtonCount = NodeGroups.MaxCount - NodeGroups.MinCount + 1;
 
         Action onExit;
         int index;
         IDisposable disposable;
 
-        public GraphSettingsPageModel(ButtonListPageView view, NodeGroups groups)
+        public GraphSettingsPageModel(ButtonListPageView view, NodeGroups groups, InputGuideSettings guideSettings)
         {
             this.view = view;
             this.groups = groups;
+            this.guideSettings = guideSettings;
 
+            // ボタン順序: [Groups 1..8][Guide On][Guide Off]。
+            // Enter()のカーソルシードとUpdateGroupHighlightはGroupsが先頭に並ぶ前提。
             for (var count = NodeGroups.MinCount; count <= NodeGroups.MaxCount; count++)
             {
                 var value = count;
                 buttons.Add(new RectorButtonState($"Groups: {value}", () => groups.SetCount(value)));
             }
+
+            guideOnButton = new RectorButtonState("Guide: On", () => guideSettings.SetVisible(true));
+            guideOffButton = new RectorButtonState("Guide: Off", () => guideSettings.SetVisible(false));
+            buttons.Add(guideOnButton);
+            buttons.Add(guideOffButton);
         }
 
         public void Initialize()
         {
-            // 現在のグループ数はハイライトで示す。ButtonListPageViewはEnterのたびにボタンを
+            // 現在値はハイライトで示す。ButtonListPageViewはEnterのたびにボタンを
             // 作り直すが、RectorButtonStateは使い回されるので状態はここで持てる。
             disposable = new CompositeDisposable(
                 view.Bind(this),
-                groups.Count.Subscribe(UpdateHighlight));
+                groups.Count.Subscribe(UpdateGroupHighlight),
+                guideSettings.Visible.Subscribe(UpdateGuideHighlight));
         }
 
         public void Dispose() => disposable?.Dispose();
@@ -56,12 +70,19 @@ namespace Rector.UI.Hud
             isVisible.Value = true;
         }
 
-        void UpdateHighlight(int count)
+        void UpdateGroupHighlight(int count)
         {
-            for (var i = 0; i < buttons.Count; i++)
+            // Guideボタンを巻き込まないようGroupsの区間だけを舐める
+            for (var i = 0; i < GroupButtonCount; i++)
             {
                 buttons[i].IsHighlighted.Value = i + NodeGroups.MinCount == count;
             }
+        }
+
+        void UpdateGuideHighlight(bool visible)
+        {
+            guideOnButton.IsHighlighted.Value = visible;
+            guideOffButton.IsHighlighted.Value = !visible;
         }
 
         IEnumerable<RectorButtonState> IButtonListPageModel.GetButtons() => buttons;

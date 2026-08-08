@@ -15,6 +15,7 @@ namespace Rector.UI.Graphs.Slots
         public SlotDirection Direction => SlotDirection.Output;
         public string Name { get; }
         public ReactiveProperty<bool> Selected { get; } = new(false);
+        public ReactiveProperty<bool> IsTarget { get; } = new(false);
 
         protected OutputSlot(NodeId nodeId, int index, SlotValueType type, string name)
         {

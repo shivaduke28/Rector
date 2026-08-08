@@ -310,6 +310,7 @@ namespace Rector.Cli
                 width = layered.Width,
                 muted = node.IsMuted.Value,
                 selected = node.Selected.Value,
+                isTarget = node.IsTarget.Value,
                 inputs = node.InputSlots.Select(ToSlotDto).ToArray(),
                 outputs = node.OutputSlots.Select(ToSlotDto).ToArray(),
             };

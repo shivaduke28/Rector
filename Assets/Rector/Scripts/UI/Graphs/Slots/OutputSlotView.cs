@@ -10,6 +10,7 @@ namespace Rector.UI.Graphs.Slots
         readonly VisualElement root;
         readonly Label nameLabel;
         const string SelectedClassName = "rector-node-slot--selected";
+        const string TargetClassName = "rector-node-slot--target";
         const string ActiveClassName = "rector-node-slot--active";
 
         public Vector2 ConnectorPosition => root.worldBound.center;
@@ -23,34 +24,38 @@ namespace Rector.UI.Graphs.Slots
         public IDisposable Bind(OutputSlot slot)
         {
             nameLabel.text = slot.Name;
-            root.AddToClassList(SelectedClassName);
+            // ソース選択とターゲット指名は型に依らないのでここでまとめて張る
+            var selection = new CompositeDisposable(
+                slot.Selected.Subscribe(x => root.EnableInClassList(SelectedClassName, x)),
+                slot.IsTarget.Subscribe(x => root.EnableInClassList(TargetClassName, x))
+            );
 
             switch (slot)
             {
                 case OutputSlot<bool> boolSlot:
                     return new CompositeDisposable(
-                        boolSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, x)),
-                        slot.Selected.Subscribe(x => root.EnableInClassList(SelectedClassName, x))
+                        selection,
+                        boolSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, x))
                     );
                 case OutputSlot<int> intSlot:
                     return new CompositeDisposable(
-                        intSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, x != 0)),
-                        slot.Selected.Subscribe(x => root.EnableInClassList(SelectedClassName, x))
+                        selection,
+                        intSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, x != 0))
                     );
                 case OutputSlot<float> floatSlot:
                     return new CompositeDisposable(
-                        floatSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, x != 0)),
-                        slot.Selected.Subscribe(x => root.EnableInClassList(SelectedClassName, x))
+                        selection,
+                        floatSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, x != 0))
                     );
                 case OutputSlot<Unit> unitSlot:
                     return new CompositeDisposable(
+                        selection,
                         unitSlot.Observable().Subscribe(x => root.EnableInClassList(ActiveClassName, true)),
-                        unitSlot.Observable().DebounceFrame(InputSlotView.DebounceFrameCount).Subscribe(x => root.EnableInClassList(ActiveClassName, false)),
-                        unitSlot.Selected.Subscribe(x => root.EnableInClassList(SelectedClassName, x))
+                        unitSlot.Observable().DebounceFrame(InputSlotView.DebounceFrameCount).Subscribe(x => root.EnableInClassList(ActiveClassName, false))
                     );
             }
 
-            return slot.Selected.Subscribe(x => root.EnableInClassList(SelectedClassName, x));
+            return selection;
         }
 
         public void AddTo(VisualElement parent)

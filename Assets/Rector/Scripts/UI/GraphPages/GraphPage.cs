@@ -37,6 +37,7 @@ namespace Rector.UI.GraphPages
 
         public readonly LayeredGraph Graph;
         public readonly NodeGroups Groups = new();
+        public readonly InputGuideSettings GuideSettings = new();
 
         readonly CreateNodeMenuModel createNodeMenuModel;
         readonly CreateNodeMenuView createNodeMenuView;
@@ -47,6 +48,7 @@ namespace Rector.UI.GraphPages
 
         readonly GraphContentTransformer graphContentTransformer;
         readonly GroupGuideView groupGuideView;
+        readonly InputGuideView inputGuideView = new();
         readonly GraphSorter graphSorter;
         readonly NodeNavigator nodeNavigator;
 
@@ -81,6 +83,9 @@ namespace Rector.UI.GraphPages
             graphContent1.Add(holdGuideView);
             groupGuideView = new GroupGuideView(graphMask1.Q<VisualElement>(GroupGuideView.RootName), Groups);
             graphContentTransformer = new GraphContentTransformer(graphMask1, graphContent1, graphInputAction, groupGuideView);
+            // maskではなくページ基準の右下に固定する。mask基準だとパラメータパネルの
+            // 開閉でmask幅が変わりガイドが左右に動いてしまう(パネル表示中はその下に並ぶ)
+            root.Add(inputGuideView);
 
             Graph = new LayeredGraph(nodeRoot1, edgeRoot1);
             graphSorter = new GraphSorter(Graph, Groups);
@@ -151,6 +156,10 @@ namespace Rector.UI.GraphPages
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
             graphInputAction.AddNode.Subscribe(_ => CurrentInputHandler.AddNode()).AddTo(disposable);
             graphInputAction.Mute.Subscribe(_ => CurrentInputHandler.Mute()).AddTo(disposable);
+            // R2で掴んでいる間、選択中ノードに矢印を出す。掴んだままSubmit等でステートが
+            // 変わることもあるので、修飾キーとステートの両方に反応させる
+            graphInputAction.GrabModifierHeld.Subscribe(_ => UpdateGrabIndicator()).AddTo(disposable);
+            State.Subscribe(_ => UpdateGrabIndicator()).AddTo(disposable);
             // ロックは押した瞬間の画面位置をアンカーにする(中央へは寄せない)。以後の追従は
             // FollowLockedNodeの既存呼び出し(選択・ターゲット変更時)が拾う。
             graphInputAction.LockStarted
@@ -164,6 +173,7 @@ namespace Rector.UI.GraphPages
 
             holdGuideView.Bind(holdGuideModel).AddTo(disposable);
             nodeParameterView.Bind(nodeParameterModel).AddTo(disposable);
+            inputGuideView.Bind(State, graphInputAction.GrabModifierHeld, graphInputAction.LockHeld, GuideSettings.Visible).AddTo(disposable);
 
             // SortでNodeViewのWidthを使用するので1F待機する
             Observable.EveryUpdate(UnityFrameProvider.PostLateUpdate)
@@ -238,6 +248,30 @@ namespace Rector.UI.GraphPages
 
             SelectedNode = node;
             groupGuideView.SetActiveGroup(node is null ? -1 : Groups.Fold(node.Group));
+            // 掴んだまま選択が動く経路(キーボードQ/Eのグループジャンプ等)でも矢印を追従させる
+            UpdateGrabIndicator();
+        }
+
+        Node? grabbedNode;
+
+        void UpdateGrabIndicator()
+        {
+            // MoveNodeToGroupが効くのはNodeSelectionだけなので、矢印もそこに限定する
+            var next = graphInputAction.GrabModifierHeld.CurrentValue && State.Value == GraphPageState.NodeSelection
+                ? SelectedNode?.NodeView.Node
+                : null;
+            if (ReferenceEquals(grabbedNode, next)) return;
+
+            if (grabbedNode != null)
+            {
+                grabbedNode.IsGrabbed.Value = false;
+            }
+
+            grabbedNode = next;
+            if (grabbedNode != null)
+            {
+                grabbedNode.IsGrabbed.Value = true;
+            }
         }
 
         public void SelectSlot(ISlot? slot)
@@ -257,14 +291,16 @@ namespace Rector.UI.GraphPages
 
         public void SetTargetNode(LayeredNode? node)
         {
-            if (TargetNode is { } old && old != SelectedNode)
+            // IsTargetはターゲット専用フラグなので、旧ターゲットからは無条件に降ろす
+            // (ソースの見た目はSelectedが別に持っている)
+            if (TargetNode is { } old)
             {
-                old.NodeView.Node.Selected.Value = false;
+                old.NodeView.Node.IsTarget.Value = false;
             }
 
             if (node != null)
             {
-                node.NodeView.Node.Selected.Value = true;
+                node.NodeView.Node.IsTarget.Value = true;
                 graphContentTransformer.FollowLockedNode(node);
             }
             else if (SelectedNode is not null)
@@ -279,12 +315,12 @@ namespace Rector.UI.GraphPages
         {
             if (TargetSlot is { } old)
             {
-                old.Selected.Value = false;
+                old.IsTarget.Value = false;
             }
 
             if (slot != null)
             {
-                slot.Selected.Value = true;
+                slot.IsTarget.Value = true;
             }
 
             TargetSlot = slot;
@@ -322,9 +358,8 @@ namespace Rector.UI.GraphPages
         /// ソース選択まで戻らずに、いま指しているノードから続けて次のエッジを張るための操作。
         /// </summary>
         /// <remarks>
-        /// Target系のクリアはセッターを通さない。SetTargetSlot(null)/SetTargetNode(null)は
-        /// 「これからSelectedになるもの」の選択表示を外したり、旧SelectedNodeへ視点を
-        /// 戻したりしてしまう(直接代入は<see cref="SlotSelectionInputHandler.Submit"/>と同じ流儀)。
+        /// Target系のクリアはセッターを通さない。SetTargetNode(null)は旧SelectedNodeへ視点を
+        /// 戻してしまうため。代わりにIsTargetはここで明示的に降ろす(降ろし忘れると表示が残留する)。
         /// </remarks>
         public void PromoteTargetToSource()
         {
@@ -336,6 +371,7 @@ namespace Rector.UI.GraphPages
                         if (TargetNode is not { } target) return;
                         if (target.InputSlotCount == 0 && target.OutputSlotCount == 0) return;
 
+                        target.NodeView.Node.IsTarget.Value = false;
                         TargetNode = null;
                         SelectNode(target);
                         SelectSlot(target.InputSlotCount > 0 ? target.NodeView.Node.InputSlots[0] : target.NodeView.Node.OutputSlots[0]);
@@ -346,6 +382,8 @@ namespace Rector.UI.GraphPages
                     {
                         if (TargetNode is not { } target || TargetSlot is not { } targetSlot) return;
 
+                        target.NodeView.Node.IsTarget.Value = false;
+                        targetSlot.IsTarget.Value = false;
                         TargetNode = null;
                         TargetSlot = null;
                         SelectNode(target);

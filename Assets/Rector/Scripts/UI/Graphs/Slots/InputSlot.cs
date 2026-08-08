@@ -22,6 +22,7 @@ namespace Rector.UI.Graphs.Slots
         public SlotDirection Direction => SlotDirection.Input;
         public string Name { get; }
         public ReactiveProperty<bool> Selected { get; } = new(false);
+        public ReactiveProperty<bool> IsTarget { get; } = new(false);
         public int ConnectedCount { get; private set; }
 
         public virtual void OnConnected()
