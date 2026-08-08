@@ -153,7 +153,7 @@ namespace Rector.UI.Graphs.Nodes
                 NodeCategory.Math => VisualElementFactory.Instance.Icons.math,
                 NodeCategory.Scene => VisualElementFactory.Instance.Icons.scene,
                 NodeCategory.System => VisualElementFactory.Instance.Icons.system,
-                NodeCategory.MIDI => VisualElementFactory.Instance.Icons.midi,
+                NodeCategory.Input => VisualElementFactory.Instance.Icons.input,
                 _ => null
             };
         }

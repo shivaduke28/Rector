@@ -12,6 +12,7 @@
         "Lasp.Runtime",
         "Minis",
         "RtMidi.Runtime",
+        "OscJack.Runtime",
         "Unity.Pipeline"
     ],
     "includePlatforms": [],

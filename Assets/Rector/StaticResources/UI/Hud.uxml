@@ -39,6 +39,9 @@
             <engine:VisualElement name="midi-input-device-page" class="rector-page">
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>
+            <engine:VisualElement name="osc-settings-page" class="rector-page">
+                <engine:VisualElement name="setting-list" class="rector-setting-list" />
+            </engine:VisualElement>
             <engine:VisualElement name="display-settings-page" class="rector-page">
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>

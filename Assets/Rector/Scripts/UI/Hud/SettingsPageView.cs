@@ -114,6 +114,12 @@ namespace Rector.UI.Hud
                         element.Bind(selector, menuLayer).AddTo(disposable);
                         return element;
                     }
+                case TextRowState text:
+                    {
+                        var element = new RectorSettingText();
+                        element.Bind(text).AddTo(disposable);
+                        return element;
+                    }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(row), row, "unknown setting row");
             }

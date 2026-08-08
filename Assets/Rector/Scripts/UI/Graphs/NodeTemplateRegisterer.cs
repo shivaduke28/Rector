@@ -2,6 +2,7 @@ using Rector.Audio;
 using Rector.Cameras;
 using Rector.Midi;
 using Rector.NodeBehaviours;
+using Rector.Osc;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Hud;
 using Rector.Vfx;
@@ -16,6 +17,7 @@ namespace Rector.UI.Graphs
         readonly BeatModel beatModel;
         readonly AudioMixerModel audioMixerModel;
         readonly MidiModel midiModel;
+        readonly OscModel oscModel;
         readonly CameraManager cameraManager;
         readonly HudModel hudModel;
 
@@ -26,6 +28,7 @@ namespace Rector.UI.Graphs
             BeatModel beatModel,
             AudioMixerModel audioMixerModel,
             MidiModel midiModel,
+            OscModel oscModel,
             CameraManager cameraManager,
             HudModel hudModel)
         {
@@ -35,6 +38,7 @@ namespace Rector.UI.Graphs
             this.beatModel = beatModel;
             this.audioMixerModel = audioMixerModel;
             this.midiModel = midiModel;
+            this.oscModel = oscModel;
             this.cameraManager = cameraManager;
             this.hudModel = hudModel;
         }
@@ -63,6 +67,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Create(BeatNode.GetCategory(), BeatNode.NodeName, id => CreateNodeView(new BeatNode(id, beatModel))));
             nodeTemplateRepository.Add(NodeTemplate.Create(MidiNoteNode.GetCategory(), MidiNoteNode.NodeName, id => CreateNodeView(new MidiNoteNode(id, midiModel))));
             nodeTemplateRepository.Add(NodeTemplate.Create(MidiCcNode.GetCategory(), MidiCcNode.NodeName, id => CreateNodeView(new MidiCcNode(id, midiModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Create(OscNode.GetCategory(), OscNode.NodeName, id => CreateNodeView(new OscNode(id, oscModel))));
             nodeTemplateRepository.Add(NodeTemplate.Create(UpdateNode.GetCategory(), UpdateNode.NodeName, id => CreateNodeView(new UpdateNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(TimeNode.GetCategory(), TimeNode.NodeName, id => CreateNodeView(new TimeNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Create(ButtonNode.GetCategory(), ButtonNode.NodeName, id => CreateNodeView(new ButtonNode(id))));
@@ -104,10 +109,10 @@ namespace Rector.UI.Graphs
                         var nodeView = new BeatNodeView(ve, beatNode);
                         return nodeView;
                     }
-                case MidiSourceNode midiSourceNode:
+                case LearnableSourceNode learnableSourceNode:
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();
-                        var nodeView = new MidiNodeView(ve, midiSourceNode);
+                        var nodeView = new LearnableSourceNodeView(ve, learnableSourceNode);
                         return nodeView;
                     }
                 /* You can add custom node view here */
