@@ -317,3 +317,66 @@
     -unity-background-image-tint-color: var(--rector-text-color);
     flex-shrink: 0;
 }
+
+/* グラフ右下の操作ガイド。中心軸を挟んだ2カラムの固定グリッドで、
+   左セルは右揃え(軸に吸着)、右セルは左揃え。ステートで文言と減光だけが変わり、
+   位置・幅は一切動かない */
+.rector-input-guide {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.rector-input-guide__row {
+    flex-direction: row;
+}
+
+/* セルは透明な位置決め箱。塗りは文字幅ぴったりの内側チップにだけ載せる */
+.rector-input-guide__cell {
+    width: 130px;
+    flex-direction: row;
+    margin: 1px 2px;
+}
+
+.rector-input-guide__cell--left {
+    justify-content: flex-end;
+}
+
+.rector-input-guide__cell--right {
+    justify-content: flex-start;
+}
+
+.rector-input-guide__chip {
+    font-size: 10px;
+    letter-spacing: 2px;
+    /* Labelの既定margin(2px)を消さないと軸吸着が2pxずれる */
+    margin: 0;
+    padding: 1px 6px;
+    color: var(--rector-text-color);
+    background-color: var(--rector-text-background-color);
+}
+
+.rector-input-guide__chip--active {
+    color: white;
+    background-color: black;
+}
+
+.rector-input-guide__chip--disabled {
+    opacity: 0.25;
+}
+
+.rector-input-guide__gap {
+    height: 8px;
+}
+
+/* ○の行を中心軸から右へずらしてパッドの菱形に寄せる */
+.rector-input-guide__face-offset {
+    width: 60px;
+}
+
+/* ショルダーのR側は△ボタンの右端あたりから始める(L/R間の余白) */
+.rector-input-guide__shoulder-gutter {
+    width: 36px;
+}

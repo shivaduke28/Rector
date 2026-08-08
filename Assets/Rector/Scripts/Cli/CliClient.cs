@@ -310,6 +310,7 @@ namespace Rector.Cli
                 width = layered.Width,
                 muted = node.IsMuted.Value,
                 selected = node.Selected.Value,
+                isTarget = node.IsTarget.Value,
                 inputs = node.InputSlots.Select(ToSlotDto).ToArray(),
                 outputs = node.OutputSlots.Select(ToSlotDto).ToArray(),
             };
@@ -338,6 +339,8 @@ namespace Rector.Cli
             name = slot.Name,
             type = slot.Type.ToString(),
             connected = slot.ConnectedCount,
+            selected = slot.Selected.Value,
+            isTarget = slot.IsTarget.Value,
         };
 
         static object Failure(string code, string message) => new { success = false, error = code, message };

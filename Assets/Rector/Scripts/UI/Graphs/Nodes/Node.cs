@@ -11,6 +11,13 @@ namespace Rector.UI.Graphs.Nodes
         public abstract InputSlot[] InputSlots { get; }
         public abstract OutputSlot[] OutputSlots { get; }
         public readonly ReactiveProperty<bool> Selected = new(false);
+
+        /// <summary>エッジ作成のターゲットとして指されている。ソース(Selected)とは別の見た目になる。</summary>
+        public readonly ReactiveProperty<bool> IsTarget = new(false);
+
+        /// <summary>GrabModifier(R2)で掴まれている。ノードの左右に点滅する矢印が出る。</summary>
+        public readonly ReactiveProperty<bool> IsGrabbed = new(false);
+
         public readonly ReactiveProperty<bool> IsMuted = new(false);
 
         public virtual void DoAction()

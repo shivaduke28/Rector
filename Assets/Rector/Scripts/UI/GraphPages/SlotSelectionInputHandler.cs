@@ -77,8 +77,9 @@ namespace Rector.UI.GraphPages
 
         public override void Submit()
         {
-            graphPage.TargetSlot = null;
-            graphPage.TargetNode = graphPage.SelectedNode;
+            // セッターを通してターゲットカーソル(IsTarget)をソース上に立てる
+            graphPage.SetTargetSlot(null);
+            graphPage.SetTargetNode(graphPage.SelectedNode);
             graphPage.State.Value = GraphPageState.TargetNodeSelection;
         }
 
