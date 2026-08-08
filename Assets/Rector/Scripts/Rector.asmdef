@@ -10,6 +10,7 @@
         "UniTask",
         "R3.Unity",
         "Lasp.Runtime",
+        "Minis",
         "Unity.Pipeline"
     ],
     "includePlatforms": [],
