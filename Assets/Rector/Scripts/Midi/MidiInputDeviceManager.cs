@@ -57,8 +57,6 @@ namespace Rector.Midi
             }
         }
 
-        public bool IsSelected(string portName) => selected.Contains(portName);
-
         public void Toggle(string portName)
         {
             if (string.IsNullOrEmpty(portName)) return;
