@@ -78,15 +78,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "NavModifier",
-                    "type": "Button",
-                    "id": "80adc06a-a353-4f9f-ba4e-33bf59dcefaa",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "GrabModifier",
                     "type": "Button",
                     "id": "42602014-d6ee-4fa8-be7f-5de191d1a6db",
@@ -446,28 +437,6 @@
                 },
                 {
                     "name": "",
-                    "id": "19a43804-cd1c-49c8-bd19-2f5f90f907b1",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "NavModifier",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c610c862-d97f-4805-9c9a-46c1aa507aca",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "NavModifier",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "20f8af16-4d2c-48ef-9662-510ea1664d47",
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
@@ -514,6 +483,17 @@
                     "name": "",
                     "id": "d6c9b53e-cdb8-45d5-a10d-19b5fb3223d9",
                     "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mute",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ada450f2-a095-4e98-92b3-8af97af5fa5d",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

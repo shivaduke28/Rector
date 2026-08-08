@@ -23,6 +23,12 @@ namespace Rector.UI.GraphPages
         const float MinScale = 0.5f;
         Vector2 offset;
 
+        // Lock(L2/Tab)ホールド中のアンカー追従。押した瞬間のフォーカスノードの画面位置を
+        // アンカーとして記憶し、ホールド中はフォーカスノードがそこに来るように追従する。
+        bool lockHeld;
+        LayeredNode lockNode;
+        Vector2 lockAnchor;
+
         /// <summary>Resetでコンテンツを置くときの、maskの端からの余白。</summary>
         const float ResetMargin = 24f;
 
@@ -100,6 +106,9 @@ namespace Rector.UI.GraphPages
             offset = Vector2.zero;
             SetTranslation(ResetTranslation);
             content.style.scale = Vector3.one;
+            // ロック中のリセットは、リセット後の位置を新しいアンカーとして追認する。
+            // やらないと次のフォーカス移動でリセット前の画面位置へ巻き戻る。
+            RederiveLockAnchor();
         }
 
         void ApplyZoom(float zoom)
@@ -117,6 +126,19 @@ namespace Rector.UI.GraphPages
             var centerPosition = maskCenter - contentLeftUp;
             var diff = centerPosition * (currentScale / beforeScale - 1f);
             SetTranslation(translation - diff);
+
+            // ロック中はマスク中心ズームで動いた先を新しいアンカーとして追認する
+            // (次のフォーカス移動でズーム前の位置へスナップさせない)。
+            RederiveLockAnchor();
+        }
+
+        /// <summary>ロック対象ノードの現在の画面位置でアンカーを取り直す。</summary>
+        void RederiveLockAnchor()
+        {
+            if (lockNode != null)
+            {
+                lockAnchor = translation + lockNode.TargetPosition * currentScale;
+            }
         }
 
 
@@ -152,12 +174,52 @@ namespace Rector.UI.GraphPages
             var delta = new Vector2(translate.x, -translate.y) * 10f;
             SetTranslation(translation + delta);
             offset += delta;
+            // ロック中の手動パンはアンカーごと動かす(次のフォーカス移動と喧嘩させない)
+            if (lockNode != null)
+            {
+                lockAnchor += delta;
+            }
+        }
+
+        /// <summary>
+        /// Lock(L2/Tab)ホールドの開始。nodeの現在の画面位置をアンカーとして記憶する。
+        /// 中央へは寄せない(押した瞬間に画面が動かない)。フォーカスが無いまま押した場合は
+        /// ホールドだけ有効にし、次にフォーカスされたノードがその場でアンカー化される。
+        /// </summary>
+        /// <remarks>アニメーション遷移中でも確定値(translationの目標値)基準で取る。</remarks>
+        public void BeginLockFollow(LayeredNode node)
+        {
+            lockHeld = true;
+            lockNode = node;
+            RederiveLockAnchor();
+        }
+
+        public void EndLockFollow()
+        {
+            lockHeld = false;
+            lockNode = null;
         }
 
         public void MoveContentToMakeNodeVisible(LayeredNode node)
         {
-            // 常時追従の設定に加えて、Lock(L2/Tab)を握っている間だけの一時追従がある
-            if (!viewSettings.FollowSelectedNode.CurrentValue && !graphInputAction.IsLockHeld) return;
+            if (lockHeld)
+            {
+                if (lockNode == null)
+                {
+                    // フォーカス無しでロックを握り、後からノードを選んだ。画面は動かさず
+                    // そのノードのいまの位置をアンカーにする
+                    lockNode = node;
+                    RederiveLockAnchor();
+                    return;
+                }
+
+                // 新しいフォーカスがアンカー位置に来るように追従する(常時追従の設定より優先)
+                lockNode = node;
+                SetTranslation(lockAnchor - node.TargetPosition * currentScale);
+                return;
+            }
+
+            if (!viewSettings.FollowSelectedNode.CurrentValue) return;
 
             // left-top
             var nodePosition = node.TargetPosition * currentScale;
