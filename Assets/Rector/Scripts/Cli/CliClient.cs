@@ -3,6 +3,7 @@ using System.Linq;
 using Rector.Cameras;
 using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
+using Rector.UI.Graphs.Serialization;
 using Rector.UI.Graphs.Slots;
 using Rector.UI.LayeredGraphDrawing;
 using Rector.Vfx;
@@ -32,19 +33,22 @@ namespace Rector.Cli
         readonly VfxManager vfxManager;
         readonly CameraManager cameraManager;
         readonly BGSceneManager bgSceneManager;
+        readonly GraphSaveManager graphSaveManager;
 
         public CliClient(
             GraphPage graphPage,
             NodeTemplateRepository nodeTemplateRepository,
             VfxManager vfxManager,
             CameraManager cameraManager,
-            BGSceneManager bgSceneManager)
+            BGSceneManager bgSceneManager,
+            GraphSaveManager graphSaveManager)
         {
             this.graphPage = graphPage;
             this.nodeTemplateRepository = nodeTemplateRepository;
             this.vfxManager = vfxManager;
             this.cameraManager = cameraManager;
             this.bgSceneManager = bgSceneManager;
+            this.graphSaveManager = graphSaveManager;
         }
 
         public void Dispose()
@@ -205,6 +209,72 @@ namespace Rector.Cli
             graphPage.Sort();
             return new { success = true, nodeCount = graphPage.Graph.NodeCount, edgeCount = graphPage.Graph.EdgeCount };
         }
+
+        // ------------------------------------------------------ グラフの保存 / 読み込み
+
+        object GetGraphSlots() => new
+        {
+            slots = graphSaveManager.GetAllSlotInfo()
+                .Select(s => new { slot = s.Number, empty = s.IsEmpty, nodeCount = s.NodeCount, edgeCount = s.EdgeCount, savedAt = s.SavedAt })
+                .ToArray(),
+        };
+
+        object SaveGraph(int slot)
+        {
+            if (!GraphSlotRepository.IsValidSlot(slot)) return InvalidSlot(slot);
+
+            if (!graphSaveManager.Save(slot, out var result))
+                return Failure("save_failed", $"Could not write graph slot {slot}. See the Unity log.");
+
+            // skipped は BG シーン由来のノードとその端点のエッジ。今は保存の対象外 (issue #81)
+            return new
+            {
+                success = true,
+                slot,
+                nodeCount = result.NodeCount,
+                edgeCount = result.EdgeCount,
+                skippedNodeCount = result.SkippedNodeCount,
+                skippedEdgeCount = result.SkippedEdgeCount,
+            };
+        }
+
+        // ロードは今のグラフへ足すだけで何も失わないので、confirm は要らない。
+        // 丸ごと入れ替えたいときは rector_clear_graph を先に呼ぶ。
+        object LoadGraph(int slot)
+        {
+            if (!GraphSlotRepository.IsValidSlot(slot)) return InvalidSlot(slot);
+
+            if (!graphSaveManager.Load(slot, out var result))
+                return Failure("empty_slot", $"Graph slot {slot} is empty or unreadable.");
+
+            return new
+            {
+                success = true,
+                slot,
+                addedNodeCount = result.NodeCount,
+                addedEdgeCount = result.EdgeCount,
+                skippedNodeCount = result.SkippedNodeCount,
+                skippedEdgeCount = result.SkippedEdgeCount,
+                nodeCount = graphPage.Graph.NodeCount,
+                edgeCount = graphPage.Graph.EdgeCount,
+            };
+        }
+
+        object ClearGraph(bool confirm)
+        {
+            var nodeCount = graphPage.Graph.NodeCount;
+
+            // HUD 側も2度押しを要求する操作。undo が無いので CLI からも一手間かける
+            if (nodeCount > 0 && !confirm)
+                return Failure("confirm_required", $"Clearing the graph removes {nodeCount} node(s) and cannot be undone. Pass confirm=true.");
+
+            graphPage.ClearGraph();
+            RectorLogger.GraphCleared(nodeCount);
+            return new { success = true, removed = nodeCount };
+        }
+
+        static object InvalidSlot(int slot) =>
+            Failure("slot_out_of_range", $"Graph slot must be in [1, {GraphSlotRepository.SlotCount}]. Got {slot}.");
 
         // ------------------------------------------------------ シーン / カメラ / VFX
 

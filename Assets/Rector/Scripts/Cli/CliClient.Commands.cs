@@ -79,6 +79,24 @@ namespace Rector.Cli
         [CliCommand("rector_sort_graph", "Re-run the layered graph layout.")]
         static object SortGraphCommand() => Call(c => c.SortGraph());
 
+        [CliCommand("rector_graph_slots", "Graph save slots: how many nodes and edges each holds, and when it was saved.")]
+        static object GraphSlotsCommand() => Call(c => c.GetGraphSlots());
+
+        [CliCommand("rector_save_graph", "Save the current graph to a slot, overwriting whatever is there.")]
+        static object SaveGraphCommand(
+            [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot)
+            => Call(c => c.SaveGraph(slot));
+
+        [CliCommand("rector_load_graph", "Add a saved slot's nodes and edges to the current graph. Existing nodes are untouched.")]
+        static object LoadGraphCommand(
+            [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot)
+            => Call(c => c.LoadGraph(slot));
+
+        [CliCommand("rector_clear_graph", "Remove every node and edge. Not undoable: requires confirm=true.")]
+        static object ClearGraphCommand(
+            [CliArg("confirm", "Apply the removal. Without it the call is refused.")] bool confirm = false)
+            => Call(c => c.ClearGraph(confirm));
+
         [CliCommand("rector_load_scene", "Load a background scene by name.")]
         static object LoadSceneCommand(
             [CliArg("name", "Scene name, as listed by rector_scenes.", Required = true)] string name)

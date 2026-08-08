@@ -10,6 +10,7 @@ using Rector.Osc;
 using Rector.UI;
 using Rector.UI.GraphPages;
 using Rector.UI.Graphs;
+using Rector.UI.Graphs.Serialization;
 using Rector.UI.Hud;
 using Rector.Vfx;
 using Unity.Cinemachine;
@@ -82,6 +83,8 @@ namespace Rector
             var oscSettingsPage = Register(new OscSettingsPageModel(oscInputSetting, oscModel, hudView.OscSettingsPageView));
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
             var graphSettingsPage = Register(new GraphSettingsPageModel(hudView.GraphSettingsPageView, graphPage.Groups, graphPage.GuideSettings));
+            var graphSaveManager = new GraphSaveManager(graphPage, nodeTemplateRepository);
+            var graphSlotPage = Register(new GraphSlotPageModel(hudView.GraphSlotPageView, graphSaveManager));
             var copyrightNoticesPage = Register(new CopyrightNoticesPageModel(hudView.CopyrightNoticesPageView));
             var memoryStatsRecorder = Register(new MemoryStatsRecorder());
 
@@ -91,7 +94,9 @@ namespace Rector
                 oscSettingsPage,
                 displaySettingsPage,
                 graphSettingsPage,
+                graphSlotPage,
                 copyrightNoticesPage,
+                graphPage,
                 hudView.SystemPageView));
             var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
 
@@ -114,7 +119,8 @@ namespace Rector
                 nodeTemplateRepository,
                 vfxManager,
                 cameraManager,
-                bgSceneManager
+                bgSceneManager,
+                graphSaveManager
             )));
 
 #if !UNITY_EDITOR

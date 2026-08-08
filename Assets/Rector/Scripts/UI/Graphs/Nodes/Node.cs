@@ -7,6 +7,14 @@ namespace Rector.UI.Graphs.Nodes
     {
         public NodeId Id { get; }
         public string Name { get; }
+
+        /// <summary>このノードを生んだ NodeTemplate の Id。</summary>
+        /// <remarks>NodeTemplate.Create(NodeId) が刻むので、ノード側から設定することはない。</remarks>
+        public NodeTemplateId TemplateId { get; internal set; }
+
+        /// <summary>グラフの保存に含めてよいか。テンプレートから引き継ぐ。</summary>
+        public bool IsSaveable { get; internal set; }
+
         public abstract NodeCategory Category { get; }
         public abstract InputSlot[] InputSlots { get; }
         public abstract OutputSlot[] OutputSlots { get; }

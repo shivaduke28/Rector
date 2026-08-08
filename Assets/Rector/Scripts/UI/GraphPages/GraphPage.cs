@@ -463,6 +463,20 @@ namespace Rector.UI.GraphPages
             holdGuideModel.Visible.Value = false;
         }
 
+        /// <summary>
+        /// グラフを空にする。グラフのロードで作り直す前に呼ぶ。
+        /// </summary>
+        /// <remarks>
+        /// EnterNodeSelection を先に通すのは、選択・ターゲット・掴み(grabbedNode)の参照を
+        /// ノードが生きているうちに外すため。RemoveSelectedNode と同じ理由。
+        /// </remarks>
+        public void ClearGraph()
+        {
+            EnterNodeSelection(null);
+            Graph.ClearNodes();
+            Sort();
+        }
+
         public void RemoveSelectedNode()
         {
             if (SelectedNode is not { } node) return;

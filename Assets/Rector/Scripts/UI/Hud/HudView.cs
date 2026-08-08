@@ -25,6 +25,7 @@ namespace Rector.UI.Hud
         public GraphPage GraphPage { get; }
         public ButtonListPageView ScenePageView { get; }
         public ButtonListPageView SystemPageView { get; }
+        public ButtonListPageView GraphSlotPageView { get; }
         public SettingsPageView AudioInputDevicePageView { get; }
         public SettingsPageView MidiInputDevicePageView { get; }
         public SettingsPageView OscSettingsPageView { get; }
@@ -52,6 +53,7 @@ namespace Rector.UI.Hud
             GraphPage = new GraphPage(root.Q<VisualElement>("graph-page"), graphInputAction, nodeTemplateRepository);
             ScenePageView = new ButtonListPageView(root.Q<VisualElement>("scene-page"), uiInputAction);
             SystemPageView = new ButtonListPageView(root.Q<VisualElement>("system-page"), uiInputAction);
+            GraphSlotPageView = new ButtonListPageView(root.Q<VisualElement>("graph-slot-page"), uiInputAction);
             AudioInputDevicePageView = new SettingsPageView(root.Q<VisualElement>("audio-input-device-page"), uiInputAction);
             MidiInputDevicePageView = new SettingsPageView(root.Q<VisualElement>("midi-input-device-page"), uiInputAction);
             OscSettingsPageView = new SettingsPageView(root.Q<VisualElement>("osc-settings-page"), uiInputAction);

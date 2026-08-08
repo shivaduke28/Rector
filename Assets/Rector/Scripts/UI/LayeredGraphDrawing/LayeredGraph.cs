@@ -66,6 +66,41 @@ namespace Rector.UI.LayeredGraphDrawing
             }
         }
 
+        /// <summary>
+        /// グラフ上の全ノード。Layers を歩くのと違い、Sort の前後や DummyNode に左右されない。
+        /// </summary>
+        public IEnumerable<LayeredNode> Nodes
+        {
+            get
+            {
+                foreach (var node in nodes.Values)
+                {
+                    if (node is LayeredNode layeredNode) yield return layeredNode;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 全ノードとエッジを消す。グラフのロードで作り直す前に呼ぶ。
+        /// </summary>
+        /// <remarks>
+        /// RemoveNode が nodes と Layers を書き換えるので、先に id を控えてから回す。
+        /// 選択やターゲットの後始末はしないので、GraphPage 側で先に外しておくこと。
+        /// </remarks>
+        public void ClearNodes()
+        {
+            var ids = new List<NodeId>(nodes.Count);
+            foreach (var id in nodes.Keys)
+            {
+                ids.Add(id);
+            }
+
+            foreach (var id in ids)
+            {
+                RemoveNode(id);
+            }
+        }
+
         public bool TryGetNode(NodeId id, out LayeredNode node)
         {
             if (nodes.TryGetValue(id, out var n) && n is LayeredNode layeredNode)
