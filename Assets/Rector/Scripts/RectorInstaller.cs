@@ -4,6 +4,7 @@ using System.Threading;
 using Rector.Audio;
 using Rector.Cameras;
 using Rector.Cli;
+using Rector.Midi;
 using Rector.NodeBehaviours;
 using Rector.UI;
 using Rector.UI.GraphPages;
@@ -48,6 +49,9 @@ namespace Rector
 
             Register(new ThresholdAdjuster(mixerModel));
 
+            // midi
+            var midiModel = Register(new MidiModel());
+
             // vfx
             var vfxManager = Register(new VfxManager(rectorSettingsAsset.vfxSettings));
 
@@ -87,6 +91,7 @@ namespace Rector
                 vfxManager,
                 beatModel,
                 mixerModel,
+                midiModel,
                 cameraManager,
                 hudModel
             ));

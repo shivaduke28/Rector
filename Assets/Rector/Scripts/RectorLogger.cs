@@ -37,6 +37,17 @@ namespace Rector
             LogInternal($"[SYSTEM/DISPLAY] {width}x{height} {mode}");
         }
 
+        public static void MidiInputDevice(string product, int channel, bool connected)
+        {
+            // channel は Minis の 0 始まりを MIDI 慣習の 1 始まりで表示する
+            LogInternal($"[SYSTEM/MIDI] {(connected ? "connected" : "disconnected")} device='{product}' ch={channel + 1}");
+        }
+
+        public static void MidiLearn(Node node, string status)
+        {
+            LogInternal($"[NODE/MIDI-LEARN] id={node.Id} name='{node.Name}' {status}");
+        }
+
         public static void DisableStackTrace()
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
