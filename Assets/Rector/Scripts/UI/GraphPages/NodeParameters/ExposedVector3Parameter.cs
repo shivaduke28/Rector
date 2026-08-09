@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using R3;
 using Rector.UI.Graphs.Slots;
 using UnityEngine;
@@ -13,48 +13,17 @@ namespace Rector.UI.GraphPages.NodeParameters
     }
 
     /// <summary>
-    /// Vector3の入力スロット1本を、見出し1行 + X/Y/Zの3行として持つ。
+    /// Vector3の入力スロット1本を、見出し1行 + X/Y/Zの3行として組む。
     /// </summary>
-    /// <remarks>
-    /// 成分ごとの行はスロットを共有するので、刻み幅の桁と成分の写しはここで1度だけ用意する。
-    /// 写しはスロットからの一方通行で、書き込みは行から直接スロットへ返す。
-    /// 双方向にすると往復を止めるためのフラグが要る。
-    /// </remarks>
-    public sealed class ExposedVector3Parameter : IDisposable
+    public static class ExposedVector3Parameter
     {
-        public ExposedVector3HeaderRow Header { get; }
-        public ExposedVector3ComponentInputModel[] Components { get; }
-
-        readonly ReactiveProperty<float>[] components = new ReactiveProperty<float>[3];
-        readonly IDisposable subscription;
-
-        public ExposedVector3Parameter(ReactivePropertyVector3InputSlot slot, ReactiveProperty<SliderStepType> stepType)
+        public static IEnumerable<IExposedRow> CreateRows(ReactivePropertyInputSlot<Vector3> slot,
+            ReactiveProperty<SliderStepType> stepType)
         {
-            var digit = ExposedStepCalculator.DigitFromRange(slot.MinValue, slot.MaxValue);
-            var current = slot.Property.Value;
-            for (var i = 0; i < components.Length; i++)
-            {
-                components[i] = new ReactiveProperty<float>(current[i]);
-            }
-
-            subscription = slot.Property.Subscribe(components, (value, cs) =>
-            {
-                for (var i = 0; i < cs.Length; i++) cs[i].Value = value[i];
-            });
-
-            Header = new ExposedVector3HeaderRow(slot.Name);
-            Components = new[]
-            {
-                new ExposedVector3ComponentInputModel(slot, Vector3Axis.X, components[0], digit, stepType),
-                new ExposedVector3ComponentInputModel(slot, Vector3Axis.Y, components[1], digit, stepType),
-                new ExposedVector3ComponentInputModel(slot, Vector3Axis.Z, components[2], digit, stepType),
-            };
-        }
-
-        public void Dispose()
-        {
-            subscription.Dispose();
-            foreach (var c in components) c.Dispose();
+            yield return new ExposedVector3HeaderRow(slot.Name);
+            yield return new ExposedVector3ComponentInputModel(slot, Vector3Axis.X, stepType);
+            yield return new ExposedVector3ComponentInputModel(slot, Vector3Axis.Y, stepType);
+            yield return new ExposedVector3ComponentInputModel(slot, Vector3Axis.Z, stepType);
         }
     }
 
@@ -69,47 +38,42 @@ namespace Rector.UI.GraphPages.NodeParameters
         }
     }
 
-    /// <summary>Vector3のX/Y/Zのうち1成分を担当する行。刻みはfloat行と共有する。</summary>
+    /// <summary>
+    /// Vector3のX/Y/Zのうち1成分を担当する行。刻みはfloat行と共有する。
+    /// </summary>
+    /// <remarks>
+    /// Vector3にはレンジが無いので刻みは整数から始まり、スライダーも出ない。
+    /// 値の置き場はスロットのReactivePropertyだけで、成分の写しは持たない。
+    /// </remarks>
     public sealed class ExposedVector3ComponentInputModel : IExposedInputModel
     {
+        // レンジが無いぶん、刻みは ±1 -> ±0.1 -> ±0.01 と整数から始める。
+        const int Digit = 0;
+
         public string Label { get; }
-        public float MinValue => slot.MinValue;
-        public float MaxValue => slot.MaxValue;
-
-        /// <summary>スロットの値からこの成分だけを写したもの。</summary>
-        public ReadOnlyReactiveProperty<float> Value => component;
-
+        public ReadOnlyReactiveProperty<Vector3> Value => slot.Property;
         public ReadOnlyReactiveProperty<SliderStepType> StepType => stepType;
         public ReactiveProperty<bool> IsFocused { get; } = new(false);
 
-        readonly ReactivePropertyVector3InputSlot slot;
+        readonly ReactivePropertyInputSlot<Vector3> slot;
         readonly int index;
-        readonly ReactiveProperty<float> component;
         readonly ReactiveProperty<SliderStepType> stepType;
-        readonly int digit;
 
-        public ExposedVector3ComponentInputModel(ReactivePropertyVector3InputSlot slot, Vector3Axis axis,
-            ReactiveProperty<float> component, int digit, ReactiveProperty<SliderStepType> stepType)
+        public ExposedVector3ComponentInputModel(ReactivePropertyInputSlot<Vector3> slot, Vector3Axis axis,
+            ReactiveProperty<SliderStepType> stepType)
         {
             this.slot = slot;
-            this.component = component;
-            this.digit = digit;
             this.stepType = stepType;
             index = (int)axis;
             Label = axis.ToString();
         }
 
-        public string ValueFormat => ExposedStepCalculator.ValueFormat(digit);
+        public string ValueFormat => ExposedStepCalculator.ValueFormat(Digit);
 
-        public float StepSize(SliderStepType step) => ExposedStepCalculator.StepSize(digit, step);
+        public float StepSize(SliderStepType step) => ExposedStepCalculator.StepSize(Digit, step);
 
-        /// <summary>担当する成分だけを差し替えてスロットへ返す。</summary>
-        public void Write(float value)
-        {
-            var v = slot.Property.Value;
-            v[index] = Mathf.Clamp(value, slot.MinValue, slot.MaxValue);
-            slot.Property.Value = v;
-        }
+        /// <summary>Vector3から担当する成分だけを取り出す。</summary>
+        public float Read(Vector3 value) => value[index];
 
         public void Increment() => Move(true);
 
@@ -117,8 +81,9 @@ namespace Rector.UI.GraphPages.NodeParameters
 
         void Move(bool increment)
         {
-            Write(ExposedStepCalculator.Apply(
-                component.Value, digit, stepType.CurrentValue, increment, slot.MinValue, slot.MaxValue));
+            var value = slot.Property.Value;
+            value[index] = ExposedStepCalculator.Apply(value[index], Digit, stepType.CurrentValue, increment);
+            slot.Property.Value = value;
         }
 
         /// <summary>刻み幅を x1 -> x10 -> x100 と回す。</summary>

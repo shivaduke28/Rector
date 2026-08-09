@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using R3;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Slots;
+using UnityEngine;
 
 namespace Rector.UI.GraphPages.NodeParameters
 {
@@ -28,9 +28,6 @@ namespace Rector.UI.GraphPages.NodeParameters
         /// <summary>カーソルが止まる行。<see cref="rows"/> から導出するので取りこぼしが起きない。</summary>
         readonly List<IExposedInputModel> focusableRows = new();
 
-        /// <summary>行が張った購読。Enterのたびに畳む。</summary>
-        readonly List<IDisposable> rowDisposables = new();
-
         int index = -1;
 
         public NodeParameterModel(GraphPage page)
@@ -54,8 +51,8 @@ namespace Rector.UI.GraphPages.NodeParameters
                         case ReactivePropertyIntInputSlot intInputSlot:
                             rows.Add(new ExposedIntInputModel(intInputSlot));
                             break;
-                        case ReactivePropertyVector3InputSlot vector3InputSlot:
-                            AddVector3(vector3InputSlot);
+                        case ReactivePropertyInputSlot<Vector3> vector3InputSlot:
+                            rows.AddRange(ExposedVector3Parameter.CreateRows(vector3InputSlot, stepType));
                             break;
                         case ReactivePropertyInputSlot<bool> boolInputSlot:
                             rows.Add(new ExposedBoolInputModel(boolInputSlot));
@@ -77,21 +74,10 @@ namespace Rector.UI.GraphPages.NodeParameters
             if (index >= 0) focusableRows[index].Focus();
 
             IsVisible.Value = true;
-            return;
-
-            void AddVector3(ReactivePropertyVector3InputSlot slot)
-            {
-                var parameter = new ExposedVector3Parameter(slot, stepType);
-                rowDisposables.Add(parameter);
-                rows.Add(parameter.Header);
-                foreach (var component in parameter.Components) rows.Add(component);
-            }
         }
 
         void Clear()
         {
-            foreach (var disposable in rowDisposables) disposable.Dispose();
-            rowDisposables.Clear();
             rows.Clear();
             focusableRows.Clear();
             index = -1;

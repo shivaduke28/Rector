@@ -5,7 +5,7 @@
         <engine:VisualElement class="rector-exposed-name-label-container">
             <engine:Label text="X" name="name-label" class="rector-label rector-exposed-name-label" />
         </engine:VisualElement>
-        <Rector.UI.RectorSlider name="slider" class="rector-slider" />
+        <engine:VisualElement name="slider-space" class="rector-slider" />
         <engine:VisualElement class="rector-exposed-step-label-container">
             <engine:Label text="±0.001" name="step-label" class="rector-label rector-exposed-step-label" />
         </engine:VisualElement>

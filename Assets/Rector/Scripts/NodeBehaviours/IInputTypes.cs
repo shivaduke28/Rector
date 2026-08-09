@@ -20,15 +20,10 @@ namespace Rector.NodeBehaviours
         int MaxValue { get; }
     }
 
-    /// <summary>
-    /// レンジはX/Y/Zで共通。範囲を持たない入力(Position等)では ±Infinity が返る。
-    /// </summary>
     public interface IVector3Input : IInput
     {
         ReactiveProperty<Vector3> Value { get; }
         Vector3 DefaultValue { get; }
-        float MinValue { get; }
-        float MaxValue { get; }
     }
 
     public interface IBoolInput : IInput

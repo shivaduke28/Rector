@@ -87,6 +87,9 @@ namespace Rector.UI.GraphPages.NodeParameters
                             callbackInputView.AddTo(propertyRoot);
                             callbackInputView.Bind(callbackInput).AddTo(disposable);
                             break;
+                        default:
+                            // 行を足してここを書き忘れると黙って消えるので、気づけるように落とす
+                            throw new ArgumentOutOfRangeException(nameof(row), row, null);
                     }
                 }
 

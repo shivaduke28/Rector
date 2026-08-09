@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Rector.NodeBehaviours;
 using UnityEditor;
@@ -54,9 +54,7 @@ namespace Rector.Editor
                     case not null when type == typeof(Vector3):
                         result.Add(new Vector3Input(
                             exposedProperty.name,
-                            visualEffect.GetVector3(exposedProperty.name),
-                            serializableVfxParameterInfo?.Min ?? float.NegativeInfinity,
-                            serializableVfxParameterInfo?.Max ?? float.PositiveInfinity
+                            visualEffect.GetVector3(exposedProperty.name)
                         ));
                         break;
                     case not null when type == typeof(bool):

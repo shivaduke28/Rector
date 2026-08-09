@@ -103,8 +103,6 @@ namespace Rector.NodeBehaviours
         {
             currentInput = input;
             Value = new ReactiveProperty<Vector3>(input.Value.Value);
-            MinValue = input.MinValue;
-            MaxValue = input.MaxValue;
             DefaultValue = input.DefaultValue;
             Name = input.Name;
 
@@ -117,8 +115,6 @@ namespace Rector.NodeBehaviours
         public override string Name { get; }
         public ReactiveProperty<Vector3> Value { get; }
         public Vector3 DefaultValue { get; }
-        public float MinValue { get; }
-        public float MaxValue { get; }
 
 
         public override void UpdateInput(IInput input)
