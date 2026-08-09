@@ -150,7 +150,6 @@ namespace Rector.UI.GraphPages
             Groups.Count.Subscribe(_ => Sort()).AddTo(disposable);
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
-            graphInputAction.MoveGroup.Subscribe(x => CurrentInputHandler.MoveGroup(x)).AddTo(disposable);
             graphInputAction.MoveNodeToGroup.Subscribe(x => CurrentInputHandler.MoveNodeToGroup(x)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
@@ -190,21 +189,6 @@ namespace Rector.UI.GraphPages
         {
             Graph.AddNode(nodeView, SelectedNode?.Group ?? 0);
             Sort();
-        }
-
-        /// <summary>
-        /// フォーカスを隣のグループへ移す。directionは-1か1。
-        /// </summary>
-        /// <remarks>
-        /// ノードのないグループは飛ばし、端まで行ったらループする。
-        /// </remarks>
-        public void MoveActiveGroup(int direction)
-        {
-            var next = nodeNavigator.FindNodeInAdjacentGroup(SelectedNode, direction, Groups.CurrentCount);
-            if (next != null)
-            {
-                SelectNode(next);
-            }
         }
 
         /// <summary>

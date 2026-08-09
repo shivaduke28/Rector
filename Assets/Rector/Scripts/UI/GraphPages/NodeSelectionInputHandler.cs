@@ -34,11 +34,6 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public override void MoveGroup(int direction)
-        {
-            graphPage.MoveActiveGroup(direction);
-        }
-
         public override void MoveNodeToGroup(int direction)
         {
             graphPage.MoveSelectedNodeToGroup(direction);
