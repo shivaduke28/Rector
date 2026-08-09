@@ -11,18 +11,21 @@ namespace Rector.UI.Hud
     /// ボタン一覧の1行。見出しかボタンのどちらか。
     /// </summary>
     /// <remarks>
-    /// 見出しはカーソルが止まらない飾りなので、モデルは行の並び(<see cref="IButtonListPageModel.GetItems"/>)と
-    /// カーソルの対象(ボタンだけの配列)を別々に持つ。見出しを飛ばす処理はどこにも要らない。
+    /// 見出しと余白はカーソルが止まらない飾りなので、モデルは行の並び(<see cref="IButtonListPageModel.GetItems"/>)と
+    /// カーソルの対象(ボタンだけの配列)を別々に持つ。飾りを飛ばす処理はどこにも要らない。
     /// </remarks>
     public readonly struct ButtonListItem
     {
-        /// <summary>見出しのテキスト。ボタンの行では null。</summary>
+        /// <summary>見出しのテキスト。ボタンと余白の行では null。</summary>
         public readonly string HeaderText;
 
-        /// <summary>ボタンの状態。見出しの行では null。</summary>
+        /// <summary>ボタンの状態。見出しと余白の行では null。</summary>
         public readonly RectorButtonState Button;
 
         public bool IsHeader => Button == null;
+
+        /// <summary>文字を持たない見出し。行のまとまりを空きだけで分ける。</summary>
+        public bool IsSpacer => Button == null && HeaderText == null;
 
         ButtonListItem(string headerText, RectorButtonState button)
         {
@@ -33,6 +36,8 @@ namespace Rector.UI.Hud
         public static ButtonListItem Of(RectorButtonState button) => new(null, button);
 
         public static ButtonListItem Header(string text) => new(text, null);
+
+        public static ButtonListItem Spacer() => new(null, null);
     }
 
     public interface IButtonListPageModel
@@ -50,6 +55,7 @@ namespace Rector.UI.Hud
     public sealed class ButtonListPageView : IUIInputHandler
     {
         const string HeaderClassName = "rector-button-list-header";
+        const string SpacerClassName = "rector-button-list-spacer";
 
         readonly VisualElement root;
         readonly UIInputAction uiInputAction;
@@ -90,6 +96,14 @@ namespace Rector.UI.Hud
             var d = new CompositeDisposable();
             foreach (var item in model.GetItems())
             {
+                if (item.IsSpacer)
+                {
+                    var spacer = new VisualElement();
+                    spacer.AddToClassList(SpacerClassName);
+                    leftList.Add(spacer);
+                    continue;
+                }
+
                 if (item.IsHeader)
                 {
                     var header = new Label(item.HeaderText);

@@ -11,24 +11,16 @@ namespace Rector.UI.Hud
     /// プリセットの保存と削除。準備のための画面なので、操作してもページから出ない。
     /// </summary>
     /// <remarks>
-    /// 名前を付ける口はここに無い。保存は日時の既定名で作られ、名前を変えたくなったら
-    /// [Open Preset Folder] で保存フォルダを開き、Finder の上でリネームする。
-    /// 戻ってきてページに入り直せば新しい名前で並ぶ。
-    ///
-    /// 中身のあるプリセットはどれを押しても確認ダイアログを通す。かつて空の枠だけその場で
-    /// 書き込むようにしていたら、行が「スロット」に見えるせいで押した瞬間にファイルができるのが
-    /// 驚きになった。[Save as new] はその逆で、角括弧付きの動作の行であり、しかも新規作成なので
-    /// 何も失わない。失うもののある Overwrite と Delete だけが確認を通る。
+    /// 名前を付ける口はここに無い。日時の既定名で作り、変えたければ Open Preset Folder から
+    /// Finder でリネームする。失うもののある Overwrite と Delete だけ確認を挟む。
     ///
     /// UIの入力は Navigate/Submit/Cancel の3つしか無いので、削除だけを別のボタンに
     /// 割り当てることはできない。上書きと削除はダイアログの中で選ぶ。
-    ///
-    /// 行数は Finder 側でも変わるので、開くたび・戻るたびに組み直す。
     /// </remarks>
     public sealed class PresetManagePageModel : IInitializable, IDisposable, IButtonListPageModel
     {
-        const string SaveAsNewLabel = "[Save as new]";
-        const string OpenFolderLabel = "[Open Preset Folder]";
+        const string SaveAsNewLabel = "Save as new";
+        const string OpenFolderLabel = "Open Preset Folder";
 
         readonly ButtonListPageView view;
         readonly GraphSaveManager graphSaveManager;
@@ -37,7 +29,6 @@ namespace Rector.UI.Hud
         readonly List<ButtonListItem> items = new();
         readonly List<RectorButtonState> buttons = new();
 
-        /// <summary>今並んでいるプリセットの名前。行の位置を名前から引き直すために持つ。</summary>
         readonly List<string> presetNames = new();
 
         Action? onExit;
@@ -62,16 +53,11 @@ namespace Rector.UI.Hud
             Refresh(null);
         }
 
-        /// <summary>
-        /// 一覧を取り直して組み直す。<paramref name="focusName"/> の行にカーソルを戻す。
-        /// </summary>
+        /// <summary>一覧を取り直して組み直し、<paramref name="focusName"/> の行にカーソルを戻す。</summary>
         /// <remarks>
-        /// 表示のオンオフを通すと <see cref="ButtonListPageView"/> が要素を組み直す。
-        /// 同じ値の代入は流れないので、先に false を挟まないと古い行が残る。
-        ///
-        /// 順番が効く。組み直し → カーソル位置の確定 → 表示、の順でないとカーソルが消える。
-        /// <see cref="RectorButton.Bind"/> は購読した時点の値を受け取るので、表示を先に立てると
-        /// まだ誰にも立っていない IsFocused を読んでしまう。
+        /// 組み直し → カーソル → 表示 の順を崩さないこと。表示のオンオフで
+        /// <see cref="ButtonListPageView"/> が要素を作り直し、<see cref="RectorButton.Bind"/> は
+        /// 購読した時点の IsFocused を読むので、表示が先だとカーソルが消える。
         /// </remarks>
         void Refresh(string? focusName)
         {
@@ -80,8 +66,8 @@ namespace Rector.UI.Hud
             var previous = index;
             BuildRows();
 
+            // 先頭が Save as new なので、プリセットの n 番目は行の n+1 番目
             var found = focusName == null ? -1 : presetNames.IndexOf(focusName);
-            // 一覧の先頭は [Save as new] なので、プリセットの n 番目は行の n+1 番目
             index = Math.Clamp(found >= 0 ? found + 1 : previous, 0, buttons.Count - 1);
             buttons[index].IsFocused.Value = true;
             isVisible.Value = true;
@@ -95,13 +81,18 @@ namespace Rector.UI.Hud
 
             Add(new RectorButtonState(SaveAsNewLabel, SaveAsNew));
 
-            foreach (var info in graphSaveManager.GetAll())
+            // 保存が無いときに余白が二重にならないよう、一覧がある側にだけ上の空きを持たせる
+            var infos = graphSaveManager.GetAll();
+            if (infos.Length > 0) items.Add(ButtonListItem.Spacer());
+
+            foreach (var info in infos)
             {
                 var name = info.Name;
                 presetNames.Add(name);
                 Add(new RectorButtonState(PresetLabel.Row(info), () => Submit(name)));
             }
 
+            items.Add(ButtonListItem.Spacer());
             Add(new RectorButtonState(OpenFolderLabel, OpenFolder));
         }
 
@@ -111,19 +102,18 @@ namespace Rector.UI.Hud
             items.Add(ButtonListItem.Of(button));
         }
 
-        /// <summary>今のグラフを新しいファイルに書く。名前は日時、変えたければ Finder で。</summary>
         void SaveAsNew()
         {
             var name = graphSaveManager.NextDefaultName();
             graphSaveManager.Save(name, out _);
 
-            // 名前順に並ぶので、新しい行は末尾とは限らない。名前で引き直してカーソルを乗せる
+            // 名前順に並ぶので、新しい行は末尾とは限らない
             Refresh(name);
         }
 
         void Submit(string name)
         {
-            // Finder 側で消えている・名前が変わっていることがある。その場合は一覧を取り直すだけ
+            // Finder 側で消えている・名前が変わっていることがある
             if (!graphSaveManager.TryGetInfo(name, out var info))
             {
                 Refresh(null);
@@ -141,13 +131,7 @@ namespace Rector.UI.Hud
             confirmDialog.Enter(PresetLabel.Row(info), choices, () => Refresh(info.Name));
         }
 
-        /// <summary>
-        /// 保存フォルダを開く。ページはそのまま残す。
-        /// </summary>
-        /// <remarks>
-        /// Finder でリネームしても一覧はすぐには変わらない。取り直す合図が無いので、
-        /// ページに入り直したときに拾う。
-        /// </remarks>
+        /// <summary>保存フォルダを開く。リネームを拾い直す合図は無いので、ページに入り直したときに反映される。</summary>
         void OpenFolder() => graphSaveManager.OpenDirectory();
 
         void Close()
