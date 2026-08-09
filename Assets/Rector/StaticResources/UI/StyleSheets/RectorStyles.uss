@@ -459,9 +459,11 @@
     background-color: var(--rector-text-background-color);
 }
 
-/* 枠の中は押すものなので、枠と文字がくっつかないぶんだけ左右を残す */
+/* 枠の中は押すものなので、キーらしく見えるだけの余白を左右に残す。
+   letter-spacingは最後の文字の後ろにも乗り、その分(2px)は右の余白として見える。
+   左右を同じ幅に見せるには右をそのぶん引いておく(左5px / 右3+2px) */
 .rector-input-guide__key {
-    padding: 0 2px;
+    padding: 0 3px 0 5px;
     border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -526,7 +528,9 @@
 }
 
 /* パッド版は透明セルが間隔を持つが、こちらはチップを直接並べるのでチップ側に持たせる。
-   縦は行がベタづきしないよう横より広く取る（行間は上下の合計で4px） */
+   横はチップ内のキー→動作(5px)より広く取らないとチップの切れ目が読めないので、
+   間隔は左マージンだけで作る。右に余りを出さないので行の右端は親のright:8pxに揃う。
+   縦は行がベタづきしない程度でよく、上下の合計で4px */
 .rector-input-guide__keyboard .rector-input-guide__chip {
-    margin: 2px;
+    margin: 2px 0 2px 12px;
 }

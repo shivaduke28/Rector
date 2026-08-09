@@ -23,7 +23,7 @@ namespace Rector.UI.GraphPages
         const string ResetKey = "P";
         const string LockKey = "TAB";
         const string ParamKey = "SHIFT";
-        const string GrabKey = "OPTION";
+        const string GrabKey = "ALT";
         const string FaceTopKey = "C";
         const string FaceLeftKey = "F";
         const string FaceRightKey = "X/ESC";
