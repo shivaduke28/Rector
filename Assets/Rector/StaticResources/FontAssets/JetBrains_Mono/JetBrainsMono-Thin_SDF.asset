@@ -2794,7 +2794,7 @@ MonoBehaviour:
   - regularTypeface: {fileID: 0}
     italicTypeface: {fileID: 0}
   m_RegularStyleWeight: 0
-  m_RegularStyleSpacing: 14
+  m_RegularStyleSpacing: 8
   m_BoldStyleWeight: 0.75
   m_BoldStyleSpacing: 7
   m_ItalicStyleSlant: 35
