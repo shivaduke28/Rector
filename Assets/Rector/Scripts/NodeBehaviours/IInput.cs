@@ -88,8 +88,27 @@ namespace Rector.NodeBehaviours
     [Serializable]
     public sealed class Vector3Input : ValueInput<Vector3>, IVector3Input
     {
+        // Position のように上限下限が決まらない入力があるので、レンジは持つかどうかから指定する。
+        // 既存のシリアライズ済みデータにはこのフィールドが無く false で読まれるため、レンジなしに落ちる。
+        [SerializeField] bool hasRange;
+        [SerializeField] float minValue;
+        [SerializeField] float maxValue;
+
+        /// <summary>レンジはX/Y/Zで共通。持たないときは ±Infinity を返し、スライダーは隠れる。</summary>
+        public float MinValue => hasRange ? minValue : float.NegativeInfinity;
+
+        public float MaxValue => hasRange ? maxValue : float.PositiveInfinity;
+
         public Vector3Input(string name, Vector3 defaultValue) : base(name, defaultValue)
         {
+        }
+
+        public Vector3Input(string name, Vector3 defaultValue, float minValue, float maxValue) : base(name, defaultValue)
+        {
+            // 範囲として成立しない指定はレンジなしとして扱う。VFXは範囲を持たない属性でも 0/0 を返してくる。
+            hasRange = minValue < maxValue && float.IsFinite(minValue) && float.IsFinite(maxValue);
+            this.minValue = minValue;
+            this.maxValue = maxValue;
         }
 
         public Vector3Input() : base("", Vector3.zero)

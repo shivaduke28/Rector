@@ -14,6 +14,8 @@ namespace Rector.UI
         public VisualTreeAsset exposedIntSlot;
         public VisualTreeAsset exposedBoolSlot;
         public VisualTreeAsset exposedCallbackSlot;
+        public VisualTreeAsset exposedVector3Header;
+        public VisualTreeAsset exposedVector3ComponentSlot;
         public VisualTreeAsset consoleLog;
 
         public RectorIconSettings iconSettings;

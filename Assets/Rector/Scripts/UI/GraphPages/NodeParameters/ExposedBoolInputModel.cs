@@ -16,6 +16,8 @@ namespace Rector.UI.GraphPages.NodeParameters
             ToggleState = new RectorToggleState(slot.Property);
         }
 
+        public string Label => Slot.Name;
+
         public void Set(bool value) => Slot.Property.Value = value;
 
         public void Toggle()

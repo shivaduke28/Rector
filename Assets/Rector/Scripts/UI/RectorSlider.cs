@@ -37,7 +37,7 @@ namespace Rector.UI
             }
             return new CompositeDisposable(
                 state.Value.Subscribe(x => slider.SetValueWithoutNotify(x)),
-                slider.OnValueChangeAsObservable().Subscribe(x => state.Value.Value = x.newValue),
+                slider.OnValueChangeAsObservable().Subscribe(x => state.Write(x.newValue)),
                 state.IsFocused.Subscribe(x => EnableInClassList(UssClassNameFocused, x)),
                 state.IsHighlighted.Subscribe(x => EnableInClassList(UssClassNameHighlighted, x))
             );

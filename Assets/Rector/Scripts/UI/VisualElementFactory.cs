@@ -38,6 +38,8 @@ namespace Rector.UI
         public VisualElement CreateExposedIntSlot() => settings.exposedIntSlot.Instantiate();
         public VisualElement CreateExposedBoolSlot() => settings.exposedBoolSlot.Instantiate();
         public VisualElement CreateExposedCallbackSlot() => settings.exposedCallbackSlot.Instantiate();
+        public VisualElement CreateExposedVector3Header() => settings.exposedVector3Header.Instantiate();
+        public VisualElement CreateExposedVector3ComponentSlot() => settings.exposedVector3ComponentSlot.Instantiate();
         public VisualElement CreateConsoleLog() => settings.consoleLog.Instantiate();
         public RectorIconSettings Icons => settings.iconSettings;
     }

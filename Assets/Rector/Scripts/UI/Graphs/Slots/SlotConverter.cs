@@ -14,7 +14,7 @@ namespace Rector.UI.Graphs.Slots
                 IFloatInput floatInput => new ReactivePropertyFloatInputSlot(nodeId, index, floatInput.Name, floatInput.Value, floatInput.DefaultValue, floatInput.MinValue, floatInput.MaxValue, isMuted),
                 IIntInput intInput => new ReactivePropertyIntInputSlot(nodeId, index, intInput.Name, intInput.Value, intInput.DefaultValue, intInput.MinValue, intInput.MaxValue, isMuted),
                 IBoolInput boolInput => new ReactivePropertyInputSlot<bool>(nodeId, index, boolInput.Name, boolInput.Value, boolInput.DefaultValue, isMuted),
-                IVector3Input vector3Input => new ReactivePropertyInputSlot<Vector3>(nodeId, index, vector3Input.Name, vector3Input.Value, vector3Input.DefaultValue, isMuted),
+                IVector3Input vector3Input => new ReactivePropertyVector3InputSlot(nodeId, index, vector3Input.Name, vector3Input.Value, vector3Input.DefaultValue, vector3Input.MinValue, vector3Input.MaxValue, isMuted),
                 ITransformInput transformInput => new ReactivePropertyInputSlot<Transform>(nodeId, index, transformInput.Name, transformInput.Value, transformInput.DefaultValue, isMuted),
                 _ => throw new System.NotImplementedException()
             };

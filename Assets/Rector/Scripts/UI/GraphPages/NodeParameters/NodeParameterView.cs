@@ -32,7 +32,9 @@ namespace Rector.UI.GraphPages.NodeParameters
                         Show();
                     else
                         Hide();
-                })
+                }),
+                // 行の購読はSetup毎に差し替わるが、View自体を畳むときにも解けるようにしておく
+                nodeDisposable
             );
         }
 
@@ -51,15 +53,24 @@ namespace Rector.UI.GraphPages.NodeParameters
                 var disposable = new CompositeDisposable();
                 nameLabel.text = node.Name;
                 propertyRoot.Clear();
-                var exposedInputs = model.ExposedInputs;
-                foreach (var exposedInput in exposedInputs)
+                foreach (var row in model.Rows)
                 {
-                    switch (exposedInput)
+                    switch (row)
                     {
                         case ExposedFloatInputModel floatInput:
                             var floatInputView = new ExposedFloatInputView(VisualElementFactory.Instance.CreateExposedFloatSlot());
                             floatInputView.AddTo(propertyRoot);
                             floatInputView.Bind(floatInput).AddTo(disposable);
+                            break;
+                        case ExposedVector3HeaderRow vector3Header:
+                            var vector3HeaderView = new ExposedVector3HeaderView(VisualElementFactory.Instance.CreateExposedVector3Header());
+                            vector3HeaderView.AddTo(propertyRoot);
+                            vector3HeaderView.Bind(vector3Header).AddTo(disposable);
+                            break;
+                        case ExposedVector3ComponentInputModel vector3Component:
+                            var vector3ComponentView = new ExposedVector3ComponentInputView(VisualElementFactory.Instance.CreateExposedVector3ComponentSlot());
+                            vector3ComponentView.AddTo(propertyRoot);
+                            vector3ComponentView.Bind(vector3Component).AddTo(disposable);
                             break;
                         case ExposedIntInputModel intInput:
                             var intInputView = new ExposedIntInputView(VisualElementFactory.Instance.CreateExposedIntSlot());

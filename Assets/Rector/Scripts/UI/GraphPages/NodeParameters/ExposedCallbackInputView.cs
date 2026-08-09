@@ -17,8 +17,7 @@ namespace Rector.UI.GraphPages.NodeParameters
 
         public IDisposable Bind(ExposedCallbackInputModel model)
         {
-            var slot = model.Slot;
-            nameLabel.text = slot.Name;
+            nameLabel.text = model.Label;
             return new CompositeDisposable(
                 model.IsFocused.Subscribe(x => root.EnableInClassList("rector-exposed-input--focused", x))
             );

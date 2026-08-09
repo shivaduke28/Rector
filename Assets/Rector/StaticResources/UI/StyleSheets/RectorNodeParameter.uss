@@ -67,3 +67,15 @@
     flex-direction: row-reverse;
     flex-grow: 1;
 }
+
+/* Vector3の見出し。名前だけを出すので、値やスライダーの列は持たない */
+.rector-exposed-vector3-header {
+    flex-direction: row;
+    margin-top: 4px;
+}
+
+/* 見出しにぶら下がるX/Y/Zの行。RectorCommonの .rector-label に負けないよう子セレクタで
+   スペシフィシティを上げる */
+.rector-exposed-input--indented > .rector-exposed-name-label-container > .rector-exposed-name-label {
+    margin-left: 12px;
+}

@@ -25,6 +25,10 @@ MonoBehaviour:
     type: 3}
   exposedCallbackSlot: {fileID: 9197481963319205126, guid: a62208f24f0714037950dcd5ec833be8,
     type: 3}
+  exposedVector3Header: {fileID: 9197481963319205126, guid: 3f91b679c49074b2688b5e635bfb2bbd,
+    type: 3}
+  exposedVector3ComponentSlot: {fileID: 9197481963319205126, guid: bc5cf9fd65d6b417f824b6c66f813e71,
+    type: 3}
   consoleLog: {fileID: 9197481963319205126, guid: de797c3cfaac3462a9cf0e3a7cd8a6a9,
     type: 3}
   iconSettings:
