@@ -33,6 +33,9 @@ namespace Rector.UI.GraphPages
         // 差し替え接続はSubmitとの同時押し。併記のまま「SHIFT+Z/SPACE」にすると長すぎるので主キーだけ書く
         const string ParamComboKey = ParamKey + "+Z";
 
+        readonly InputGuideChip panChip;
+        readonly InputGuideChip zoomChip;
+        readonly InputGuideChip resetChip;
         readonly InputGuideChip lockChip;
         readonly InputGuideChip paramChip;
         readonly InputGuideChip grabChip;
@@ -49,9 +52,12 @@ namespace Rector.UI.GraphPages
 
             // パン・ズーム・リセットはステートに依らず常に効くので、文言は作ったきり触らない
             var viewRow = CreateRow();
-            viewRow.Add(new InputGuideChip(PanKey, "PAN"));
-            viewRow.Add(new InputGuideChip(ZoomKey, "ZOOM"));
-            viewRow.Add(new InputGuideChip(ResetKey, "RESET"));
+            panChip = new InputGuideChip(PanKey, "PAN");
+            zoomChip = new InputGuideChip(ZoomKey, "ZOOM");
+            resetChip = new InputGuideChip(ResetKey, "RESET");
+            viewRow.Add(panChip);
+            viewRow.Add(zoomChip);
+            viewRow.Add(resetChip);
             Add(viewRow);
 
             var modifierRow = CreateRow();
@@ -77,10 +83,10 @@ namespace Rector.UI.GraphPages
             Add(actionRow);
         }
 
-        public void Apply(GuideContent content, bool grabHeld, bool lockHeld)
+        public void Apply(GuideContent content)
         {
-            lockChip.SetState(true, lockHeld);
-            grabChip.SetState(content.Grab, grabHeld);
+            lockChip.SetState(true, false);
+            grabChip.SetState(content.Grab, false);
             muteChip.SetState(content.Mute, false);
 
             paramChip.SetKey(content.ParamCombo ? ParamComboKey : ParamKey);
@@ -91,6 +97,24 @@ namespace Rector.UI.GraphPages
             SetFace(faceLeft, content.FaceLeft);
             SetFace(faceRight, content.FaceRight);
             SetFace(faceBottom, content.FaceBottom);
+        }
+
+        public void SetPressed(GuideInput input, bool value)
+        {
+            switch (input)
+            {
+                case GuideInput.FaceTop: faceTop.SetPressed(value); break;
+                case GuideInput.FaceLeft: faceLeft.SetPressed(value); break;
+                case GuideInput.FaceRight: faceRight.SetPressed(value); break;
+                case GuideInput.FaceBottom: faceBottom.SetPressed(value); break;
+                case GuideInput.UpperLeft: lockChip.SetPressed(value); break;
+                case GuideInput.UpperRight: grabChip.SetPressed(value); break;
+                case GuideInput.LowerLeft: muteChip.SetPressed(value); break;
+                case GuideInput.LowerRight: paramChip.SetPressed(value); break;
+                case GuideInput.Pan: panChip.SetPressed(value); break;
+                case GuideInput.Zoom: zoomChip.SetPressed(value); break;
+                case GuideInput.Reset: resetChip.SetPressed(value); break;
+            }
         }
 
         /// <summary>空きポジションは「-」の減光表示にして、何も無いことを見せる。</summary>
