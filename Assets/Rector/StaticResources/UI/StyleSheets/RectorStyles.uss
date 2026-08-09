@@ -356,19 +356,56 @@
     justify-content: flex-start;
 }
 
+/* チップは透明な入れ物で、塗りはキー名と動作がそれぞれ持つ */
 .rector-input-guide__chip {
+    flex-direction: row;
+    align-items: center;
     font-size: 10px;
     letter-spacing: 2px;
     /* Labelの既定margin(2px)を消さないと軸吸着が2pxずれる */
     margin: 0;
-    padding: 1px 6px;
     color: var(--rector-text-color);
+}
+
+/* 同じ色の下地を2つに割り、キー名だけ枠で囲む。押すものが四角として立つ。
+   動作側の透明な枠は、枠の有無で箱の高さがずれないようにするためのもの。
+   枠のぶんpaddingを1px詰めて、増える幅を隙間と枠だけに抑えている */
+.rector-input-guide__key,
+.rector-input-guide__action {
+    margin: 0;
+    padding: 0 5px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
     background-color: var(--rector-text-background-color);
 }
 
-.rector-input-guide__chip--active {
+.rector-input-guide__key {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* △□◯✕は記号そのものがボタンの形なので囲まない。枠は消しても幅が動かないよう色だけ透明にする */
+.rector-input-guide__key--plain {
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.rector-input-guide__action {
+    margin-left: 2px;
+}
+
+.rector-input-guide__chip--active .rector-input-guide__key,
+.rector-input-guide__chip--active .rector-input-guide__action {
     color: white;
     background-color: black;
+}
+
+/* 反転すると下地が黒くなるので、枠を上げないと四角が消える */
+.rector-input-guide__chip--active .rector-input-guide__key {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* 上の子孫セレクタの方が強いので、囲まない指定を反転時にも効かせ直す */
+.rector-input-guide__chip--active .rector-input-guide__key--plain {
+    border-color: rgba(0, 0, 0, 0);
 }
 
 .rector-input-guide__chip--disabled {
@@ -387,4 +424,26 @@
 /* ショルダーのR側は△ボタンの右端あたりから始める(L/R間の余白) */
 .rector-input-guide__shoulder-gutter {
     width: 36px;
+}
+
+/* パッド用とキーボード用は排他表示。縦積みは各レイアウト側が持つ */
+.rector-input-guide__pad,
+.rector-input-guide__keyboard {
+    flex-direction: column;
+}
+
+.rector-input-guide__pad {
+    align-items: flex-start;
+}
+
+/* キーボードは物理配置を写さず、意味でまとめた行にチップを横へ流す。
+   行の幅は文言で伸び縮みするので、右端で揃えてガイドの右辺だけは動かさない */
+.rector-input-guide__keyboard {
+    align-items: flex-end;
+}
+
+/* パッド版は透明セルが間隔を持つが、こちらはチップを直接並べるのでチップ側に持たせる。
+   縦は行がベタづきしないよう横より広く取る（行間は上下の合計で4px） */
+.rector-input-guide__keyboard .rector-input-guide__chip {
+    margin: 2px;
 }

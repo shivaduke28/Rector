@@ -20,7 +20,7 @@ namespace Rector.UI.GraphPages
             // 保存された値が範囲外でも壊れないようclampして読む
             var saved = PlayerPrefs.GetInt(PrefsKey, (int)InputGuideMode.DualShock);
             mode = new ReactiveProperty<InputGuideMode>(
-                (InputGuideMode)Mathf.Clamp(saved, (int)InputGuideMode.Off, (int)InputGuideMode.Xbox));
+                (InputGuideMode)Mathf.Clamp(saved, (int)InputGuideMode.Off, (int)InputGuideMode.Keyboard));
         }
 
         public void SetMode(InputGuideMode value)
