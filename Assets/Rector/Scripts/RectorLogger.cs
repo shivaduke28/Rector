@@ -130,25 +130,25 @@ namespace Rector
             }
         }
 
-        public static void GraphSaved(int slot, int nodeCount, int edgeCount, int skippedNodes, int skippedEdges)
+        public static void GraphSaved(string name, int nodeCount, int edgeCount, int skippedNodes, int skippedEdges)
         {
             var skipped = skippedNodes > 0 || skippedEdges > 0
                 ? $" (skipped {skippedNodes} scene node(s), {skippedEdges} edge(s))"
                 : "";
-            LogInternal($"[GRAPH/SAVE] slot={slot} nodes={nodeCount} edges={edgeCount}{skipped}");
+            LogInternal($"[GRAPH/SAVE] preset='{name}' nodes={nodeCount} edges={edgeCount}{skipped}");
         }
 
-        public static void GraphLoaded(int slot, int nodeCount, int edgeCount, int skippedNodes, int skippedEdges)
+        public static void GraphLoaded(string name, int nodeCount, int edgeCount, int skippedNodes, int skippedEdges)
         {
             var skipped = skippedNodes > 0 || skippedEdges > 0
                 ? $" (dropped {skippedNodes} node(s), {skippedEdges} edge(s))"
                 : "";
-            LogInternal($"[GRAPH/LOAD] slot={slot} added {nodeCount} node(s), {edgeCount} edge(s){skipped}");
+            LogInternal($"[GRAPH/LOAD] preset='{name}' added {nodeCount} node(s), {edgeCount} edge(s){skipped}");
         }
 
-        public static void GraphSlotDeleted(int slot)
+        public static void GraphPresetDeleted(string name)
         {
-            LogInternal($"[GRAPH/DELETE] slot={slot}");
+            LogInternal($"[GRAPH/DELETE] preset='{name}'");
         }
 
         public static void GraphCleared(int nodeCount)
@@ -156,9 +156,9 @@ namespace Rector
             LogInternal($"[GRAPH/CLEAR] removed {nodeCount} node(s)");
         }
 
-        public static void GraphSlotEmpty(int slot)
+        public static void GraphPresetMissing(string name)
         {
-            LogInternal($"[GRAPH/LOAD] slot={slot} is empty.");
+            LogInternal($"[GRAPH/LOAD] preset='{name}' is missing or unreadable.");
         }
 
         public static void GraphLoadSkippedNode(string saveKey)

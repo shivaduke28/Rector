@@ -11,8 +11,8 @@ namespace Rector.UI.Hud
     /// プリセットの読み込み。本番で使う画面なので、選んだら即その場で読んで閉じる。
     /// </summary>
     /// <remarks>
-    /// 読み込みは今のグラフへ足すだけで何も失わないので確認は挟まない。中身のあるスロットしか
-    /// 並べないのも、選ぶ手数を減らすため。保存と削除は<see cref="PresetManagePageModel"/>。
+    /// 読み込みは今のグラフへ足すだけで何も失わないので確認は挟まない。
+    /// 保存と削除は<see cref="PresetManagePageModel"/>。
     /// </remarks>
     public sealed class PresetLoadPageModel : IInitializable, IDisposable, IButtonListPageModel
     {
@@ -40,7 +40,7 @@ namespace Rector.UI.Hud
         {
             onExit = onExitAction;
 
-            // 管理ページで保存や削除をすると件数が変わるので、開くたびに組み直して先頭へ戻す
+            // 管理ページや Finder で増減するので、開くたびに組み直して先頭へ戻す
             BuildRows();
             index = 0;
             buttons[index].IsFocused.Value = true;
@@ -52,12 +52,10 @@ namespace Rector.UI.Hud
             items.Clear();
             buttons.Clear();
 
-            foreach (var info in graphSaveManager.GetAllSlotInfo())
+            foreach (var info in graphSaveManager.GetAll())
             {
-                if (info.IsEmpty) continue;
-
-                var slot = info.Number;
-                var button = new RectorButtonState(PresetSlotLabel.Row(info), () => Load(slot));
+                var name = info.Name;
+                var button = new RectorButtonState(PresetLabel.Row(info), () => Load(name));
                 buttons.Add(button);
                 items.Add(ButtonListItem.Of(button));
             }
@@ -71,9 +69,9 @@ namespace Rector.UI.Hud
             }
         }
 
-        void Load(int slot)
+        void Load(string name)
         {
-            if (graphSaveManager.Load(slot, out _)) Close();
+            if (graphSaveManager.Load(name, out _)) Close();
         }
 
         void Close()

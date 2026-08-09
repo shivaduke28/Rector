@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Rector.Tests.EditMode
 {
     /// <summary>
-    /// グラフ保存データの形式。スロットへの読み書きは <see cref="GraphSlotRepositoryTests"/>。
+    /// グラフ保存データの形式。プリセットへの読み書きは <see cref="GraphPresetRepositoryTests"/>。
     /// グラフの組み立て自体は VisualElement に依存するのでここでは扱わず、CLI で確認する。
     /// </summary>
     public sealed class GraphSaveDataTests

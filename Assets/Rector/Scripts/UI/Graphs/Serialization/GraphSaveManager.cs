@@ -5,60 +5,67 @@ using Rector.UI.GraphPages;
 namespace Rector.UI.Graphs.Serialization
 {
     /// <summary>
-    /// グラフのスロットへの保存と読み込み。HUD と CLI の共通の入り口。
+    /// グラフのプリセットへの保存と読み込み。HUD と CLI の共通の入り口。
     /// </summary>
     public sealed class GraphSaveManager
     {
         readonly GraphSerializer serializer;
-        readonly GraphSlotRepository repository;
+        readonly GraphPresetRepository repository;
 
         public GraphSaveManager(GraphPage graphPage, NodeTemplateRepository nodeTemplateRepository)
-            : this(new GraphSerializer(graphPage, nodeTemplateRepository), new GraphSlotRepository())
+            : this(new GraphSerializer(graphPage, nodeTemplateRepository), new GraphPresetRepository())
         {
         }
 
-        public GraphSaveManager(GraphSerializer serializer, GraphSlotRepository repository)
+        public GraphSaveManager(GraphSerializer serializer, GraphPresetRepository repository)
         {
             this.serializer = serializer;
             this.repository = repository;
         }
 
-        public GraphSlotInfo[] GetAllSlotInfo() => repository.GetAllInfo();
+        public GraphPresetInfo[] GetAll() => repository.GetAll();
 
-        public GraphSlotInfo GetSlotInfo(int slot) => repository.GetInfo(slot);
+        public bool TryGetInfo(string name, out GraphPresetInfo info) => repository.TryGetInfo(name, out info);
 
-        public bool Save(int slot, out GraphSaveResult result)
+        public bool Exists(string name) => repository.Exists(name);
+
+        public string NextDefaultName() => repository.NextDefaultName();
+
+        /// <summary>保存フォルダを開く。プリセットの名前を変える唯一の口。</summary>
+        public void OpenDirectory() => repository.OpenDirectory();
+
+        public bool Save(string name, out GraphSaveResult result)
         {
             var data = serializer.Capture(out result);
-            if (!repository.Write(slot, data)) return false;
+            if (!repository.Write(name, data)) return false;
 
-            RectorLogger.GraphSaved(slot, result.NodeCount, result.EdgeCount, result.SkippedNodeCount, result.SkippedEdgeCount);
+            RectorLogger.GraphSaved(name, result.NodeCount, result.EdgeCount, result.SkippedNodeCount, result.SkippedEdgeCount);
             return true;
         }
 
-        /// <summary>スロットを消す。空のスロットでも成功扱い。グラフには触らない。</summary>
-        public bool Delete(int slot)
+        /// <summary>プリセットを消す。元から無くても成功扱い。グラフには触らない。</summary>
+        public bool Delete(string name)
         {
-            if (!repository.Delete(slot)) return false;
+            if (!repository.Delete(name)) return false;
 
-            RectorLogger.GraphSlotDeleted(slot);
+            RectorLogger.GraphPresetDeleted(name);
             return true;
         }
 
-        /// <summary>空のスロットや壊れたファイルでは false を返し、グラフには触らない。</summary>
-        public bool Load(int slot, out GraphLoadResult result)
+        /// <summary>無いプリセットや壊れたファイルでは false を返し、グラフには触らない。</summary>
+        public bool Load(string name, out GraphLoadResult result)
         {
             result = default;
 
-            var data = repository.Read(slot);
+            var data = repository.Read(name);
             if (data == null)
             {
-                RectorLogger.GraphSlotEmpty(slot);
+                RectorLogger.GraphPresetMissing(name);
                 return false;
             }
 
             result = serializer.Restore(data);
-            RectorLogger.GraphLoaded(slot, result.NodeCount, result.EdgeCount, result.SkippedNodeCount, result.SkippedEdgeCount);
+            RectorLogger.GraphLoaded(name, result.NodeCount, result.EdgeCount, result.SkippedNodeCount, result.SkippedEdgeCount);
             return true;
         }
     }
