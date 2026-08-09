@@ -10,7 +10,7 @@ namespace Rector.UI.Hud
 {
     public sealed class GraphSettingsPageModel : IInitializable, IDisposable, ISettingsPageModel
     {
-        static readonly InputGuideMode[] GuideModes = { InputGuideMode.Off, InputGuideMode.DualShock, InputGuideMode.Xbox };
+        static readonly InputGuideMode[] GuideModes = { InputGuideMode.Off, InputGuideMode.DualShock, InputGuideMode.Xbox, InputGuideMode.Keyboard };
         static readonly string[] GuideOptions = GuideModes.Select(x => x.ToString()).ToArray();
 
         static readonly string[] GroupCountOptions = Enumerable
