@@ -34,6 +34,7 @@ namespace Rector.UI.GraphPages
         readonly VisualElement root;
 
         readonly GraphInputAction graphInputAction;
+        readonly NodeTemplateRepository nodeTemplateRepository;
 
         public readonly LayeredGraph Graph;
         public readonly NodeGroups Groups = new();
@@ -68,6 +69,7 @@ namespace Rector.UI.GraphPages
             NodeTemplateRepository nodeTemplateRepository)
         {
             this.graphInputAction = graphInputAction;
+            this.nodeTemplateRepository = nodeTemplateRepository;
 
             // VisualElements
             root = container.Q<VisualElement>(RootName);
@@ -189,6 +191,30 @@ namespace Rector.UI.GraphPages
         {
             Graph.AddNode(nodeView, SelectedNode?.Group ?? 0);
             Sort();
+        }
+
+        /// <summary>
+        /// 選択中のノードと同じ種類のノードを1つ足す。値もエッジも引き継がない。
+        /// </summary>
+        /// <remarks>
+        /// 選択は動かさない。連打でいくつでも増やせるし、押しっぱなしのR1で出ている
+        /// パラメータパネルも元のノードのまま出し続けられる。
+        /// AddNode が選択中のノードのグループへ入れるので、コピーは元と同じグループに並ぶ。
+        /// </remarks>
+        public void CopySelectedNode()
+        {
+            if (SelectedNode is not { } selected) return;
+
+            var source = selected.NodeView.Node;
+            // BGシーンをアンロードした後の SceneLocal ノードなど、テンプレートの登録が
+            // 消えているものは作り直せない
+            if (!nodeTemplateRepository.TryGet(source.TemplateId, out var template))
+            {
+                RectorLogger.NodeCopySkipped(source);
+                return;
+            }
+
+            AddNode(template.Create(NodeId.Generate()));
         }
 
         /// <summary>
