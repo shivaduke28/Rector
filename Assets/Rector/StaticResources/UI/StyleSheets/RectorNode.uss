@@ -70,7 +70,7 @@
 
 .rector-node-slot-name-label {
     font-size: 10px;
-    padding: 0 2px;
+    padding: 0;
     margin-left: 4px;
     display: none;
     position: absolute;

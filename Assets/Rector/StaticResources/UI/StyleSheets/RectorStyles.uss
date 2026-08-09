@@ -306,7 +306,8 @@
     margin: 0;
     font-size: 10px;
     letter-spacing: 2px;
-    padding: 2px 6px;
+    /* HUD の文字は左右に余白を置かない。上下は枠との重なりを作るために残す */
+    padding: 2px 0;
     -unity-text-align: middle-left;
     color: var(--rector-text-color);
     background-color: var(--rector-text-background-color);
@@ -440,18 +441,19 @@
 }
 
 /* 同じ色の下地を2つに割り、キー名だけ枠で囲む。押すものが四角として立つ。
-   動作側の透明な枠は、枠の有無で箱の高さがずれないようにするためのもの。
-   枠のぶんpaddingを1px詰めて、増える幅を隙間と枠だけに抑えている */
+   動作側の透明な枠は、枠の有無で箱の高さがずれないようにするためのもの。 */
 .rector-input-guide__key,
 .rector-input-guide__action {
     margin: 0;
-    padding: 0 5px;
+    padding: 0;
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0);
     background-color: var(--rector-text-background-color);
 }
 
+/* 枠の中は押すものなので、枠と文字がくっつかないぶんだけ左右を残す */
 .rector-input-guide__key {
+    padding: 0 2px;
     border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -460,8 +462,9 @@
     border-color: rgba(0, 0, 0, 0);
 }
 
+/* キーの枠と動作の間。左右の余白を落としたぶん、ここだけは隙間で離す */
 .rector-input-guide__action {
-    margin-left: 2px;
+    margin-left: 5px;
 }
 
 .rector-input-guide__chip--active .rector-input-guide__key,
