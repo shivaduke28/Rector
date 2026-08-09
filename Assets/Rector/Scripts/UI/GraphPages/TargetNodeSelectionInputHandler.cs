@@ -25,16 +25,6 @@ namespace Rector.UI.GraphPages
             }
         }
 
-        public override void MoveGroup(int direction)
-        {
-            // MoveActiveGroupはSelectedNode(ソース)を動かしてしまうので、ターゲット用の別経路
-            var next = navigator.FindNodeInAdjacentGroup(graphPage.TargetNode, direction, graphPage.Groups.CurrentCount);
-            if (next != null)
-            {
-                graphPage.SetTargetNode(next);
-            }
-        }
-
         public override void AddNode()
         {
             graphPage.PromoteTargetToSource();

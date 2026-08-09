@@ -105,16 +105,6 @@ namespace Rector
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""MoveGroup"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""db45d00f-e29c-400f-8261-28f8b94c2f82"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true,
-                    ""priority"": 0
-                },
-                {
                     ""name"": ""Submit"",
                     ""type"": ""Button"",
                     ""id"": ""e5da0ab8-f142-45a2-bcb1-53b6cfbea470"",
@@ -246,7 +236,7 @@ namespace Rector
                 },
                 {
                     ""name"": ""Translate"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""c4b68e2c-330e-4f92-8821-dac33d4aaa91"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
@@ -555,7 +545,7 @@ namespace Rector
                 {
                     ""name"": """",
                     ""id"": ""46485fac-71ff-461e-a308-773847cfc799"",
-                    ""path"": ""<Keyboard>/ctrl"",
+                    ""path"": ""<Keyboard>/alt"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -722,7 +712,7 @@ namespace Rector
                     ""id"": ""98466bd1-b35b-478d-b65e-213845506d8b"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""stickDeadzone"",
                     ""groups"": """",
                     ""action"": ""Translate"",
                     ""isComposite"": false,
@@ -804,39 +794,6 @@ namespace Rector
                     ""action"": ""ResetTransform"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""Keyboard"",
-                    ""id"": ""8f134aaa-17c4-4571-9d16-7ad1fa8a2f1a"",
-                    ""path"": ""2DVector(mode=1)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MoveGroup"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""18ab6b63-cd7f-4769-98f8-acebbf5b7ca5"",
-                    ""path"": ""<Keyboard>/q"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""MoveGroup"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""48cb8ca2-271b-46a4-80b4-146bed62a3e6"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""MoveGroup"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -1220,7 +1177,6 @@ namespace Rector
             // Graph
             m_Graph = asset.FindActionMap("Graph", throwIfNotFound: true);
             m_Graph_Navigate = m_Graph.FindAction("Navigate", throwIfNotFound: true);
-            m_Graph_MoveGroup = m_Graph.FindAction("MoveGroup", throwIfNotFound: true);
             m_Graph_Submit = m_Graph.FindAction("Submit", throwIfNotFound: true);
             m_Graph_Cancel = m_Graph.FindAction("Cancel", throwIfNotFound: true);
             m_Graph_Action = m_Graph.FindAction("Action", throwIfNotFound: true);
@@ -1328,7 +1284,6 @@ namespace Rector
         private readonly InputActionMap m_Graph;
         private List<IGraphActions> m_GraphActionsCallbackInterfaces = new List<IGraphActions>();
         private readonly InputAction m_Graph_Navigate;
-        private readonly InputAction m_Graph_MoveGroup;
         private readonly InputAction m_Graph_Submit;
         private readonly InputAction m_Graph_Cancel;
         private readonly InputAction m_Graph_Action;
@@ -1359,10 +1314,6 @@ namespace Rector
             /// Provides access to the underlying input action "Graph/Navigate".
             /// </summary>
             public InputAction @Navigate => m_Wrapper.m_Graph_Navigate;
-            /// <summary>
-            /// Provides access to the underlying input action "Graph/MoveGroup".
-            /// </summary>
-            public InputAction @MoveGroup => m_Wrapper.m_Graph_MoveGroup;
             /// <summary>
             /// Provides access to the underlying input action "Graph/Submit".
             /// </summary>
@@ -1452,9 +1403,6 @@ namespace Rector
                 @Navigate.started += instance.OnNavigate;
                 @Navigate.performed += instance.OnNavigate;
                 @Navigate.canceled += instance.OnNavigate;
-                @MoveGroup.started += instance.OnMoveGroup;
-                @MoveGroup.performed += instance.OnMoveGroup;
-                @MoveGroup.canceled += instance.OnMoveGroup;
                 @Submit.started += instance.OnSubmit;
                 @Submit.performed += instance.OnSubmit;
                 @Submit.canceled += instance.OnSubmit;
@@ -1514,9 +1462,6 @@ namespace Rector
                 @Navigate.started -= instance.OnNavigate;
                 @Navigate.performed -= instance.OnNavigate;
                 @Navigate.canceled -= instance.OnNavigate;
-                @MoveGroup.started -= instance.OnMoveGroup;
-                @MoveGroup.performed -= instance.OnMoveGroup;
-                @MoveGroup.canceled -= instance.OnMoveGroup;
                 @Submit.started -= instance.OnSubmit;
                 @Submit.performed -= instance.OnSubmit;
                 @Submit.canceled -= instance.OnSubmit;
@@ -1782,13 +1727,6 @@ namespace Rector
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnNavigate(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "MoveGroup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnMoveGroup(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Submit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

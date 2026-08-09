@@ -30,7 +30,6 @@ namespace Rector.UI.GraphPages
         readonly Subject<Unit> openSystem = new();
         readonly Subject<Unit> openScene = new();
         readonly Subject<Unit> resetTransform = new();
-        readonly Subject<int> moveGroup = new();
         readonly Subject<int> moveNodeToGroup = new();
 
         readonly NavigateInputThrottle navigateInputThrottle = new();
@@ -52,7 +51,6 @@ namespace Rector.UI.GraphPages
         public Observable<Unit> OpenScene => openScene;
         public Observable<Unit> ResetTransform => resetTransform;
         public Observable<Vector2> Navigate => navigateInputThrottle.Navigate;
-        public Observable<int> MoveGroup => moveGroup;
         public Observable<int> MoveNodeToGroup => moveNodeToGroup;
 
         public Vector2 Translate { get; private set; }
@@ -60,7 +58,6 @@ namespace Rector.UI.GraphPages
         public bool IsNodeParameterOpen => rectorInput.Graph.OpenNodeParameter.IsPressed();
 
         const float DirectionThreshold = 0.5f;
-        int moveGroupDirection;
 
         enum NavigateDirection
         {
@@ -96,9 +93,6 @@ namespace Rector.UI.GraphPages
         {
             Translate = Vector2.zero;
             Zoom = 0f;
-            // moveGroupDirection はここでリセットしない。MoveGroup は initialStateCheck 付きなので、
-            // 倒したまま抜けて戻ると再有効化時に performed が来る。0に戻しておくと
-            // 「中立から倒れた」と誤判定して、触っていないのにグループが1つ飛ぶ。
             rectorInput.Graph.Disable();
         }
 
@@ -126,7 +120,7 @@ namespace Rector.UI.GraphPages
         }
 
         /// <remarks>
-        /// GrabModifier(R2/Ctrl)を押している間は十字キーを別コマンドとして扱う。
+        /// GrabModifier(R2/Option)を押している間は十字キーを別コマンドとして扱う。
         /// 左右は選択ノードのグループ移動。離散的な操作なのでリピートさせず、
         /// 方向が新しく確定した瞬間だけ発火させる。
         /// </remarks>
@@ -176,30 +170,6 @@ namespace Rector.UI.GraphPages
             }
 
             return value.y > 0 ? NavigateDirection.Up : NavigateDirection.Down;
-        }
-
-        /// <remarks>
-        /// グループ移動は離散的な操作なので、Navigateのようなリピートはさせない。
-        /// スティックが中立から左右に倒れた瞬間だけ発火させる。
-        /// </remarks>
-        public void OnMoveGroup(InputAction.CallbackContext context)
-        {
-            var direction = context.canceled ? 0 : ToHorizontalDirection(context.ReadValue<Vector2>());
-            if (direction == moveGroupDirection) return;
-
-            moveGroupDirection = direction;
-            if (direction != 0)
-            {
-                moveGroup.OnNext(direction);
-            }
-        }
-
-        static int ToHorizontalDirection(Vector2 value)
-        {
-            // 縦入力と、倒しきっていない入力は無視する
-            if (Mathf.Abs(value.x) < DirectionThreshold) return 0;
-            if (Mathf.Abs(value.x) <= Mathf.Abs(value.y)) return 0;
-            return value.x > 0 ? 1 : -1;
         }
 
         public void OnSubmit(InputAction.CallbackContext context)
