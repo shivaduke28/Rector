@@ -102,6 +102,12 @@ namespace Rector
             LogInternal($"[NODE/DELETE] id={node.Id} name='{node.Name}'");
         }
 
+        /// <summary>テンプレートの登録が消えていてコピーを作れなかった。</summary>
+        public static void NodeCopySkipped(Node node)
+        {
+            LogInternal($"[NODE/COPY_SKIPPED] id={node.Id} name='{node.Name}'");
+        }
+
         public static void CreateEdge(Edge edge, Node output, Node input)
         {
             LogInternal($"[EDGE/CREATE] src=({output.Id},{output.Name},{edge.OutputSlot.Name}) dst=({input.Id},{input.Name},{edge.InputSlot.Name})");

@@ -75,6 +75,7 @@ namespace Rector.UI.GraphPages
             },
             [GraphPageState.NodeParameter] = new GuideContent
             {
+                FaceTop = "COPY",
                 FaceLeft = "STEP",
                 FaceRight = "CLOSE",
                 Mute = true,
