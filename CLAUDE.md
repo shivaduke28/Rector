@@ -147,15 +147,15 @@ unity command eval 'return UnityEditor.AssetDatabase.FindAssets("t:VisualEffectA
 
 ### Driving a build
 
-`unity command --runtime RectorApp` connects to a running Player, so a build
+`unity command --runtime Rector` connects to a running Player, so a build
 processing live audio can be inspected and driven exactly like the editor.
 Placement of `--runtime` does not matter — commander.js claims it wherever it
 appears — but put it before the command name for readability. When no matching
 Player is found the call fails; it never silently answers from the editor.
 
 Watch the shell instead: **zsh does not word-split unquoted parameters**, so
-`FLAGS="--runtime RectorApp"; unity command $FLAGS rector_state` passes one
-argument `--runtime RectorApp`, which is not recognised and the call goes to
+`FLAGS="--runtime Rector"; unity command $FLAGS rector_state` passes one
+argument `--runtime Rector`, which is not recognised and the call goes to
 the editor. Write the flags out, or use an array.
 
 `Base.unity` carries a `RuntimePipelineManager` with `enableInBuilds` on, which
