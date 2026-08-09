@@ -158,20 +158,9 @@
 }
 
 /*
- * 確認ダイアログの箱。他のページのリストと同じ起点に置いて、開いても視線が飛ばないようにする。
- * 中身はタイトルと詳細の見出し行 + 選択肢のボタンで、行の作りはボタン一覧と同じ。
+ * 確認ダイアログ。見た目は他のページのボタン一覧そのままで、枠も下地も足さない。
+ * 問いかけと対象の中身を見出しの行で出し、その下に選択肢を並べる。
  */
-.rector-confirm-dialog {
-    align-items: flex-start;
-    margin-left: 100px;
-    margin-top: 100px;
-    padding: 8px;
-    border-width: 1px;
-    border-color: var(--rector-border-color);
-    background-color: var(--rector-text-background-color);
-}
-
-/* 箱の1行目はダイアログの問いかけなので、区切りのための上余白は要らない */
 .rector-confirm-dialog > .rector-button-list-header {
     margin-top: 0;
 }

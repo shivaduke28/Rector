@@ -6,7 +6,7 @@ using R3;
 
 namespace Rector.UI.Hud
 {
-    /// <summary>確認ダイアログの選択肢。Cancel はモデルが足すので、ここには危ない方だけ渡す。</summary>
+    /// <summary>確認ダイアログの選択肢。Cancel は末尾にモデルが足すので、ここには危ない方だけ渡す。</summary>
     public readonly struct ConfirmChoice
     {
         public readonly string Label;
@@ -63,15 +63,17 @@ namespace Rector.UI.Hud
             items.Add(ButtonListItem.Header(title));
             if (!string.IsNullOrEmpty(detail)) items.Add(ButtonListItem.Header(detail));
 
-            // 先頭は必ず Cancel。開いた瞬間に危ない選択肢の上でカーソルが待っている状態を作らない
-            Add(new RectorButtonState(CancelLabel, Close));
             foreach (var choice in choices)
             {
                 var action = choice.Action;
                 Add(new RectorButtonState(choice.Label, () => Run(action)));
             }
 
-            index = 0;
+            // Cancel は最後に置き、カーソルだけそこへ乗せる。並びは「やること→やめる」のままで、
+            // 開いた瞬間に危ない選択肢の上でカーソルが待っている状態にはならない
+            Add(new RectorButtonState(CancelLabel, Close));
+
+            index = buttons.Count - 1;
             buttons[index].IsFocused.Value = true;
             isVisible.Value = true;
         }
