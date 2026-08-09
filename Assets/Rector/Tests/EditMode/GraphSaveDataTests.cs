@@ -1,54 +1,19 @@
 using System;
-using System.Globalization;
-using System.IO;
 using NUnit.Framework;
 using Rector.UI.Graphs;
 using Rector.UI.Graphs.Nodes;
 using Rector.UI.Graphs.Serialization;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Rector.Tests.EditMode
 {
     /// <summary>
-    /// グラフ保存データの形式と、スロットへの読み書き。
+    /// グラフ保存データの形式。スロットへの読み書きは <see cref="GraphSlotRepositoryTests"/>。
     /// グラフの組み立て自体は VisualElement に依存するのでここでは扱わず、CLI で確認する。
     /// </summary>
     public sealed class GraphSaveDataTests
     {
-        const string SavedAtRaw = "2026-08-09T00:12:34.0000000+09:00";
-
-        static GraphSaveData MakeData()
-        {
-            return new GraphSaveData
-            {
-                version = GraphSaveData.CurrentVersion,
-                savedAt = SavedAtRaw,
-                nodes = new[]
-                {
-                    new NodeSaveData
-                    {
-                        templateKind = "Code", nodeType = "MidiCcNode",
-                        ints = new[] { new IntSlotValue { index = 1, value = 42 } },
-                        bools = new[] { new BoolSlotValue { index = 0, value = true } },
-                    },
-                    new NodeSaveData
-                    {
-                        templateKind = "Code", nodeType = "FloatNode",
-                        floats = new[] { new FloatSlotValue { index = 0, value = 0.25f } },
-                        vector3s = new[] { new Vector3SlotValue { index = 3, value = new Vector3(1, 2, 3) } },
-                    },
-                },
-                edges = new[]
-                {
-                    new EdgeSaveData
-                    {
-                        fromNode = 0, fromSlot = 0, fromType = "Float",
-                        toNode = 1, toSlot = 0, toType = "Float",
-                    },
-                },
-            };
-        }
+        static GraphSaveData MakeData() => GraphSaveDataFixture.Make();
 
         [Test]
         public void JsonRoundTripPreservesEverything()
@@ -92,118 +57,6 @@ namespace Rector.Tests.EditMode
             Assert.That(JsonUtility.FromJson<GraphSaveData>("{\"nodes\":[]}").IsSupportedVersion, Is.False);
             Assert.That(JsonUtility.FromJson<GraphSaveData>("{\"version\":99}").IsSupportedVersion, Is.False);
             Assert.That(MakeData().IsSupportedVersion, Is.True);
-        }
-
-        // ------------------------------------------------------------------- スロット保存
-
-        static string TempDirectory() =>
-            Path.Combine(Path.GetTempPath(), "rector-graph-slot-tests", Path.GetRandomFileName());
-
-        [Test]
-        public void RepositoryWritesAndReadsBackASlot()
-        {
-            var directory = TempDirectory();
-            try
-            {
-                var repository = new GraphSlotRepository(directory);
-                Assert.That(repository.Write(1, MakeData()), Is.True);
-
-                var read = repository.Read(1);
-                Assert.That(read, Is.Not.Null);
-                Assert.That(read.nodes.Length, Is.EqualTo(2));
-                Assert.That(read.nodes[0].ints[0].value, Is.EqualTo(42));
-
-                var info = repository.GetInfo(1);
-                Assert.That(info.IsEmpty, Is.False);
-                Assert.That(info.NodeCount, Is.EqualTo(2));
-                Assert.That(info.EdgeCount, Is.EqualTo(1));
-                // FormatSavedAt はオフセット付きの保存値をローカル時刻へ直して見せるので、
-                // 表示文字列を固定すると JST 以外で落ちる。保存した瞬間に戻ることだけ見る
-                var shown = DateTime.Parse(info.SavedAt, CultureInfo.InvariantCulture);
-                var expected = DateTimeOffset.Parse(SavedAtRaw, CultureInfo.InvariantCulture).LocalDateTime;
-                Assert.That(shown, Is.EqualTo(new DateTime(expected.Year, expected.Month, expected.Day, expected.Hour, expected.Minute, 0)));
-            }
-            finally
-            {
-                if (Directory.Exists(directory)) Directory.Delete(directory, true);
-            }
-        }
-
-        [Test]
-        public void RepositoryOverwritesAnExistingSlot()
-        {
-            var directory = TempDirectory();
-            try
-            {
-                var repository = new GraphSlotRepository(directory);
-                repository.Write(1, MakeData());
-
-                var second = MakeData();
-                second.nodes = new[] { new NodeSaveData { templateKind = "Code", nodeType = "FloatNode" } };
-                Assert.That(repository.Write(1, second), Is.True);
-
-                Assert.That(repository.Read(1).nodes.Length, Is.EqualTo(1));
-                Assert.That(Directory.GetFiles(directory, "*.tmp"), Is.Empty);
-            }
-            finally
-            {
-                if (Directory.Exists(directory)) Directory.Delete(directory, true);
-            }
-        }
-
-        [Test]
-        public void RepositoryRefusesAnUnsupportedVersion()
-        {
-            var directory = TempDirectory();
-            try
-            {
-                Directory.CreateDirectory(directory);
-                File.WriteAllText(Path.Combine(directory, "slot1.json"), "{\"version\":99,\"nodes\":[],\"edges\":[]}");
-
-                LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("unsupported version"));
-                Assert.That(new GraphSlotRepository(directory).Read(1), Is.Null);
-            }
-            finally
-            {
-                if (Directory.Exists(directory)) Directory.Delete(directory, true);
-            }
-        }
-
-        [Test]
-        public void RepositoryReportsUnwrittenSlotsAsEmpty()
-        {
-            var repository = new GraphSlotRepository(TempDirectory());
-
-            Assert.That(repository.Read(1), Is.Null);
-
-            var info = repository.GetInfo(1);
-            Assert.That(info.IsEmpty, Is.True);
-            Assert.That(info.Number, Is.EqualTo(1));
-            Assert.That(info.SavedAt, Is.Empty);
-        }
-
-        [Test]
-        public void RepositoryRefusesSlotsOutOfRange()
-        {
-            var repository = new GraphSlotRepository(TempDirectory());
-
-            Assert.That(GraphSlotRepository.IsValidSlot(0), Is.False);
-            Assert.That(GraphSlotRepository.IsValidSlot(1), Is.True);
-            Assert.That(GraphSlotRepository.IsValidSlot(GraphSlotRepository.SlotCount), Is.True);
-            Assert.That(GraphSlotRepository.IsValidSlot(GraphSlotRepository.SlotCount + 1), Is.False);
-
-            Assert.That(repository.Write(0, MakeData()), Is.False);
-            Assert.That(repository.Read(0), Is.Null);
-        }
-
-        [Test]
-        public void RepositoryListsEverySlot()
-        {
-            var infos = new GraphSlotRepository(TempDirectory()).GetAllInfo();
-
-            Assert.That(infos.Length, Is.EqualTo(GraphSlotRepository.SlotCount));
-            Assert.That(infos[0].Number, Is.EqualTo(1));
-            Assert.That(infos[GraphSlotRepository.SlotCount - 1].Number, Is.EqualTo(GraphSlotRepository.SlotCount));
         }
 
         // ------------------------------------------------------------ テンプレートID

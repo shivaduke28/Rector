@@ -33,8 +33,14 @@
             <engine:VisualElement name="system-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
-            <engine:VisualElement name="graph-slot-page" class="rector-page">
+            <engine:VisualElement name="preset-load-page" class="rector-page">
                 <engine:VisualElement name="left-list" class="rector-button-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="preset-manage-page" class="rector-page">
+                <engine:VisualElement name="left-list" class="rector-button-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="confirm-dialog-page" class="rector-page">
+                <engine:VisualElement name="left-list" class="rector-confirm-dialog" />
             </engine:VisualElement>
             <engine:VisualElement name="audio-input-device-page" class="rector-page">
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />

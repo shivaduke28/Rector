@@ -138,6 +138,11 @@ namespace Rector
             LogInternal($"[GRAPH/LOAD] slot={slot} added {nodeCount} node(s), {edgeCount} edge(s){skipped}");
         }
 
+        public static void GraphSlotDeleted(int slot)
+        {
+            LogInternal($"[GRAPH/DELETE] slot={slot}");
+        }
+
         public static void GraphCleared(int nodeCount)
         {
             LogInternal($"[GRAPH/CLEAR] removed {nodeCount} node(s)");

@@ -84,7 +84,9 @@ namespace Rector
             var displaySettingsPage = Register(new DisplaySettingsPageModel(hudView.DisplaySettingsPageView));
             var graphSettingsPage = Register(new GraphSettingsPageModel(hudView.GraphSettingsPageView, graphPage.Groups, graphPage.GuideSettings));
             var graphSaveManager = new GraphSaveManager(graphPage, nodeTemplateRepository);
-            var graphSlotPage = Register(new GraphSlotPageModel(hudView.GraphSlotPageView, graphSaveManager));
+            var confirmDialog = Register(new ConfirmDialogModel(hudView.ConfirmDialogView));
+            var presetLoadPage = Register(new PresetLoadPageModel(hudView.PresetLoadPageView, graphSaveManager));
+            var presetManagePage = Register(new PresetManagePageModel(hudView.PresetManagePageView, graphSaveManager, confirmDialog));
             var copyrightNoticesPage = Register(new CopyrightNoticesPageModel(hudView.CopyrightNoticesPageView));
             var memoryStatsRecorder = Register(new MemoryStatsRecorder());
 
@@ -94,8 +96,10 @@ namespace Rector
                 oscSettingsPage,
                 displaySettingsPage,
                 graphSettingsPage,
-                graphSlotPage,
+                presetLoadPage,
+                presetManagePage,
                 copyrightNoticesPage,
+                confirmDialog,
                 graphPage,
                 hudView.SystemPageView));
             var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));

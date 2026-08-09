@@ -145,6 +145,37 @@
     margin-top: 100px;
 }
 
+/* グループの見出し。カーソルは止まらないので、行より一段沈めて区切りだけ見せる */
+.rector-button-list-header {
+    color: rgba(255, 255, 255, 0.3);
+    background-color: var(--rector-text-background-color);
+    -unity-text-align: middle-left;
+    margin-top: 12px;
+    margin-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    font-size: 10px;
+}
+
+/*
+ * 確認ダイアログの箱。他のページのリストと同じ起点に置いて、開いても視線が飛ばないようにする。
+ * 中身はタイトルと詳細の見出し行 + 選択肢のボタンで、行の作りはボタン一覧と同じ。
+ */
+.rector-confirm-dialog {
+    align-items: flex-start;
+    margin-left: 100px;
+    margin-top: 100px;
+    padding: 8px;
+    border-width: 1px;
+    border-color: var(--rector-border-color);
+    background-color: var(--rector-text-background-color);
+}
+
+/* 箱の1行目はダイアログの問いかけなので、区切りのための上余白は要らない */
+.rector-confirm-dialog > .rector-button-list-header {
+    margin-top: 0;
+}
+
 /* 行の幅を固定して、どのページでも値の列が同じ位置に来るようにする */
 .rector-setting-list {
     align-items: stretch;

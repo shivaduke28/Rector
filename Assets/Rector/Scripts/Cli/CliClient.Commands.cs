@@ -92,6 +92,12 @@ namespace Rector.Cli
             [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot)
             => Call(c => c.LoadGraph(slot));
 
+        [CliCommand("rector_delete_graph_slot", "Delete a saved slot. Not undoable: requires confirm=true.")]
+        static object DeleteGraphSlotCommand(
+            [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot,
+            [CliArg("confirm", "Apply the deletion. Without it the call is refused.")] bool confirm = false)
+            => Call(c => c.DeleteGraphSlot(slot, confirm));
+
         [CliCommand("rector_clear_graph", "Remove every node and edge. Not undoable: requires confirm=true.")]
         static object ClearGraphCommand(
             [CliArg("confirm", "Apply the removal. Without it the call is refused.")] bool confirm = false)

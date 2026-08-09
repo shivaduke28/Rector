@@ -144,6 +144,30 @@ namespace Rector.UI.Graphs.Serialization
             }
         }
 
+        /// <summary>スロットのファイルを消す。空のスロットを消すのは成功扱い(冪等)。</summary>
+        /// <remarks>
+        /// false は「番号が範囲外」か「消せなかった」のときだけ。空かどうかは呼ぶ側が
+        /// <see cref="GetInfo"/> で判断する。Load と同じで、状態の判定と操作の成否を混ぜない。
+        /// </remarks>
+        public bool Delete(int number)
+        {
+            if (!IsValidSlot(number)) return false;
+
+            var path = PathOf(number);
+            if (!File.Exists(path)) return true;
+
+            try
+            {
+                File.Delete(path);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to delete graph slot {number}: {e.Message}");
+                return false;
+            }
+        }
+
         static void TryDelete(string path)
         {
             try

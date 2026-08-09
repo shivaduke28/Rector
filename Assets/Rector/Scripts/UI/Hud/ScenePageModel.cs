@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using R3;
 
 namespace Rector.UI.Hud
@@ -42,7 +43,7 @@ namespace Rector.UI.Hud
             isVisible.Value = true;
         }
 
-        IEnumerable<RectorButtonState> IButtonListPageModel.GetButtons() => buttons;
+        IEnumerable<ButtonListItem> IButtonListPageModel.GetItems() => buttons.Select(ButtonListItem.Of);
         ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
 
         void IButtonListPageModel.Submit() => buttons[index].OnClick();

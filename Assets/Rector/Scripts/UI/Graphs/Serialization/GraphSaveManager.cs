@@ -36,6 +36,15 @@ namespace Rector.UI.Graphs.Serialization
             return true;
         }
 
+        /// <summary>スロットを消す。空のスロットでも成功扱い。グラフには触らない。</summary>
+        public bool Delete(int slot)
+        {
+            if (!repository.Delete(slot)) return false;
+
+            RectorLogger.GraphSlotDeleted(slot);
+            return true;
+        }
+
         /// <summary>空のスロットや壊れたファイルでは false を返し、グラフには触らない。</summary>
         public bool Load(int slot, out GraphLoadResult result)
         {
