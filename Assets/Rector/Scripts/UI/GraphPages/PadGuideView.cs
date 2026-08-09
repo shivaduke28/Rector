@@ -96,7 +96,7 @@ namespace Rector.UI.GraphPages
 
         public void SetXbox(bool xbox) => names = xbox ? XboxNames : DualShockNames;
 
-        public void Apply(GuideContent content, bool grabHeld, bool lockHeld)
+        public void Apply(GuideContent content)
         {
             SetFace(faceTop, names.FaceTop, content.FaceTop, names.FaceIsSymbol);
             SetFace(faceLeft, names.FaceLeft, content.FaceLeft, names.FaceIsSymbol);
@@ -104,15 +104,31 @@ namespace Rector.UI.GraphPages
             SetFace(faceBottom, names.FaceBottom, content.FaceBottom, names.FaceIsSymbol);
 
             lockChip.SetKey(names.UpperLeft);
-            lockChip.SetState(true, lockHeld);
+            lockChip.SetState(true, false);
             grabChip.SetKey(names.UpperRight);
-            grabChip.SetState(content.Grab, grabHeld);
+            grabChip.SetState(content.Grab, false);
             muteChip.SetKey(names.LowerLeft);
             muteChip.SetState(content.Mute, false);
             // 差し替え接続は下面ボタンとの同時押しなので、そのまま「R1+✕」と見せる
             paramChip.SetKey(content.ParamCombo ? $"{names.LowerRight}+{names.FaceBottom}" : names.LowerRight);
             paramChip.SetAction(content.Param ?? InputGuideContents.ParamLabel);
             paramChip.SetState(content.Param != null, content.ParamActive);
+        }
+
+        /// <summary>スティック側(Pan/Zoom/Reset)はこのレイアウトに載せていないので無視する。</summary>
+        public void SetPressed(GuideInput input, bool value)
+        {
+            switch (input)
+            {
+                case GuideInput.FaceTop: faceTop.SetPressed(value); break;
+                case GuideInput.FaceLeft: faceLeft.SetPressed(value); break;
+                case GuideInput.FaceRight: faceRight.SetPressed(value); break;
+                case GuideInput.FaceBottom: faceBottom.SetPressed(value); break;
+                case GuideInput.UpperLeft: lockChip.SetPressed(value); break;
+                case GuideInput.UpperRight: grabChip.SetPressed(value); break;
+                case GuideInput.LowerLeft: muteChip.SetPressed(value); break;
+                case GuideInput.LowerRight: paramChip.SetPressed(value); break;
+            }
         }
 
         /// <summary>空きポジションは「-」の減光表示にして、何も無いことを見せる。</summary>

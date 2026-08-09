@@ -12,6 +12,10 @@ namespace Rector.UI.GraphPages
         readonly Label key;
         readonly Label action;
 
+        bool enabled = true;
+        bool stateActive;
+        bool pressed;
+
         public InputGuideChip(string keyText = "", string actionText = "")
         {
             AddToClassList(InputGuideClassNames.Chip);
@@ -38,8 +42,22 @@ namespace Rector.UI.GraphPages
 
         public void SetState(bool enabled, bool active)
         {
+            this.enabled = enabled;
+            stateActive = active;
+            Refresh();
+        }
+
+        /// <summary>そのボタンを押している間。ステート由来の反転とは別に持ってORで解決する。</summary>
+        public void SetPressed(bool value)
+        {
+            pressed = value;
+            Refresh();
+        }
+
+        void Refresh()
+        {
             EnableInClassList(InputGuideClassNames.ChipDisabled, !enabled);
-            EnableInClassList(InputGuideClassNames.ChipActive, enabled && active);
+            EnableInClassList(InputGuideClassNames.ChipActive, enabled && (stateActive || pressed));
         }
     }
 }

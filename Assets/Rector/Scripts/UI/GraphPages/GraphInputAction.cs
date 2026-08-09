@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using R3;
 using UnityEngine;
@@ -44,7 +45,6 @@ namespace Rector.UI.GraphPages
         public Observable<Unit> LockStarted => lockStarted;
         public Observable<Unit> LockEnded => lockEnded;
         public ReadOnlyReactiveProperty<bool> GrabModifierHeld => grabModifierHeld;
-        public ReadOnlyReactiveProperty<bool> LockHeld => lockHeld;
         public Observable<Unit> OpenNodeParameter => openNodeParameter;
         public Observable<Unit> CloseNodeParameter => closeNodeParameter;
         public Observable<Unit> OpenSystem => openSystem;
@@ -70,7 +70,26 @@ namespace Rector.UI.GraphPages
 
         // ガイドバー等が購読できるようReactivePropertyで持つ
         readonly ReactiveProperty<bool> grabModifierHeld = new(false);
-        readonly ReactiveProperty<bool> lockHeld = new(false);
+
+        /// <summary>
+        /// 操作ガイドを光らせるための押下状態。位置ごとに1つ持つ。
+        /// </summary>
+        /// <remarks>
+        /// phaseの意味がinteractionで変わるので、押下の取り方は位置ごとに選んでいる。
+        /// interaction無しとHoldは started(押す)/canceled(離す) が揃うが、
+        /// **Tapは離したときperformedで終わり canceled が来ない**。
+        /// Tapが付いた Cancel / AddNode は同じ物理ボタンにHoldのアクション
+        /// (RemoveEdge / RemoveNode)が同居していてバインディングも一致しているので、
+        /// そちらを押下の代表として見る。バインディングを分けるときはここも直すこと。
+        /// </remarks>
+        readonly ReactiveProperty<bool>[] pressed =
+            Enumerable.Range(0, Enum.GetValues(typeof(GuideInput)).Length)
+                .Select(_ => new ReactiveProperty<bool>(false))
+                .ToArray();
+
+        public ReadOnlyReactiveProperty<bool> Pressed(GuideInput input) => pressed[(int)input];
+
+        void SetPressed(GuideInput input, bool value) => pressed[(int)input].Value = value;
         NavigateDirection chordNavigateDirection;
         bool chordNeutralRequired;
 
@@ -174,12 +193,15 @@ namespace Rector.UI.GraphPages
 
         public void OnSubmit(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.FaceBottom, context);
             if (context.performed)
             {
                 submit.OnNext(Unit.Default);
             }
         }
 
+        // Cancel / AddNode はTapなので押下の追跡には使わない(pressedのremarks参照)。
+        // 同じボタンの RemoveEdge / RemoveNode が代わりに光らせる。
         public void OnCancel(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -190,6 +212,7 @@ namespace Rector.UI.GraphPages
 
         public void OnAction(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.FaceLeft, context);
             if (context.performed)
             {
                 action.OnNext(Unit.Default);
@@ -204,8 +227,29 @@ namespace Rector.UI.GraphPages
             }
         }
 
+        /// <summary>started で点け、canceled で消す。</summary>
+        /// <remarks>
+        /// 使えるのはデジタルなボタンだけ。startedは actuation > 0 で飛ぶのに対し
+        /// performed は押し込み閾値(既定0.5)を超えないと飛ばないので、アナログトリガー
+        /// (L2/R2にあたる Lock / GrabModifier)でこれを使うと、機能が動いていない半押し域で
+        /// ガイドだけが光ってしまう。あの2つは performed / canceled で拾っている。
+        /// Tapのアクション(Cancel / AddNode)も canceled が来ないので使えない(pressedのremarks参照)。
+        /// </remarks>
+        void UpdatePressed(GuideInput input, InputAction.CallbackContext context)
+        {
+            if (context.started)
+            {
+                SetPressed(input, true);
+            }
+            else if (context.canceled)
+            {
+                SetPressed(input, false);
+            }
+        }
+
         public void OnRemoveEdge(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.FaceRight, context);
             if (context.started)
             {
                 removeEdgeHoldId = (removeEdgeHoldId + 1) % 255;
@@ -239,6 +283,7 @@ namespace Rector.UI.GraphPages
 
         public void OnRemoveNode(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.FaceTop, context);
             if (context.started)
             {
                 removeNodeHoldId = (removeNodeHoldId + 1) % 255;
@@ -280,11 +325,15 @@ namespace Rector.UI.GraphPages
         {
             if (context.performed)
             {
+                // L2/R2はアナログトリガーなので、startedを使うと半押しで光ってしまう
+                // (詳細は UpdatePressed のコメント)
+                SetPressed(GuideInput.UpperRight, true);
                 grabModifierHeld.Value = true;
                 BeginChord();
             }
             else if (context.canceled)
             {
+                SetPressed(GuideInput.UpperRight, false);
                 // 離した時点で倒れたままの十字キーはナビゲートに引き継がない。
                 // Navigateは値が変わるまでイベントが来ないので、倒し直すまで移動しない。
                 grabModifierHeld.Value = false;
@@ -305,6 +354,7 @@ namespace Rector.UI.GraphPages
         /// <remarks>L1/Vの単押しトグル。</remarks>
         public void OnMute(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.LowerLeft, context);
             if (context.performed)
             {
                 mute.OnNext(Unit.Default);
@@ -313,6 +363,7 @@ namespace Rector.UI.GraphPages
 
         public void OnOpenNodeParameter(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.LowerRight, context);
             if (context.performed)
             {
                 openNodeParameter.OnNext(Unit.Default);
@@ -327,12 +378,12 @@ namespace Rector.UI.GraphPages
         {
             if (context.performed)
             {
-                lockHeld.Value = true;
+                SetPressed(GuideInput.UpperLeft, true);
                 lockStarted.OnNext(Unit.Default);
             }
             else if (context.canceled)
             {
-                lockHeld.Value = false;
+                SetPressed(GuideInput.UpperLeft, false);
                 lockEnded.OnNext(Unit.Default);
             }
         }
@@ -363,6 +414,9 @@ namespace Rector.UI.GraphPages
             {
                 Zoom = 0f;
             }
+
+            // Value型なので倒している間ずっと値が来る。押下は値の有無で決まる
+            SetPressed(GuideInput.Zoom, !Mathf.Approximately(Zoom, 0f));
         }
 
         public void OnTranslate(InputAction.CallbackContext context)
@@ -375,10 +429,13 @@ namespace Rector.UI.GraphPages
             {
                 Translate = Vector2.zero;
             }
+
+            SetPressed(GuideInput.Pan, Translate.sqrMagnitude != 0f);
         }
 
         public void OnResetTransform(InputAction.CallbackContext context)
         {
+            UpdatePressed(GuideInput.Reset, context);
             if (context.performed)
             {
                 resetTransform.OnNext(Unit.Default);
