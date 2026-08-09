@@ -67,22 +67,24 @@ namespace Rector
             var targets = localAddresses.Length > 0
                 ? string.Join(", ", localAddresses.Select(a => $"{a}:{port}"))
                 : $"127.0.0.1:{port}";
-            LogInternal($"[SYSTEM/OSC] listening on port {port}. Send to {targets}");
+            LogInternal($"[SYSTEM/OSC] {targets}");
         }
 
         public static void OscDisabled()
         {
-            LogInternal("[SYSTEM/OSC] input is off. Enable it in System > OSC Settings.");
+            LogInternal("[SYSTEM/OSC] off");
         }
 
+        // 設定ページの "port N unavailable" と同じ言い方にする。落ちる理由はほぼ
+        // ポートの取り合いだが、それ以外のソケットエラーの手掛かりを括弧に残す
         public static void OscBindFailed(int port, string message)
         {
-            LogInternal($"[SYSTEM/OSC] failed to listen on port {port}. {message}");
+            LogInternal($"[SYSTEM/OSC] port {port} unavailable ({message})");
         }
 
         public static void OscInputOverflow()
         {
-            LogInternal("[SYSTEM/OSC] dropped incoming messages. The receive queue overflowed.");
+            LogInternal("[SYSTEM/OSC] input dropped (queue overflow)");
         }
 
         public static void DisableStackTrace()
