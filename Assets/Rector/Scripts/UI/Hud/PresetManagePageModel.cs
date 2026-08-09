@@ -23,8 +23,6 @@ namespace Rector.UI.Hud
     /// </remarks>
     public sealed class PresetManagePageModel : IInitializable, IDisposable, IButtonListPageModel
     {
-        const string HeaderText = "MANAGE PRESETS";
-
         readonly ButtonListPageView view;
         readonly GraphSaveManager graphSaveManager;
         readonly ConfirmDialogModel confirmDialog;
@@ -46,7 +44,6 @@ namespace Rector.UI.Hud
         void IInitializable.Initialize()
         {
             // 枠の数は固定なので行は一度きり。以降はテキストだけ差し替える
-            items.Add(ButtonListItem.Header(HeaderText));
             foreach (var info in graphSaveManager.GetAllSlotInfo())
             {
                 var slot = info.Number;
@@ -99,8 +96,9 @@ namespace Rector.UI.Hud
                     new ConfirmChoice("Delete", () => graphSaveManager.Delete(slot)),
                 };
 
+            // 押した行と同じ文面を出す。何を選んだかがそのまま確認の文になる
             isVisible.Value = false;
-            confirmDialog.Enter(PresetSlotLabel.Title(info), PresetSlotLabel.Summary(info), choices, Resume);
+            confirmDialog.Enter(PresetSlotLabel.Row(info), choices, Resume);
         }
 
         void Close()

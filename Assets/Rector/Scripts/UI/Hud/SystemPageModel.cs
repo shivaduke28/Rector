@@ -75,7 +75,8 @@ namespace Rector.UI.Hud
                 ButtonListItem.Of(new RectorButtonState("Manage Presets", ShowManagePresets)),
                 ButtonListItem.Header("GRAPH"),
                 ButtonListItem.Of(new RectorButtonState("Clear Graph", ClearGraph)),
-                ButtonListItem.Header("SYSTEM"),
+                // ページの題が SYSTEM なので、最後のまとまりは APP と呼ぶ
+                ButtonListItem.Header("APP"),
                 ButtonListItem.Of(new RectorButtonState("Copyright Notices", ShowCopyrightNotices)),
                 ButtonListItem.Of(new RectorButtonState("Exit", ExitApplication)),
             };
@@ -119,8 +120,7 @@ namespace Rector.UI.Hud
 
             isVisible.Value = false;
             confirmDialog.Enter(
-                "Clear the current graph?",
-                $"{nodeCount} nodes / {graphPage.Graph.EdgeCount} edges",
+                $"Clear the current graph?   {nodeCount} nodes / {graphPage.Graph.EdgeCount} edges",
                 new[] { new ConfirmChoice("Clear", DoClearGraph) },
                 Resume);
         }
@@ -206,7 +206,7 @@ namespace Rector.UI.Hud
         void ExitApplication()
         {
             isVisible.Value = false;
-            confirmDialog.Enter("Quit Rector?", "", new[] { new ConfirmChoice("Quit", Quit) }, Resume);
+            confirmDialog.Enter("Quit Rector?", new[] { new ConfirmChoice("Quit", Quit) }, Resume);
         }
 
         static void Quit()

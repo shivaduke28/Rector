@@ -16,8 +16,6 @@ namespace Rector.UI.Hud
     /// </remarks>
     public sealed class PresetLoadPageModel : IInitializable, IDisposable, IButtonListPageModel
     {
-        const string HeaderText = "LOAD PRESET";
-
         readonly ButtonListPageView view;
         readonly GraphSaveManager graphSaveManager;
         readonly ReactiveProperty<bool> isVisible = new(false);
@@ -53,7 +51,6 @@ namespace Rector.UI.Hud
         {
             items.Clear();
             buttons.Clear();
-            items.Add(ButtonListItem.Header(HeaderText));
 
             foreach (var info in graphSaveManager.GetAllSlotInfo())
             {

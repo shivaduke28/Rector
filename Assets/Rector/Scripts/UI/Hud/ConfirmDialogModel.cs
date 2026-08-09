@@ -29,6 +29,7 @@ namespace Rector.UI.Hud
     /// ページ」ができる。表示のオンオフを通すと ButtonListPageView が入力を取り直す。
     ///
     /// 見出し行が使えるので、専用の View は持たず <see cref="ButtonListPageView"/> に相乗りする。
+    /// 文面は1行だけ。題と詳細で2行に割ると、同じ見た目の行が並んで読みにくくなる。
     /// </remarks>
     public sealed class ConfirmDialogModel : IInitializable, IDisposable, IButtonListPageModel
     {
@@ -52,16 +53,15 @@ namespace Rector.UI.Hud
 
         void IDisposable.Dispose() => disposable?.Dispose();
 
-        /// <param name="detail">対象の中身。空なら行ごと出さない。</param>
-        public void Enter(string title, string detail, ConfirmChoice[] choices, Action onCloseAction)
+        /// <param name="text">何に対する確認かを表す1行。対象の中身もここに畳んで渡す。</param>
+        public void Enter(string text, ConfirmChoice[] choices, Action onCloseAction)
         {
             onClose = onCloseAction;
 
             items.Clear();
             buttons.Clear();
 
-            items.Add(ButtonListItem.Header(title));
-            if (!string.IsNullOrEmpty(detail)) items.Add(ButtonListItem.Header(detail));
+            items.Add(ButtonListItem.Header(text));
 
             foreach (var choice in choices)
             {

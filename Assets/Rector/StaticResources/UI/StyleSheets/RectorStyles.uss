@@ -139,28 +139,81 @@
     flex-grow: 1;
 }
 
+/*
+ * ページの題。どの画面にも1つだけ置いて、今どこにいるかを同じ位置で示す。
+ * 中身の書き出し位置(100px)はここが決めるので、下のリストは上余白を持たない。
+ *
+ * system 系のページは行の箱を「枠1px + 左右8px」で揃える。設定行が元からこの作りで、
+ * 揃えないと題・見出し・項目で文字の出だしがずれる。枠は焦点の輪と同じ幅で色だけ抜く。
+ * グラフ側のノード作成メニューは余白なしのままなので .rector-button は直接触らない。
+ */
+.rector-page-title {
+    align-self: flex-start;
+    color: var(--rector-text-color);
+    background-color: var(--rector-text-background-color);
+    -unity-text-align: middle-left;
+    margin-left: 100px;
+    margin-top: 100px;
+    margin-bottom: 2px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 12px;
+}
+
+.rector-button-list > .rector-button > Button {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* 題の下の罫線。幅は設定行のラベル列に揃える。題のラベルを伸ばすと下地の板まで伸びるので別要素 */
+.rector-page-rule {
+    width: 340px;
+    height: 1px;
+    margin-left: 100px;
+    margin-bottom: 16px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .rector-button-list {
     align-items: flex-start;
     margin-left: 100px;
-    margin-top: 100px;
 }
 
-/* グループの見出し。カーソルは止まらないので、行より一段沈めて区切りだけ見せる */
+/*
+ * ページの中のグループの見出し。題より暗く小さくして、段の違いを明るさで見せる。
+ * カーソルは止まらない。
+ */
 .rector-button-list-header {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.4);
     background-color: var(--rector-text-background-color);
     -unity-text-align: middle-left;
+    /* Label の既定マージンを消す。効いたままだと見出しだけ右へずれる */
+    margin-left: 0;
+    margin-right: 0;
     margin-top: 12px;
     margin-bottom: 2px;
-    padding-left: 2px;
-    padding-right: 2px;
-    font-size: 10px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
+    padding-left: 8px;
+    padding-right: 8px;
+    /* Label の既定の上下余白を落として、文字の実寸ぶんの高さにする */
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 9px;
 }
 
 /*
  * 確認ダイアログ。見た目は他のページのボタン一覧そのままで、枠も下地も足さない。
- * 問いかけと対象の中身を見出しの行で出し、その下に選択肢を並べる。
+ * 題は持たず、何に対する確認かを1行で出してから選択肢を並べるので、
+ * その1行が他のページの題と同じ位置に来るよう上余白をここで持つ。
  */
+.rector-confirm-dialog {
+    margin-top: 100px;
+}
+
+/* 1行目は問いかけなので、まとまりを区切るための上余白は要らない */
 .rector-confirm-dialog > .rector-button-list-header {
     margin-top: 0;
 }
@@ -170,7 +223,6 @@
     align-items: stretch;
     width: 760px;
     margin-left: 100px;
-    margin-top: 100px;
 }
 
 .rector-copyright-notices-page {
