@@ -258,6 +258,25 @@ namespace Rector.Cli
             };
         }
 
+        // 空かどうかの判定はここで持つ。GraphSaveManager.Delete は「消えている状態にする」ので、
+        // 元から空でも成功を返す。CLI からは打ち間違いに気付けるよう空を分けて返す。
+        object DeleteGraphSlot(int slot, bool confirm)
+        {
+            if (!GraphSlotRepository.IsValidSlot(slot)) return InvalidSlot(slot);
+
+            var info = graphSaveManager.GetSlotInfo(slot);
+            if (info.IsEmpty) return Failure("empty_slot", $"Graph slot {slot} is already empty.");
+
+            // HUD 側も確認を挟む操作。undo が無いので CLI からも一手間かける
+            if (!confirm)
+                return Failure("confirm_required", $"Deleting graph slot {slot} ({info.NodeCount} node(s)) cannot be undone. Pass confirm=true.");
+
+            if (!graphSaveManager.Delete(slot))
+                return Failure("delete_failed", $"Could not delete graph slot {slot}. See the Unity log.");
+
+            return new { success = true, slot };
+        }
+
         object ClearGraph(bool confirm)
         {
             var nodeCount = graphPage.Graph.NodeCount;

@@ -28,27 +28,51 @@
                 </engine:VisualElement>
             </engine:VisualElement>
             <engine:VisualElement name="scene-page" class="rector-page">
+                <engine:Label text="SCENE" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
             <engine:VisualElement name="system-page" class="rector-page">
+                <engine:Label text="SYSTEM" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="left-list" class="rector-button-list" />
             </engine:VisualElement>
-            <engine:VisualElement name="graph-slot-page" class="rector-page">
+            <engine:VisualElement name="preset-load-page" class="rector-page">
+                <engine:Label text="LOAD PRESET" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="left-list" class="rector-button-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="preset-manage-page" class="rector-page">
+                <engine:Label text="MANAGE PRESETS" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
+                <engine:VisualElement name="left-list" class="rector-button-list" />
+            </engine:VisualElement>
+            <engine:VisualElement name="confirm-dialog-page" class="rector-page">
+                <engine:VisualElement name="left-list" class="rector-button-list rector-confirm-dialog" />
             </engine:VisualElement>
             <engine:VisualElement name="audio-input-device-page" class="rector-page">
+                <engine:Label text="AUDIO" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>
             <engine:VisualElement name="midi-input-device-page" class="rector-page">
+                <engine:Label text="MIDI" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>
             <engine:VisualElement name="osc-settings-page" class="rector-page">
+                <engine:Label text="OSC" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>
             <engine:VisualElement name="display-settings-page" class="rector-page">
+                <engine:Label text="DISPLAY" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>
             <engine:VisualElement name="graph-settings-page" class="rector-page">
+                <engine:Label text="GRAPH EDITOR" class="rector-page-title" />
+                <engine:VisualElement class="rector-page-rule" />
                 <engine:VisualElement name="setting-list" class="rector-setting-list" />
             </engine:VisualElement>
             <engine:VisualElement name="copyright-notices-page" class="rector-page rector-copyright-notices-page">

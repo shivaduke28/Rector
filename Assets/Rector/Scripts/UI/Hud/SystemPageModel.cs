@@ -1,12 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using R3;
 using Rector.UI.GraphPages;
 
 namespace Rector.UI.Hud
 {
+    /// <summary>
+    /// HUD の親メニュー。設定・プリセット・グラフ・アプリの4つに見出しで区切る。
+    /// </summary>
+    /// <remarks>
+    /// 見出しはカーソルが止まらないので、上下は今までどおり項目の間を素通しで動く。
+    /// 設定の行から "Settings" を落としているのは見出しと重なるため。グラフの設定だけ
+    /// "Graph Editor" にしてあるのは、グラフの中身を触る GRAPH の見出しと読み違えないように。
+    /// </remarks>
     public sealed class SystemPageModel : IInitializable, IDisposable, IButtonListPageModel
     {
+        readonly ButtonListItem[] items;
         readonly RectorButtonState[] buttons;
         readonly ReactiveProperty<bool> isVisible = new(false);
         int index;
@@ -16,19 +26,14 @@ namespace Rector.UI.Hud
         readonly OscSettingsPageModel oscSettingsPageModel;
         readonly DisplaySettingsPageModel displaySettingsPageModel;
         readonly GraphSettingsPageModel graphSettingsPageModel;
-        readonly GraphSlotPageModel graphSlotPageModel;
+        readonly PresetLoadPageModel presetLoadPageModel;
+        readonly PresetManagePageModel presetManagePageModel;
         readonly CopyrightNoticesPageModel copyrightNoticesPageModel;
+        readonly ConfirmDialogModel confirmDialog;
         readonly GraphPage graphPage;
         readonly ButtonListPageView view;
         Action onExit;
         IDisposable disposable;
-
-        const string ClearGraphLabel = "Clear Graph";
-
-        /// <summary>グラフ全消しの確認待ち。ラベルを戻すためにボタンを持っておく。</summary>
-        readonly RectorButtonState clearGraphButton;
-
-        bool clearGraphArmed;
 
         public SystemPageModel(
             AudioInputDevicePageModel audioInputDevicePageModel,
@@ -36,8 +41,10 @@ namespace Rector.UI.Hud
             OscSettingsPageModel oscSettingsPageModel,
             DisplaySettingsPageModel displaySettingsPageModel,
             GraphSettingsPageModel graphSettingsPageModel,
-            GraphSlotPageModel graphSlotPageModel,
+            PresetLoadPageModel presetLoadPageModel,
+            PresetManagePageModel presetManagePageModel,
             CopyrightNoticesPageModel copyrightNoticesPageModel,
+            ConfirmDialogModel confirmDialog,
             GraphPage graphPage,
             ButtonListPageView view
         )
@@ -47,24 +54,34 @@ namespace Rector.UI.Hud
             this.oscSettingsPageModel = oscSettingsPageModel;
             this.displaySettingsPageModel = displaySettingsPageModel;
             this.graphSettingsPageModel = graphSettingsPageModel;
-            this.graphSlotPageModel = graphSlotPageModel;
+            this.presetLoadPageModel = presetLoadPageModel;
+            this.presetManagePageModel = presetManagePageModel;
             this.copyrightNoticesPageModel = copyrightNoticesPageModel;
+            this.confirmDialog = confirmDialog;
             this.graphPage = graphPage;
             this.view = view;
-            clearGraphButton = new RectorButtonState(ClearGraphLabel, ClearGraph);
-            buttons = new[]
+
+            // 並びの正はこの配列だけ。カーソルの対象はここから見出しを抜いて作る
+            items = new[]
             {
-                new RectorButtonState("Audio Settings", ShowAudioSettings),
-                new RectorButtonState("MIDI Settings", ShowMidiSettings),
-                new RectorButtonState("OSC Settings", ShowOscSettings),
-                new RectorButtonState("Display Settings", ShowDisplaySettings),
-                new RectorButtonState("Graph Settings", ShowGraphSettings),
-                new RectorButtonState("Save Graph", ShowSaveGraph),
-                new RectorButtonState("Load Graph", ShowLoadGraph),
-                clearGraphButton,
-                new RectorButtonState("Copyright Notices", ShowCopyrightNotices),
-                new RectorButtonState("Exit", ExitApplication),
+                ButtonListItem.Header("SETTINGS"),
+                ButtonListItem.Of(new RectorButtonState("Audio", ShowAudioSettings)),
+                ButtonListItem.Of(new RectorButtonState("MIDI", ShowMidiSettings)),
+                ButtonListItem.Of(new RectorButtonState("OSC", ShowOscSettings)),
+                ButtonListItem.Of(new RectorButtonState("Display", ShowDisplaySettings)),
+                ButtonListItem.Of(new RectorButtonState("Graph Editor", ShowGraphSettings)),
+                ButtonListItem.Header("PRESET"),
+                ButtonListItem.Of(new RectorButtonState("Load Preset", ShowLoadPreset)),
+                ButtonListItem.Of(new RectorButtonState("Manage Presets", ShowManagePresets)),
+                ButtonListItem.Header("GRAPH"),
+                ButtonListItem.Of(new RectorButtonState("Clear Graph", ClearGraph)),
+                // ページの題が SYSTEM なので、最後のまとまりは APP と呼ぶ
+                ButtonListItem.Header("APP"),
+                ButtonListItem.Of(new RectorButtonState("Copyright Notices", ShowCopyrightNotices)),
+                ButtonListItem.Of(new RectorButtonState("Exit", ExitApplication)),
             };
+
+            buttons = items.Where(x => !x.IsHeader).Select(x => x.Button).ToArray();
         }
 
         void IInitializable.Initialize()
@@ -77,7 +94,6 @@ namespace Rector.UI.Hud
         public void Enter(Action onExitAction)
         {
             onExit = onExitAction;
-            DisarmClearGraph();
             isVisible.Value = true;
             // 閉じずに Enter された場合に前のフォーカスが残らないよう、先に外してから先頭へ戻す
             buttons[index].IsFocused.Value = false;
@@ -90,32 +106,33 @@ namespace Rector.UI.Hud
             isVisible.Value = true;
         }
 
-        /// <summary>グラフを全部消す。undoが無いので、もう一度押させて意思を確かめる。</summary>
+        /// <summary>グラフを全部消す。undoが無いので確認を挟む。</summary>
         void ClearGraph()
         {
             var nodeCount = graphPage.Graph.NodeCount;
 
             // 空のグラフは消すものが無いので確認しない
-            if (nodeCount > 0 && !clearGraphArmed)
+            if (nodeCount == 0)
             {
-                clearGraphArmed = true;
-                clearGraphButton.Text.Value = "Clear Graph?   press again to confirm";
+                DoClearGraph();
                 return;
             }
 
-            DisarmClearGraph();
+            isVisible.Value = false;
+            confirmDialog.Enter(
+                $"Clear the current graph?   {nodeCount} nodes / {graphPage.Graph.EdgeCount} edges",
+                new[] { new ConfirmChoice("Clear", DoClearGraph) },
+                Resume);
+        }
+
+        void DoClearGraph()
+        {
+            var nodeCount = graphPage.Graph.NodeCount;
             graphPage.ClearGraph();
             RectorLogger.GraphCleared(nodeCount);
         }
 
-        void DisarmClearGraph()
-        {
-            clearGraphArmed = false;
-            clearGraphButton.Text.Value = ClearGraphLabel;
-        }
-
-
-        IEnumerable<RectorButtonState> IButtonListPageModel.GetButtons() => buttons;
+        IEnumerable<ButtonListItem> IButtonListPageModel.GetItems() => items;
 
         ReadOnlyReactiveProperty<bool> IButtonListPageModel.IsVisible => isVisible;
 
@@ -130,9 +147,6 @@ namespace Rector.UI.Hud
 
         void IButtonListPageModel.Navigate(bool next)
         {
-            // 行を移ったら確認は無かったことにする
-            DisarmClearGraph();
-
             buttons[index].IsFocused.Value = false;
             index += next ? 1 : -1;
             index = (index + buttons.Length) % buttons.Length;
@@ -171,16 +185,16 @@ namespace Rector.UI.Hud
             graphSettingsPageModel.Enter(Resume);
         }
 
-        void ShowSaveGraph()
+        void ShowLoadPreset()
         {
             isVisible.Value = false;
-            graphSlotPageModel.Enter(GraphSlotPageMode.Save, Resume);
+            presetLoadPageModel.Enter(Resume);
         }
 
-        void ShowLoadGraph()
+        void ShowManagePresets()
         {
             isVisible.Value = false;
-            graphSlotPageModel.Enter(GraphSlotPageMode.Load, Resume);
+            presetManagePageModel.Enter(Resume);
         }
 
         void ShowCopyrightNotices()
@@ -191,7 +205,12 @@ namespace Rector.UI.Hud
 
         void ExitApplication()
         {
-            // TODO: Add a confirmation dialog?
+            isVisible.Value = false;
+            confirmDialog.Enter("Quit Rector?", new[] { new ConfirmChoice("Quit", Quit) }, Resume);
+        }
+
+        static void Quit()
+        {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.ExitPlaymode();
 #else
