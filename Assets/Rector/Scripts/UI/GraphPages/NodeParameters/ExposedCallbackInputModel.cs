@@ -11,6 +11,8 @@ namespace Rector.UI.GraphPages.NodeParameters
 
         public ExposedCallbackInputModel(CallbackInputSlot slot) => Slot = slot;
 
+        public string Label => Slot.Name;
+
         public void Invoke() => Slot.SendForce();
 
         public void Increment() { }

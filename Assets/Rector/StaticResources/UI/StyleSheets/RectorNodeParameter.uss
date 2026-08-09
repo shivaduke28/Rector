@@ -67,3 +67,18 @@
     flex-direction: row-reverse;
     flex-grow: 1;
 }
+
+/* Vector3の見出し。名前だけを出すので、値やスライダーの列は持たない。
+   border-widthは行の高さと名前列の位置を .rector-exposed-input と揃えるために要る */
+.rector-exposed-vector3-header {
+    flex-direction: row;
+    border-width: 1px;
+    margin-top: 4px;
+}
+
+/* 見出しにぶら下がるX/Y/Zの行。名前の列ごと下げるとスライダーの左端がfloat行とずれるので、
+   ラベルだけを下げる。RectorCommonの .rector-label { margin: 0 } と同スペシフィシティでは
+   負けるため、親クラスを噛ませて上げてある */
+.rector-exposed-input--indented > .rector-exposed-name-label-container > .rector-exposed-name-label {
+    margin-left: 12px;
+}

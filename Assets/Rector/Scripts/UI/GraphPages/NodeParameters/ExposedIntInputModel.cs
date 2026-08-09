@@ -18,6 +18,8 @@ namespace Rector.UI.GraphPages.NodeParameters
             delta = 1;
         }
 
+        public string Label => Slot.Name;
+
         public void Increment()
         {
             Slot.Property.Value += Mathf.Clamp(delta, 0, Slot.MaxValue - Slot.Property.Value);

@@ -88,6 +88,8 @@ namespace Rector.NodeBehaviours
     [Serializable]
     public sealed class Vector3Input : ValueInput<Vector3>, IVector3Input
     {
+        // FloatInput/IntInputと違ってレンジを持たない。Position/Rotation/Scale/Offsetに自然な上下限は無く、
+        // VFX GraphもVector3プロパティには範囲を出してこない(±Infinityが返る)ので、設定する経路が無い。
         public Vector3Input(string name, Vector3 defaultValue) : base(name, defaultValue)
         {
         }

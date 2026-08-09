@@ -24,7 +24,7 @@ namespace Rector.UI.GraphPages.NodeParameters
         public IDisposable Bind(ExposedIntInputModel model)
         {
             var slot = model.Slot;
-            nameLabel.text = slot.Name;
+            nameLabel.text = model.Label;
             sliderState = new RectorSliderIntState(slot.Property, slot.MinValue, slot.MaxValue);
             return new CompositeDisposable(
                 slider.Bind(sliderState),
