@@ -7,11 +7,10 @@ namespace Rector.UI.Hud
     {
         public static string Title(GraphSlotInfo info) => $"Slot {info.Number}";
 
-        /// <summary>中身の要約。空のスロットでは空文字。</summary>
-        public static string Detail(GraphSlotInfo info) =>
-            info.IsEmpty ? "" : $"{info.NodeCount} nodes / {info.EdgeCount} edges   {info.SavedAt}";
+        /// <summary>中身の要約。</summary>
+        public static string Summary(GraphSlotInfo info) =>
+            info.IsEmpty ? "(empty)" : $"{info.NodeCount} nodes / {info.EdgeCount} edges   {info.SavedAt}";
 
-        public static string Row(GraphSlotInfo info) =>
-            $"{Title(info)}   {(info.IsEmpty ? "(empty)" : Detail(info))}";
+        public static string Row(GraphSlotInfo info) => $"{Title(info)}   {Summary(info)}";
     }
 }

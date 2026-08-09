@@ -11,9 +11,12 @@ namespace Rector.UI.Hud
     /// プリセットの保存と削除。準備のための画面なので、操作してもページから出ない。
     /// </summary>
     /// <remarks>
-    /// 空の枠は失うものが無いのでそのまま書く。埋まっている枠は確認ダイアログへ回し、
-    /// 上書きと削除をそこで選ばせる。UIの入力は Navigate/Submit/Cancel の3つしか無いので、
-    /// 削除だけを別のボタンに割り当てることはできない。
+    /// どの枠を押しても必ず確認ダイアログを通す。空の枠だけその場で書き込むようにしていたが、
+    /// 行が「スロット」に見えるので、押した瞬間にファイルができるのが驚きになった。
+    /// 「行を選ぶ→何をするか選ぶ」に揃えて、空の枠は選択肢が Save だけになる。
+    ///
+    /// UIの入力は Navigate/Submit/Cancel の3つしか無いので、削除だけを別のボタンに
+    /// 割り当てることはできない。上書きと削除はダイアログの中で選ぶ。
     ///
     /// 行(<see cref="RectorButtonState"/>)は作り直さずテキストだけ差し替える。ダイアログから
     /// 戻ると ButtonListPageView が要素を組み直すが、同じ state を使い回していればカーソルが残る。
@@ -87,23 +90,17 @@ namespace Rector.UI.Hud
         void Submit(int slot)
         {
             var info = graphSaveManager.GetSlotInfo(slot);
-            if (info.IsEmpty)
-            {
-                graphSaveManager.Save(slot, out _);
-                RefreshLabels();
-                return;
-            }
 
-            isVisible.Value = false;
-            confirmDialog.Enter(
-                PresetSlotLabel.Title(info),
-                PresetSlotLabel.Detail(info),
-                new[]
+            var choices = info.IsEmpty
+                ? new[] { new ConfirmChoice("Save", () => graphSaveManager.Save(slot, out _)) }
+                : new[]
                 {
                     new ConfirmChoice("Overwrite", () => graphSaveManager.Save(slot, out _)),
                     new ConfirmChoice("Delete", () => graphSaveManager.Delete(slot)),
-                },
-                Resume);
+                };
+
+            isVisible.Value = false;
+            confirmDialog.Enter(PresetSlotLabel.Title(info), PresetSlotLabel.Summary(info), choices, Resume);
         }
 
         void Close()
