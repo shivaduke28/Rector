@@ -298,7 +298,7 @@ namespace Rector.UI.LayeredGraphDrawing
             return x;
 
             // block内のnodeのxとsinkを決める
-            // blockとsinkが共通のblockがある場合は先にそれを計算する（ので再起処理になってる）
+            // blockとsinkが共通のblockがある場合は先にそれを計算する（ので再帰処理になってる）
             void PlaceBlock(ILayeredNode rootNode)
             {
                 if (x.TryAdd(rootNode.Id, 0f))
