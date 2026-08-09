@@ -352,7 +352,8 @@
 }
 
 .rector-create-node-menu-list > .rector-button > Button {
-    background-color: rgba(20, 20, 20, 0.7);
+    /* カテゴリ列と同じ濃さ。2列は横に並ぶので下地は1つに揃える */
+    background-color: rgba(15, 15, 15, 0.76);
     font-size: 12px;
 }
 
@@ -375,7 +376,9 @@
 }
 
 .rector-node-category-button-inner {
-    background-color: rgba(20, 20, 20, 0.7);
+    /* ラベルが .rector-label で黒0.2を重ねていてテキスト側だけ濃かったので、下地はここ1枚に集約する。
+       rgba(15, 15, 15, 0.76) は rgba(20, 20, 20, 0.7) に黒0.2を重ねた合成値 */
+    background-color: rgba(15, 15, 15, 0.76);
     border-width: 0;
     margin: 0;
     padding: 0;
@@ -389,6 +392,11 @@
 
 .rector-node-category-button--focused > .rector-node-category-button-inner {
     background-color: black;
+}
+
+/* .rector-label(RectorCommon) の背景を消す。同スペシフィシティだとそちらが勝つので子セレクタで上書きする */
+.rector-node-category-button-inner > .rector-label {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .rector-node-category-button-icon {
