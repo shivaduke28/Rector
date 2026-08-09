@@ -11,24 +11,25 @@ namespace Rector.UI.Hud
     /// プリセットの保存と削除。準備のための画面なので、操作してもページから出ない。
     /// </summary>
     /// <remarks>
-    /// どの枠を押しても必ず確認ダイアログを通す。空の枠だけその場で書き込むようにしていたが、
-    /// 行が「スロット」に見えるので、押した瞬間にファイルができるのが驚きになった。
-    /// 「行を選ぶ→何をするか選ぶ」に揃えて、空の枠は選択肢が Save だけになる。
+    /// 名前を付ける口はここに無い。日時の既定名で作り、変えたければ Open Preset Folder から
+    /// Finder でリネームする。失うもののある Overwrite と Delete だけ確認を挟む。
     ///
     /// UIの入力は Navigate/Submit/Cancel の3つしか無いので、削除だけを別のボタンに
     /// 割り当てることはできない。上書きと削除はダイアログの中で選ぶ。
-    ///
-    /// 行(<see cref="RectorButtonState"/>)は作り直さずテキストだけ差し替える。ダイアログから
-    /// 戻ると ButtonListPageView が要素を組み直すが、同じ state を使い回していればカーソルが残る。
     /// </remarks>
     public sealed class PresetManagePageModel : IInitializable, IDisposable, IButtonListPageModel
     {
+        const string SaveAsNewLabel = "Save as new";
+        const string OpenFolderLabel = "Open Preset Folder";
+
         readonly ButtonListPageView view;
         readonly GraphSaveManager graphSaveManager;
         readonly ConfirmDialogModel confirmDialog;
         readonly ReactiveProperty<bool> isVisible = new(false);
         readonly List<ButtonListItem> items = new();
         readonly List<RectorButtonState> buttons = new();
+
+        readonly List<string> presetNames = new();
 
         Action? onExit;
         IDisposable? disposable;
@@ -41,65 +42,97 @@ namespace Rector.UI.Hud
             this.confirmDialog = confirmDialog;
         }
 
-        void IInitializable.Initialize()
-        {
-            // 枠の数は固定なので行は一度きり。以降はテキストだけ差し替える
-            foreach (var info in graphSaveManager.GetAllSlotInfo())
-            {
-                var slot = info.Number;
-                var button = new RectorButtonState(PresetSlotLabel.Row(info), () => Submit(slot));
-                buttons.Add(button);
-                items.Add(ButtonListItem.Of(button));
-            }
-
-            disposable = view.Bind(this);
-        }
+        void IInitializable.Initialize() => disposable = view.Bind(this);
 
         void IDisposable.Dispose() => disposable?.Dispose();
 
         public void Enter(Action onExitAction)
         {
             onExit = onExitAction;
-            RefreshLabels();
-
-            buttons[index].IsFocused.Value = false;
             index = 0;
+            Refresh(null);
+        }
+
+        /// <summary>一覧を取り直して組み直し、<paramref name="focusName"/> の行にカーソルを戻す。</summary>
+        /// <remarks>
+        /// 組み直し → カーソル → 表示 の順を崩さないこと。表示のオンオフで
+        /// <see cref="ButtonListPageView"/> が要素を作り直し、<see cref="RectorButton.Bind"/> は
+        /// 購読した時点の IsFocused を読むので、表示が先だとカーソルが消える。
+        /// </remarks>
+        void Refresh(string? focusName)
+        {
+            isVisible.Value = false;
+
+            var previous = index;
+            BuildRows();
+
+            // 先頭が Save as new なので、プリセットの n 番目は行の n+1 番目
+            var found = focusName == null ? -1 : presetNames.IndexOf(focusName);
+            index = Math.Clamp(found >= 0 ? found + 1 : previous, 0, buttons.Count - 1);
             buttons[index].IsFocused.Value = true;
             isVisible.Value = true;
         }
 
-        /// <summary>ダイアログから戻る先。カーソルは動かさず、操作の結果だけ拾い直す。</summary>
-        void Resume()
+        void BuildRows()
         {
-            RefreshLabels();
-            isVisible.Value = true;
-        }
+            items.Clear();
+            buttons.Clear();
+            presetNames.Clear();
 
-        void RefreshLabels()
-        {
-            var infos = graphSaveManager.GetAllSlotInfo();
-            for (var i = 0; i < buttons.Count; i++)
+            Add(new RectorButtonState(SaveAsNewLabel, SaveAsNew));
+
+            // 保存が無いときに余白が二重にならないよう、一覧がある側にだけ上の空きを持たせる
+            var infos = graphSaveManager.GetAll();
+            if (infos.Length > 0) items.Add(ButtonListItem.Spacer());
+
+            foreach (var info in infos)
             {
-                buttons[i].Text.Value = PresetSlotLabel.Row(infos[i]);
+                var name = info.Name;
+                presetNames.Add(name);
+                Add(new RectorButtonState(PresetLabel.Row(info), () => Submit(name)));
             }
+
+            items.Add(ButtonListItem.Spacer());
+            Add(new RectorButtonState(OpenFolderLabel, OpenFolder));
         }
 
-        void Submit(int slot)
+        void Add(RectorButtonState button)
         {
-            var info = graphSaveManager.GetSlotInfo(slot);
+            buttons.Add(button);
+            items.Add(ButtonListItem.Of(button));
+        }
 
-            var choices = info.IsEmpty
-                ? new[] { new ConfirmChoice("Save", () => graphSaveManager.Save(slot, out _)) }
-                : new[]
-                {
-                    new ConfirmChoice("Overwrite", () => graphSaveManager.Save(slot, out _)),
-                    new ConfirmChoice("Delete", () => graphSaveManager.Delete(slot)),
-                };
+        void SaveAsNew()
+        {
+            var name = graphSaveManager.NextDefaultName();
+            graphSaveManager.Save(name, out _);
+
+            // 名前順に並ぶので、新しい行は末尾とは限らない
+            Refresh(name);
+        }
+
+        void Submit(string name)
+        {
+            // Finder 側で消えている・名前が変わっていることがある
+            if (!graphSaveManager.TryGetInfo(name, out var info))
+            {
+                Refresh(null);
+                return;
+            }
+
+            var choices = new[]
+            {
+                new ConfirmChoice("Overwrite", () => graphSaveManager.Save(info.Name, out _)),
+                new ConfirmChoice("Delete", () => graphSaveManager.Delete(info.Name)),
+            };
 
             // 押した行と同じ文面を出す。何を選んだかがそのまま確認の文になる
             isVisible.Value = false;
-            confirmDialog.Enter(PresetSlotLabel.Row(info), choices, Resume);
+            confirmDialog.Enter(PresetLabel.Row(info), choices, () => Refresh(info.Name));
         }
+
+        /// <summary>保存フォルダを開く。リネームを拾い直す合図は無いので、ページに入り直したときに反映される。</summary>
+        void OpenFolder() => graphSaveManager.OpenDirectory();
 
         void Close()
         {

@@ -210,25 +210,33 @@ namespace Rector.Cli
 
         // ------------------------------------------------------ グラフの保存 / 読み込み
 
-        object GetGraphSlots() => new
+        object GetGraphPresets() => new
         {
-            slots = graphSaveManager.GetAllSlotInfo()
-                .Select(s => new { slot = s.Number, empty = s.IsEmpty, nodeCount = s.NodeCount, edgeCount = s.EdgeCount, savedAt = s.SavedAt })
+            presets = graphSaveManager.GetAll()
+                .Select(p => new { name = p.Name, nodeCount = p.NodeCount, edgeCount = p.EdgeCount, savedAt = p.SavedAt })
                 .ToArray(),
         };
 
-        object SaveGraph(int slot)
+        // 名前は検証しない。ファイル名にできない名前はファイルシステムが弾き、save_failed になる。
+        object SaveGraph(string name, bool overwrite)
         {
-            if (!GraphSlotRepository.IsValidSlot(slot)) return InvalidSlot(slot);
+            // 名前を省くと HUD の [Save as new] と同じ既定名で新しく作る
+            var isNew = string.IsNullOrEmpty(name);
+            if (isNew) name = graphSaveManager.NextDefaultName();
 
-            if (!graphSaveManager.Save(slot, out var result))
-                return Failure("save_failed", $"Could not write graph slot {slot}. See the Unity log.");
+            // 打ち間違いで別のプリセットを潰さないよう、既にある名前は一手間かける。
+            // 削除が confirm を要求するのと揃える
+            if (!isNew && !overwrite && graphSaveManager.Exists(name))
+                return Failure("preset_exists", $"Graph preset '{name}' already exists. Pass overwrite=true to replace it.");
+
+            if (!graphSaveManager.Save(name, out var result))
+                return Failure("save_failed", $"Could not write graph preset '{name}'. See the Unity log.");
 
             // skipped は BG シーン由来のノードとその端点のエッジ。今は保存の対象外 (issue #81)
             return new
             {
                 success = true,
-                slot,
+                name,
                 nodeCount = result.NodeCount,
                 edgeCount = result.EdgeCount,
                 skippedNodeCount = result.SkippedNodeCount,
@@ -238,17 +246,19 @@ namespace Rector.Cli
 
         // ロードは今のグラフへ足すだけで何も失わないので、confirm は要らない。
         // 丸ごと入れ替えたいときは rector_clear_graph を先に呼ぶ。
-        object LoadGraph(int slot)
+        object LoadGraph(string name)
         {
-            if (!GraphSlotRepository.IsValidSlot(slot)) return InvalidSlot(slot);
+            // ディスク上の綴りに解決してから使う。ファイルシステムが大文字小文字を区別しないと、
+            // 引数の綴りのまま返したときに一覧と食い違う
+            if (!graphSaveManager.TryGetInfo(name, out var info)) return PresetNotFound(name);
 
-            if (!graphSaveManager.Load(slot, out var result))
-                return Failure("empty_slot", $"Graph slot {slot} is empty or unreadable.");
+            if (!graphSaveManager.Load(info.Name, out var result))
+                return Failure("load_failed", $"Could not read graph preset '{info.Name}'. See the Unity log.");
 
             return new
             {
                 success = true,
-                slot,
+                name = info.Name,
                 addedNodeCount = result.NodeCount,
                 addedEdgeCount = result.EdgeCount,
                 skippedNodeCount = result.SkippedNodeCount,
@@ -258,23 +268,20 @@ namespace Rector.Cli
             };
         }
 
-        // 空かどうかの判定はここで持つ。GraphSaveManager.Delete は「消えている状態にする」ので、
-        // 元から空でも成功を返す。CLI からは打ち間違いに気付けるよう空を分けて返す。
-        object DeleteGraphSlot(int slot, bool confirm)
+        // あるかどうかの判定はここで持つ。GraphSaveManager.Delete は「消えている状態にする」ので、
+        // 元から無くても成功を返す。CLI からは打ち間違いに気付けるよう分けて返す。
+        object DeleteGraphPreset(string name, bool confirm)
         {
-            if (!GraphSlotRepository.IsValidSlot(slot)) return InvalidSlot(slot);
-
-            var info = graphSaveManager.GetSlotInfo(slot);
-            if (info.IsEmpty) return Failure("empty_slot", $"Graph slot {slot} is already empty.");
+            if (!graphSaveManager.TryGetInfo(name, out var info)) return PresetNotFound(name);
 
             // HUD 側も確認を挟む操作。undo が無いので CLI からも一手間かける
             if (!confirm)
-                return Failure("confirm_required", $"Deleting graph slot {slot} ({info.NodeCount} node(s)) cannot be undone. Pass confirm=true.");
+                return Failure("confirm_required", $"Deleting graph preset '{info.Name}' ({info.NodeCount} node(s)) cannot be undone. Pass confirm=true.");
 
-            if (!graphSaveManager.Delete(slot))
-                return Failure("delete_failed", $"Could not delete graph slot {slot}. See the Unity log.");
+            if (!graphSaveManager.Delete(info.Name))
+                return Failure("delete_failed", $"Could not delete graph preset '{info.Name}'. See the Unity log.");
 
-            return new { success = true, slot };
+            return new { success = true, name = info.Name };
         }
 
         object ClearGraph(bool confirm)
@@ -290,8 +297,8 @@ namespace Rector.Cli
             return new { success = true, removed = nodeCount };
         }
 
-        static object InvalidSlot(int slot) =>
-            Failure("slot_out_of_range", $"Graph slot must be in [1, {GraphSlotRepository.SlotCount}]. Got {slot}.");
+        static object PresetNotFound(string name) =>
+            Failure("preset_not_found", $"No graph preset named '{name}'. List them with rector_graph_presets.");
 
         // ------------------------------------------------------ シーン / カメラ / VFX
 

@@ -79,24 +79,25 @@ namespace Rector.Cli
         [CliCommand("rector_sort_graph", "Re-run the layered graph layout.")]
         static object SortGraphCommand() => Call(c => c.SortGraph());
 
-        [CliCommand("rector_graph_slots", "Graph save slots: how many nodes and edges each holds, and when it was saved.")]
-        static object GraphSlotsCommand() => Call(c => c.GetGraphSlots());
+        [CliCommand("rector_graph_presets", "Saved graph presets: how many nodes and edges each holds, and when it was saved.")]
+        static object GraphPresetsCommand() => Call(c => c.GetGraphPresets());
 
-        [CliCommand("rector_save_graph", "Save the current graph to a slot, overwriting whatever is there.")]
+        [CliCommand("rector_save_graph", "Save the current graph as a preset. The name is the file name on disk.")]
         static object SaveGraphCommand(
-            [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot)
-            => Call(c => c.SaveGraph(slot));
+            [CliArg("name", "Preset name. Omit to create a new one named after the current date and time.")] string name = "",
+            [CliArg("overwrite", "Replace the preset if the name is already taken.")] bool overwrite = false)
+            => Call(c => c.SaveGraph(name, overwrite));
 
-        [CliCommand("rector_load_graph", "Add a saved slot's nodes and edges to the current graph. Existing nodes are untouched.")]
+        [CliCommand("rector_load_graph", "Add a preset's nodes and edges to the current graph. Existing nodes are untouched.")]
         static object LoadGraphCommand(
-            [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot)
-            => Call(c => c.LoadGraph(slot));
+            [CliArg("name", "Preset name, as listed by rector_graph_presets.", Required = true)] string name)
+            => Call(c => c.LoadGraph(name));
 
-        [CliCommand("rector_delete_graph_slot", "Delete a saved slot. Not undoable: requires confirm=true.")]
-        static object DeleteGraphSlotCommand(
-            [CliArg("slot", "Slot number, 1..8.", Required = true)] int slot,
+        [CliCommand("rector_delete_graph_preset", "Delete a saved preset. Not undoable: requires confirm=true.")]
+        static object DeleteGraphPresetCommand(
+            [CliArg("name", "Preset name, as listed by rector_graph_presets.", Required = true)] string name,
             [CliArg("confirm", "Apply the deletion. Without it the call is refused.")] bool confirm = false)
-            => Call(c => c.DeleteGraphSlot(slot, confirm));
+            => Call(c => c.DeleteGraphPreset(name, confirm));
 
         [CliCommand("rector_clear_graph", "Remove every node and edge. Not undoable: requires confirm=true.")]
         static object ClearGraphCommand(
