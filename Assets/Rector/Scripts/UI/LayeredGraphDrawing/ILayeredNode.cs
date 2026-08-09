@@ -18,10 +18,10 @@ namespace Rector.UI.LayeredGraphDrawing
         // static
         bool IsDummy { get; }
 
-        // nealy static
+        // nearly static
         float Width { get; }
 
-        // nealy static
+        // nearly static
         float Height { get; }
 
         // dynamic

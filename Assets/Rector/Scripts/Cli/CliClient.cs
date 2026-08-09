@@ -132,9 +132,7 @@ namespace Rector.Cli
             return new { success = true, node = ToNodeSummaryDto(node) };
         }
 
-        // HUD ではノード削除だけが長押し (NodeSelectionInputHandler)。エッジ削除も
-        // シーン切替も単押しなので、Rector 自身が「慎重にやる操作」と決めているのは
-        // これだけ。undo もないため CLI からも一手間かける。
+        // ノード削除には undo が無い。CLI は誤爆しても取り返しがつかないので confirm を要求する。
         object RemoveNode(uint id, bool confirm)
         {
             if (!graphPage.Graph.TryGetNode(new NodeId(id), out var node)) return UnknownNode(id);

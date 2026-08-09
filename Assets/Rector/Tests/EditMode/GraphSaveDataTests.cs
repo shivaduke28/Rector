@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using NUnit.Framework;
 using Rector.UI.Graphs;
@@ -15,12 +16,14 @@ namespace Rector.Tests.EditMode
     /// </summary>
     public sealed class GraphSaveDataTests
     {
+        const string SavedAtRaw = "2026-08-09T00:12:34.0000000+09:00";
+
         static GraphSaveData MakeData()
         {
             return new GraphSaveData
             {
                 version = GraphSaveData.CurrentVersion,
-                savedAt = "2026-08-09T00:12:34.0000000+09:00",
+                savedAt = SavedAtRaw,
                 nodes = new[]
                 {
                     new NodeSaveData
@@ -114,7 +117,11 @@ namespace Rector.Tests.EditMode
                 Assert.That(info.IsEmpty, Is.False);
                 Assert.That(info.NodeCount, Is.EqualTo(2));
                 Assert.That(info.EdgeCount, Is.EqualTo(1));
-                Assert.That(info.SavedAt, Is.EqualTo("2026-08-09 00:12"));
+                // FormatSavedAt はオフセット付きの保存値をローカル時刻へ直して見せるので、
+                // 表示文字列を固定すると JST 以外で落ちる。保存した瞬間に戻ることだけ見る
+                var shown = DateTime.Parse(info.SavedAt, CultureInfo.InvariantCulture);
+                var expected = DateTimeOffset.Parse(SavedAtRaw, CultureInfo.InvariantCulture).LocalDateTime;
+                Assert.That(shown, Is.EqualTo(new DateTime(expected.Year, expected.Month, expected.Day, expected.Hour, expected.Minute, 0)));
             }
             finally
             {

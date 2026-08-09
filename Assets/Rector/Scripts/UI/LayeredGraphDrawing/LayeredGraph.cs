@@ -241,7 +241,7 @@ namespace Rector.UI.LayeredGraphDrawing
             }
         }
 
-        // fromからtoに向かうedgeがあるかどうかを再起的に調べる
+        // fromからtoに向かうedgeがあるかどうかを再帰的に調べる
         bool CheckRecursively(LayeredNode from, LayeredNode to)
         {
             if (from == to) return true;

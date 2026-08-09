@@ -38,7 +38,7 @@ namespace Rector.UI.LayeredGraphDrawing
         public const int MaxCount = 8;
         public const int DefaultCount = 4;
 
-        /// <summary>グループの最小幅。NodeView.Widthはレイアウト解決前は0なので、その揺れもここで吸収される。</summary>
+        /// <summary>グループの最小幅。中身が細いときに枠が潰れないようにする。</summary>
         public const float MinWidth = 240f;
 
         /// <summary>グループの左右と上の内側の余白。左borderとノードがくっついて見えなくなるのを防ぐ。</summary>

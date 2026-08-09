@@ -50,7 +50,7 @@ namespace Rector.Audio
         }
 
         /// <summary>
-        /// 音声データ（波形）。マイフレームサイズが変わるので注意。
+        /// 音声データ（波形）。毎フレームサイズが変わるので注意。
         /// </summary>
         public NativeSlice<float> AudioDataSlice => levelTracker.audioDataSlice;
 
