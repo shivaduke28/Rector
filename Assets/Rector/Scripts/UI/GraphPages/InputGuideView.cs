@@ -20,6 +20,7 @@ namespace Rector.UI.GraphPages
         readonly KeyboardGuideView keyboardView = new();
 
         GraphPageState currentState;
+        bool grabbing;
 
         public InputGuideView()
         {
@@ -41,6 +42,13 @@ namespace Rector.UI.GraphPages
             state.Subscribe(x =>
             {
                 currentState = x;
+                UpdateContent();
+            }).AddTo(disposables);
+
+            // R2(ALT)で掴んでいる間は△の表記がCOPYに変わる
+            input.GrabModifierHeld.Subscribe(x =>
+            {
+                grabbing = x;
                 UpdateContent();
             }).AddTo(disposables);
 
@@ -72,7 +80,7 @@ namespace Rector.UI.GraphPages
 
         void UpdateContent()
         {
-            var content = InputGuideContents.Get(currentState);
+            var content = InputGuideContents.Get(currentState, grabbing);
             padView.Apply(content);
             keyboardView.Apply(content);
         }

@@ -21,9 +21,5 @@ namespace Rector.UI.GraphPages
 
         // パネル表示中のミュート(L1/V)がここに届く
         public override void Mute() => graphPage.ToggleMute(graphPage.SelectedNode);
-
-        // R1(SHIFT)を握ったままの△(C)。ノード選択中と同じボタンだが、
-        // 向こうが「作成メニューを開く」なのに対しこちらは「同じ種類をもう1個足す」
-        public override void AddNode() => graphPage.CopySelectedNode();
     }
 }

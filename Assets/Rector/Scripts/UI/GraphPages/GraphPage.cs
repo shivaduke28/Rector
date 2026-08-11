@@ -64,6 +64,8 @@ namespace Rector.UI.GraphPages
 
         public bool IsNodeParameterOpen => graphInputAction.IsNodeParameterOpen;
 
+        public bool IsGrabbing => graphInputAction.GrabModifierHeld.CurrentValue;
+
         public GraphPage(VisualElement container,
             GraphInputAction graphInputAction,
             NodeTemplateRepository nodeTemplateRepository)
@@ -197,8 +199,8 @@ namespace Rector.UI.GraphPages
         /// 選択中のノードと同じ種類のノードを1つ足す。値もエッジも引き継がない。
         /// </summary>
         /// <remarks>
-        /// 選択は動かさない。連打でいくつでも増やせるし、押しっぱなしのR1で出ている
-        /// パラメータパネルも元のノードのまま出し続けられる。
+        /// 選択は動かさない。R2で掴んだまま連打でいくつでも増やせるし、掴んでいるのは
+        /// 元のノードのままなのでそのままグループ移動を続けられる。
         /// AddNode が選択中のノードのグループへ入れるので、コピーは元と同じグループに並ぶ。
         /// </remarks>
         public void CopySelectedNode()
