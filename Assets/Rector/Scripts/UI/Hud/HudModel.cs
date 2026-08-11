@@ -32,7 +32,7 @@ namespace Rector.UI.Hud
         int dtCount;
         float fpsUpdateTime;
 
-        public readonly string VersionText = $"{Application.productName} ver.{Application.version}";
+        public string VersionText { get; }
 
         readonly CompositeDisposable disposable = new();
 
@@ -41,8 +41,11 @@ namespace Rector.UI.Hud
             GraphPage graphPage,
             ScenePageModel scenePageModel,
             SystemPageModel systemPageModel,
-            MemoryStatsRecorder memoryStatsRecorder)
+            MemoryStatsRecorder memoryStatsRecorder,
+            string appName,
+            string version)
         {
+            VersionText = $"{appName} ver.{version}";
             this.view = view;
             this.memoryStatsRecorder = memoryStatsRecorder;
 
