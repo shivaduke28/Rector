@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 460b9ddb55af44f78afdfa8d4e4b6b94, type: 3}
   m_Name: RectorSettings
   m_EditorClassIdentifier: 
+  hudSettings:
+    appName: Rector
+    version: 1.0.0
   sceneSettings:
     sceneNames:
     - Room

@@ -102,7 +102,13 @@ namespace Rector
                 confirmDialog,
                 graphPage,
                 hudView.SystemPageView));
-            var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder));
+            var appName = string.IsNullOrEmpty(rectorSettingsAsset.hudSettings.appName)
+                ? Application.productName
+                : rectorSettingsAsset.hudSettings.appName;
+            var appVersion = string.IsNullOrEmpty(rectorSettingsAsset.hudSettings.version)
+                ? Application.version
+                : rectorSettingsAsset.hudSettings.version;
+            var hudModel = Register(new HudModel(hudView, graphPage, scenePage, menuPage, memoryStatsRecorder, appName, appVersion));
 
             Register(new NodeTemplateRegisterer(
                 nodeTemplateRepository,

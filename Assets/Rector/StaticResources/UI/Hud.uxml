@@ -3,7 +3,7 @@
     <Style src="project://database/Assets/Rector/StaticResources/UI/StyleSheets/RectorStyles.uss?fileID=7433441132597879392&amp;guid=6e4bceee306bbe249afe4a80e1779567&amp;type=3#RectorStyles" />
     <engine:VisualElement name="header" class="rector-hud-header">
         <engine:VisualElement class="rector-hud-logo" />
-        <engine:Label text="Rector App ver.0.1.0" name="version-label" class="rector-label rector-hud-version-label" />
+        <engine:Label text="Rector ver.1.0.0" name="version-label" class="rector-label rector-hud-version-label" />
     </engine:VisualElement>
     <engine:VisualElement name="body" class="rector-hud-body">
         <engine:VisualElement name="side-left" class="rector-hud-content-side-left" />
