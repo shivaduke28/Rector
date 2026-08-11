@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using R3;
 using Rector.UI.GraphPages;
+using UnityEngine.InputSystem;
 
 namespace Rector.UI.Hud
 {
@@ -93,6 +94,14 @@ namespace Rector.UI.Hud
 
         public void Enter(Action onExitAction)
         {
+            // ALT/Shift は macOS では差分イベント(flagsChanged)でしか届かず、フォーカスが
+            // 切れている間に取りこぼすと押下状態が反転したまま自己回復しない。
+            // ここでOSの実状態を再送させて矯正する。コストはキー1回押した分と同じ。
+            if (Keyboard.current is { } keyboard)
+            {
+                InputSystem.TrySyncDevice(keyboard);
+            }
+
             onExit = onExitAction;
             isVisible.Value = true;
             // 閉じずに Enter された場合に前のフォーカスが残らないよう、先に外してから先頭へ戻す
