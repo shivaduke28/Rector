@@ -75,7 +75,6 @@ namespace Rector.UI.GraphPages
             },
             [GraphPageState.NodeParameter] = new GuideContent
             {
-                FaceTop = "COPY",
                 FaceLeft = "STEP",
                 FaceRight = "CLOSE",
                 Mute = true,
@@ -84,6 +83,19 @@ namespace Rector.UI.GraphPages
             },
         };
 
-        public static GuideContent Get(GraphPageState state) => Contents[state];
+        // R2(ALT)で掴んでいる間のノード選択。△がコピーになり、長押し削除は効かない
+        static readonly GuideContent NodeSelectionGrab = new()
+        {
+            FaceTop = "COPY",
+            FaceLeft = "ACTION",
+            FaceRight = "(CUT)",
+            FaceBottom = "SLOT",
+            Mute = true,
+            Param = ParamLabel,
+            Grab = true,
+        };
+
+        public static GuideContent Get(GraphPageState state, bool grabbing) =>
+            grabbing && state == GraphPageState.NodeSelection ? NodeSelectionGrab : Contents[state];
     }
 }

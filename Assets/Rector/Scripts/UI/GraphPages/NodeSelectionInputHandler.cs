@@ -55,6 +55,14 @@ namespace Rector.UI.GraphPages
 
         public override void AddNode()
         {
+            // R2(ALT)で掴んでいる間の△(C)はコピー。未選択でも作成メニューへは倒さない。
+            // R2押下中はd-padがグループ移動に取られてメニューが操作不能になるため
+            if (graphPage.IsGrabbing)
+            {
+                graphPage.CopySelectedNode();
+                return;
+            }
+
             graphPage.State.Value = GraphPageState.NodeCreation;
         }
 
@@ -84,16 +92,20 @@ namespace Rector.UI.GraphPages
 
         public override void RemoveNode(HoldState state)
         {
+            // 掴んでいる間の△はコピーなので、握りすぎてホールドが成立しても削除しない
             switch (state)
             {
                 case HoldState.Start:
+                    if (graphPage.IsGrabbing) break;
                     graphPage.ShowHoldNextToSelected();
                     break;
                 case HoldState.Cancel:
                     graphPage.HideHold();
                     break;
                 case HoldState.Perform:
+                    // ガイドは無条件に消す。非Grabで押し始めてからR2を握った場合の残留を防ぐ
                     graphPage.HideHold();
+                    if (graphPage.IsGrabbing) break;
                     graphPage.RemoveSelectedNode();
 
                     break;
