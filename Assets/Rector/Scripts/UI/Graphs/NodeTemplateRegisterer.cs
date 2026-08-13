@@ -80,6 +80,9 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<Switch4Node>(Switch4Node.GetCategory(), Switch4Node.NodeName, id => CreateNodeView(new Switch4Node(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<Switch16Node>(Switch16Node.GetCategory(), Switch16Node.NodeName, id => CreateNodeView(new Switch16Node(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<Switch4By4Node>(Switch4By4Node.GetCategory(), Switch4By4Node.NodeName, id => CreateNodeView(new Switch4By4Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Branch2Node>(Branch2Node.GetCategory(), Branch2Node.NodeName, id => CreateNodeView(new Branch2Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Branch4Node>(Branch4Node.GetCategory(), Branch4Node.NodeName, id => CreateNodeView(new Branch4Node(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<Branch16Node>(Branch16Node.GetCategory(), Branch16Node.NodeName, id => CreateNodeView(new Branch16Node(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<AndNode>(AndNode.GetCategory(), AndNode.NodeName, id => CreateNodeView(new AndNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<OrNode>(OrNode.GetCategory(), OrNode.NodeName, id => CreateNodeView(new OrNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<GateNode>(GateNode.GetCategory(), GateNode.NodeName, id => CreateNodeView(new GateNode(id))));
