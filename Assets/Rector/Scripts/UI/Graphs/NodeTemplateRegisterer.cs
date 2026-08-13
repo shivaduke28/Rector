@@ -120,6 +120,12 @@ namespace Rector.UI.Graphs
                         var nodeView = new SequenceNodeView(ve, sequenceNode);
                         return nodeView;
                     }
+                case LoopNode loopNode:
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new LoopNodeView(ve, loopNode);
+                        return nodeView;
+                    }
                 case LearnableSourceNode learnableSourceNode:
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();

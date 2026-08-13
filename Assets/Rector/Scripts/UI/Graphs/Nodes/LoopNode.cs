@@ -16,6 +16,9 @@ namespace Rector.UI.Graphs.Nodes
         readonly ReactiveProperty<int> beat = new(0, equalityComparer: null);
         readonly ReactiveProperty<int> length = new(4);
 
+        public ReadOnlyReactiveProperty<int> Beat => beat;
+        public ReadOnlyReactiveProperty<int> Length => length;
+
         public LoopNode(NodeId id) : base(id, NodeName)
         {
             var beatSlot = new ReactivePropertyIntInputSlot(id, 0, "Beat", beat, 0, 0, 256, IsMuted);
