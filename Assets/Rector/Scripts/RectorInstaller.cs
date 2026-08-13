@@ -47,6 +47,7 @@ namespace Rector
 
             // audio
             var beatModel = Register(new BeatModel());
+            var sequenceModel = Register(new SequenceModel());
             var mixerModel = Register(new AudioMixerModel(audioInputDeviceManager));
 
             Register(new ThresholdAdjuster(mixerModel));
@@ -115,6 +116,7 @@ namespace Rector
                 nodeBehaviourProxyRepository,
                 vfxManager,
                 beatModel,
+                sequenceModel,
                 mixerModel,
                 midiModel,
                 oscModel,

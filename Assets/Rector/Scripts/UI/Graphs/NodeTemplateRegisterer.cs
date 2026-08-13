@@ -15,6 +15,7 @@ namespace Rector.UI.Graphs
         readonly NodeBehaviourProxyRepository proxyRepository;
         readonly VfxManager vfxManager;
         readonly BeatModel beatModel;
+        readonly SequenceModel sequenceModel;
         readonly AudioMixerModel audioMixerModel;
         readonly MidiModel midiModel;
         readonly OscModel oscModel;
@@ -26,6 +27,7 @@ namespace Rector.UI.Graphs
             NodeBehaviourProxyRepository proxyRepository,
             VfxManager vfxManager,
             BeatModel beatModel,
+            SequenceModel sequenceModel,
             AudioMixerModel audioMixerModel,
             MidiModel midiModel,
             OscModel oscModel,
@@ -36,6 +38,7 @@ namespace Rector.UI.Graphs
             this.proxyRepository = proxyRepository;
             this.vfxManager = vfxManager;
             this.beatModel = beatModel;
+            this.sequenceModel = sequenceModel;
             this.audioMixerModel = audioMixerModel;
             this.midiModel = midiModel;
             this.oscModel = oscModel;
@@ -65,6 +68,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<AudioThresholdNode>(AudioThresholdNode.GetCategory(), AudioThresholdNode.NodeName, id => CreateNodeView(new AudioThresholdNode(id, audioMixerModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<LevelNode>(LevelNode.GetCategory(), LevelNode.NodeName, id => CreateNodeView(new LevelNode(id, audioMixerModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<BeatNode>(BeatNode.GetCategory(), BeatNode.NodeName, id => CreateNodeView(new BeatNode(id, beatModel))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<SequenceNode>(SequenceNode.GetCategory(), SequenceNode.NodeName, id => CreateNodeView(new SequenceNode(id, sequenceModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<MidiNoteNode>(MidiNoteNode.GetCategory(), MidiNoteNode.NodeName, id => CreateNodeView(new MidiNoteNode(id, midiModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<MidiCcNode>(MidiCcNode.GetCategory(), MidiCcNode.NodeName, id => CreateNodeView(new MidiCcNode(id, midiModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<OscNode>(OscNode.GetCategory(), OscNode.NodeName, id => CreateNodeView(new OscNode(id, oscModel))));
@@ -81,6 +85,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<GateNode>(GateNode.GetCategory(), GateNode.NodeName, id => CreateNodeView(new GateNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<NegateNode>(NegateNode.GetCategory(), NegateNode.NodeName, id => CreateNodeView(new NegateNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<WithNode>(WithNode.GetCategory(), WithNode.NodeName, id => CreateNodeView(new WithNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<LoopNode>(LoopNode.GetCategory(), LoopNode.NodeName, id => CreateNodeView(new LoopNode(id))));
 
             nodeTemplateRepository.Add(NodeTemplate.Code<MadNode>(MadNode.GetCategory(), MadNode.NodeName, id => CreateNodeView(new MadNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<FloatNode>(FloatNode.GetCategory(), FloatNode.NodeName, id => CreateNodeView(new FloatNode(id))));
@@ -107,6 +112,12 @@ namespace Rector.UI.Graphs
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();
                         var nodeView = new BeatNodeView(ve, beatNode);
+                        return nodeView;
+                    }
+                case SequenceNode sequenceNode:
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new SequenceNodeView(ve, sequenceNode);
                         return nodeView;
                     }
                 case LearnableSourceNode learnableSourceNode:
