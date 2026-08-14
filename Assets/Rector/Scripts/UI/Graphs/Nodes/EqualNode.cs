@@ -5,7 +5,7 @@ namespace Rector.UI.Graphs.Nodes
 {
     // Equal: 1始まりの Index を Value と比較する2択分岐。
     // 一致すれば Match に、一致しなければ NoMatch に Index をそのまま流す。
-    // Index が 1 未満（=無し）のときは両方 0。Branch と同じ素通し規律なので木に重ねられる。
+    // Index が 1 未満（=無し）のときは両方 0。Route と同じ素通し規律なので木に重ねられる。
     public sealed class EqualNode : Node
     {
         public const string NodeName = "Equal";

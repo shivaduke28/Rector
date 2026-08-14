@@ -3,13 +3,13 @@ using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    // Branch N: 1始まりの Index を N 本のレーンに振り分ける分岐ノード。
+    // Route N: 1始まりの Index を N 本のレーンに振り分けるルーティングノード。
     // 選ばれたレーン "1 + (Index - 1) % N" には Index をそのまま流し、他のレーンには 0 を流す。
     // 0 は「無し」なので、下流の Int→Bool (x != 0) で点灯/消灯がそのまま伝わり、
-    // Branch の下に Branch/Loop/Equal を重ねると位置が木を流れ落ちて排他が構造的に保たれる。
-    public sealed class Branch2Node : Node
+    // Route の下に Route/Loop/Equal を重ねると位置が木を流れ落ちて排他が構造的に保たれる。
+    public sealed class Route2Node : Node
     {
-        public const string NodeName = "Branch 2";
+        public const string NodeName = "Route 2";
         public static NodeCategory GetCategory() => NodeCategory.Operator;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
@@ -17,7 +17,7 @@ namespace Rector.UI.Graphs.Nodes
 
         readonly ReactiveProperty<int> index = new(0);
 
-        public Branch2Node(NodeId id) : base(id, NodeName)
+        public Route2Node(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
@@ -34,9 +34,9 @@ namespace Rector.UI.Graphs.Nodes
         }
     }
 
-    public sealed class Branch4Node : Node
+    public sealed class Route4Node : Node
     {
-        public const string NodeName = "Branch 4";
+        public const string NodeName = "Route 4";
         public static NodeCategory GetCategory() => NodeCategory.Operator;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
@@ -44,7 +44,7 @@ namespace Rector.UI.Graphs.Nodes
 
         readonly ReactiveProperty<int> index = new(0);
 
-        public Branch4Node(NodeId id) : base(id, NodeName)
+        public Route4Node(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
@@ -61,9 +61,9 @@ namespace Rector.UI.Graphs.Nodes
         }
     }
 
-    public sealed class Branch16Node : Node
+    public sealed class Route16Node : Node
     {
-        public const string NodeName = "Branch 16";
+        public const string NodeName = "Route 16";
         public static NodeCategory GetCategory() => NodeCategory.Operator;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
@@ -71,7 +71,7 @@ namespace Rector.UI.Graphs.Nodes
 
         readonly ReactiveProperty<int> index = new(0);
 
-        public Branch16Node(NodeId id) : base(id, NodeName)
+        public Route16Node(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
