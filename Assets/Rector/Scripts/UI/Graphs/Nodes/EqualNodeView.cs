@@ -7,7 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     {
         public EqualNodeView(VisualElement templateContainer, EqualNode equalNode) : base(templateContainer, equalNode)
         {
-            equalNode.Value.Subscribe(v => NameLabel.text = $"== {v}").AddTo(Disposables);
+            equalNode.Value.Subscribe(v => NameLabel.text = $" == {v}").AddTo(Disposables);
         }
     }
 }
