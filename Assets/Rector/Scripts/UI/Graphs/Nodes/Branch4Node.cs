@@ -3,9 +3,10 @@ using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    // Branch N: 1始まりの Index を排他的な bool に解釈する分岐ノード。
-    // 0 は「何も選ばれていない」(全出力オフ)、k >= 1 は出力 "1 + (k - 1) % N" だけ点灯。
-    // Seq.Beat や Loop.Phase/Cycle の1始まりの位置をそのまま受けられる。
+    // Branch N: 1始まりの Index を N 本のレーンに振り分ける分岐ノード。
+    // 選ばれたレーン "1 + (Index - 1) % N" には Index をそのまま流し、他のレーンには 0 を流す。
+    // 0 は「無し」なので、下流の Int→Bool (x != 0) で点灯/消灯がそのまま伝わり、
+    // Branch の下に Branch/Loop/Equal を重ねると位置が木を流れ落ちて排他が構造的に保たれる。
     public sealed class Branch2Node : Node
     {
         public const string NodeName = "Branch 2";
@@ -27,8 +28,8 @@ namespace Rector.UI.Graphs.Nodes
             for (var i = 0; i < 2; i++)
             {
                 var ind = i;
-                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, (i + 1).ToString(),
-                    index.Select(x => x >= 1 && (x - 1) % 2 == ind).DistinctUntilChanged(), IsMuted);
+                OutputSlots[i] = new ObservableOutputSlot<int>(id, i, (i + 1).ToString(),
+                    index.Select(x => x >= 1 && (x - 1) % 2 == ind ? x : 0).DistinctUntilChanged(), IsMuted);
             }
         }
     }
@@ -54,8 +55,8 @@ namespace Rector.UI.Graphs.Nodes
             for (var i = 0; i < 4; i++)
             {
                 var ind = i;
-                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, (i + 1).ToString(),
-                    index.Select(x => x >= 1 && (x - 1) % 4 == ind).DistinctUntilChanged(), IsMuted);
+                OutputSlots[i] = new ObservableOutputSlot<int>(id, i, (i + 1).ToString(),
+                    index.Select(x => x >= 1 && (x - 1) % 4 == ind ? x : 0).DistinctUntilChanged(), IsMuted);
             }
         }
     }
@@ -81,8 +82,8 @@ namespace Rector.UI.Graphs.Nodes
             for (var i = 0; i < 16; i++)
             {
                 var ind = i;
-                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, (i + 1).ToString(),
-                    index.Select(x => x >= 1 && (x - 1) % 16 == ind).DistinctUntilChanged(), IsMuted);
+                OutputSlots[i] = new ObservableOutputSlot<int>(id, i, (i + 1).ToString(),
+                    index.Select(x => x >= 1 && (x - 1) % 16 == ind ? x : 0).DistinctUntilChanged(), IsMuted);
             }
         }
     }
