@@ -17,6 +17,8 @@ namespace Rector.UI.Graphs.Nodes
         readonly ReactiveProperty<int> index = new(0);
         readonly ReactiveProperty<int> value = new(1);
 
+        public ReadOnlyReactiveProperty<int> Value => value;
+
         public EqualNode(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]

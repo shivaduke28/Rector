@@ -130,6 +130,12 @@ namespace Rector.UI.Graphs
                         var nodeView = new LoopNodeView(ve, loopNode);
                         return nodeView;
                     }
+                case EqualNode equalNode:
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new EqualNodeView(ve, equalNode);
+                        return nodeView;
+                    }
                 case LearnableSourceNode learnableSourceNode:
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();
