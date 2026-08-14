@@ -11,8 +11,9 @@ namespace Rector.UI.Graphs.Nodes
             loopNode.Beat.CombineLatest(loopNode.Length, (beat, len) =>
                 {
                     var l = len < 1 ? 1 : len;
-                    var digits = (l - 1).ToString().Length;
-                    return $"Loop {(beat % l).ToString().PadLeft(digits, '0')}/{l}";
+                    var digits = l.ToString().Length;
+                    var phase = beat >= 1 ? (beat - 1) % l + 1 : 0;
+                    return $"Loop {phase.ToString().PadLeft(digits, '0')}/{l}";
                 })
                 .Subscribe(text => NameLabel.text = text)
                 .AddTo(Disposables);

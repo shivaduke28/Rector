@@ -7,6 +7,13 @@ namespace Rector.Tests.EditMode
     public sealed class SequenceModelTests
     {
         [Test]
+        public void BeatStartsAtOne()
+        {
+            using var model = new SequenceModel();
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(1));
+        }
+
+        [Test]
         public void StepWrapsAtLength()
         {
             using var model = new SequenceModel();
@@ -15,10 +22,10 @@ namespace Rector.Tests.EditMode
             model.Step();
             model.Step();
             model.Step();
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(3));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(4));
 
             model.Step();
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(0));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(1));
         }
 
         [Test]
@@ -35,12 +42,12 @@ namespace Rector.Tests.EditMode
             model.Step();
             model.Step();
 
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(0));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(1));
             Assert.That(fired - initialReplay, Is.EqualTo(3));
         }
 
         [Test]
-        public void ResetSetsBeatToZeroAndFires()
+        public void ResetSetsBeatToOneAndFires()
         {
             using var model = new SequenceModel();
             model.SetLength(8);
@@ -53,7 +60,7 @@ namespace Rector.Tests.EditMode
 
             model.Reset();
 
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(0));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(1));
             Assert.That(fired - initialReplay, Is.EqualTo(1));
         }
 
@@ -79,18 +86,18 @@ namespace Rector.Tests.EditMode
                 model.Step();
             }
 
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(10));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(11));
 
             var fired = 0;
             using var subscription = model.BeatProperty.Subscribe(_ => fired++);
             var initialReplay = fired;
 
             model.SetLength(4);
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(10));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(11));
             Assert.That(fired - initialReplay, Is.EqualTo(0));
 
             model.Step();
-            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(3));
+            Assert.That(model.BeatProperty.CurrentValue, Is.EqualTo(4));
         }
     }
 }

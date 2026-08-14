@@ -3,10 +3,9 @@ using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    // Branch N: Index の int を排他的な bool に解釈する分岐ノード。
-    // 0 は「何も選ばれていない」(全出力オフ)、k >= 1 は out[(k - 1) % N] だけ点灯。
-    // Switch 系の「選択中 = 1始まりの周回数, 非選択 = 0」の出力をそのまま受けられる。
-    // Loop が 0 を正当な位置として扱うのに対し、Branch は 0 をオフ符号として扱う。
+    // Branch N: 1始まりの Index を排他的な bool に解釈する分岐ノード。
+    // 0 は「何も選ばれていない」(全出力オフ)、k >= 1 は出力 "1 + (k - 1) % N" だけ点灯。
+    // Seq.Beat や Loop.Phase/Cycle の1始まりの位置をそのまま受けられる。
     public sealed class Branch2Node : Node
     {
         public const string NodeName = "Branch 2";
@@ -28,7 +27,7 @@ namespace Rector.UI.Graphs.Nodes
             for (var i = 0; i < 2; i++)
             {
                 var ind = i;
-                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, i.ToString(),
+                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, (i + 1).ToString(),
                     index.Select(x => x >= 1 && (x - 1) % 2 == ind).DistinctUntilChanged(), IsMuted);
             }
         }
@@ -55,7 +54,7 @@ namespace Rector.UI.Graphs.Nodes
             for (var i = 0; i < 4; i++)
             {
                 var ind = i;
-                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, i.ToString(),
+                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, (i + 1).ToString(),
                     index.Select(x => x >= 1 && (x - 1) % 4 == ind).DistinctUntilChanged(), IsMuted);
             }
         }
@@ -82,7 +81,7 @@ namespace Rector.UI.Graphs.Nodes
             for (var i = 0; i < 16; i++)
             {
                 var ind = i;
-                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, i.ToString(),
+                OutputSlots[i] = new ObservableOutputSlot<bool>(id, i, (i + 1).ToString(),
                     index.Select(x => x >= 1 && (x - 1) % 16 == ind).DistinctUntilChanged(), IsMuted);
             }
         }

@@ -10,8 +10,9 @@ namespace Rector.Audio
         public const int MaxLength = 256;
         public const int DefaultLength = 64;
 
+        // 拍は1始まり (1..length)。0はグラフ全体で「無し/オフ」を意味する規約なので位置には使わない。
         // length=1 でも毎Stepで拍イベントを流すため、同値通知を抑制しない
-        readonly ReactiveProperty<int> beatProperty = new(0, equalityComparer: null);
+        readonly ReactiveProperty<int> beatProperty = new(1, equalityComparer: null);
         readonly ReactiveProperty<int> lengthProperty = new(DefaultLength);
 
         public ReadOnlyReactiveProperty<int> BeatProperty => beatProperty;
@@ -19,12 +20,12 @@ namespace Rector.Audio
 
         public void Step()
         {
-            beatProperty.Value = (beatProperty.Value + 1) % lengthProperty.Value;
+            beatProperty.Value = beatProperty.Value % lengthProperty.Value + 1;
         }
 
         public void Reset()
         {
-            beatProperty.Value = 0;
+            beatProperty.Value = 1;
         }
 
         public void SetLength(int length)
