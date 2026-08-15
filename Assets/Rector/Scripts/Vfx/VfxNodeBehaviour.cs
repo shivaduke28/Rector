@@ -1,4 +1,5 @@
 using System.Linq;
+using R3;
 using Rector.NodeBehaviours;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace Rector.Vfx
     public class VfxNodeBehaviour : NodeBehaviour
     {
         [SerializeField] VfxInputSlotBehaviour vfxInputSlot;
+
+        public ReadOnlyReactiveProperty<bool> IsActive => vfxInputSlot.ActiveInput.Value;
 
         public void ToggleActive()
         {

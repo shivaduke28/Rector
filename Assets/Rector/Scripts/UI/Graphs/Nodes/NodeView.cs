@@ -55,7 +55,16 @@ namespace Rector.UI.Graphs.Nodes
             InputSlotList = Root.Q<VisualElement>("input-slot-list");
             OutputSlotList = Root.Q<VisualElement>("output-slot-list");
 
-            Root.Q<VisualElement>("icon").style.backgroundImage = new StyleBackground(GetCategoryIcon(node.Category));
+            var icon = Root.Q<VisualElement>("icon");
+            var outlineIcon = GetCategoryIcon(node.Category);
+            icon.style.backgroundImage = new StyleBackground(outlineIcon);
+            if (node is IActiveStateNode activeStateNode &&
+                VisualElementFactory.Instance.Icons.GetFilledIcon(node.Category) is { } filledIcon)
+            {
+                activeStateNode.ActiveState
+                    .Subscribe(active => icon.style.backgroundImage = new StyleBackground(active ? filledIcon : outlineIcon))
+                    .AddTo(Disposables);
+            }
 
             Node = node;
             NameLabel.text = node.Name;

@@ -41,3 +41,5 @@ MonoBehaviour:
     system: {fileID: 2800000, guid: 54abaddcdf15a4cf59a0d10a54a288c5, type: 3}
     input: {fileID: 2800000, guid: 22de3cc14f80f4993a688d8db20c4c55, type: 3}
     sequence: {fileID: 2800000, guid: 551400ef548164a44be139e42f6ce555, type: 3}
+    cameraFilled: {fileID: 2800000, guid: e23a14fee3b95444691615a3695328c9, type: 3}
+    vfxFilled: {fileID: 2800000, guid: a65bac0cce4364429b0b42cbab60249b, type: 3}

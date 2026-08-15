@@ -22,6 +22,16 @@ namespace Rector.Tests.EditMode
         const string GroupCountPrefsKey = "Rector_NodeGroupCount";
         int savedGroupCount;
 
+        // NodeViewはアイコン解決でVisualElementFactoryに依存する。
+        // ランタイムでRectorInstallerが行う初期化を、テストでは空のアセットで行う
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            var settings = ScriptableObject.CreateInstance<Rector.UI.RectorUISettingsAsset>();
+            settings.iconSettings = new Rector.UI.RectorIconSettings();
+            Rector.UI.VisualElementFactory.Initialize(settings);
+        }
+
         [SetUp]
         public void SetUp() => savedGroupCount = PlayerPrefs.GetInt(GroupCountPrefsKey, NodeGroups.DefaultCount);
 
@@ -39,8 +49,7 @@ namespace Rector.Tests.EditMode
             {
             }
 
-            // 実在しない値にするとNodeViewのアイコン解決がVisualElementFactoryを触らずに済む
-            public override NodeCategory Category => (NodeCategory)(-1);
+            public override NodeCategory Category => NodeCategory.Operator;
             public override InputSlot[] InputSlots => Array.Empty<InputSlot>();
             public override OutputSlot[] OutputSlots => Array.Empty<OutputSlot>();
         }
