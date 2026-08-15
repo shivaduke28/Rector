@@ -6,10 +6,10 @@ namespace Rector.UI.GraphPages.NodeParameters
 {
     public sealed class ExposedCallbackInputModel : IExposedInputModel
     {
-        public readonly CallbackInputSlot Slot;
+        public readonly ICallbackInputSlot Slot;
         public readonly ReactiveProperty<bool> IsFocused = new(false);
 
-        public ExposedCallbackInputModel(CallbackInputSlot slot) => Slot = slot;
+        public ExposedCallbackInputModel(ICallbackInputSlot slot) => Slot = slot;
 
         public string Label => Slot.Name;
 

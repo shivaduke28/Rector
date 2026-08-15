@@ -8,20 +8,20 @@ namespace Rector.UI.Graphs.Nodes
         public const string NodeName = "Gate";
         public static NodeCategory GetCategory() => NodeCategory.Operator;
         public override NodeCategory Category => GetCategory();
-        readonly Subject<Unit> subject = new();
+        readonly Subject<float> subject = new();
         readonly ReactiveProperty<bool> gate = new(true);
 
         public GateNode(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
-                new CallbackInputSlot(id, 0, "In", () => subject.OnNext(Unit.Default), IsMuted),
+                new CallbackFloatInputSlot(id, 0, "In", x => subject.OnNext(x), IsMuted),
                 new ReactivePropertyInputSlot<bool>(id, 1, "Gate", gate, gate.Value, IsMuted),
             };
 
             OutputSlots = new OutputSlot[]
             {
-                new ObservableOutputSlot<Unit>(id, 0, "Out", subject.Where(_ => gate.Value), IsMuted)
+                new ObservableOutputSlot<float>(id, 0, "Out", subject.Where(_ => gate.Value), IsMuted)
             };
         }
 
