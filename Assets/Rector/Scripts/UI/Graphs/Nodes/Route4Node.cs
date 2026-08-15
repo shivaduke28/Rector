@@ -4,9 +4,11 @@ using Rector.UI.Graphs.Slots;
 namespace Rector.UI.Graphs.Nodes
 {
     // Route N: 1始まりの Index を N 本のレーンに振り分けるルーティングノード。
-    // 選ばれたレーン "1 + (Index - 1) % N" には Index をそのまま流し、他のレーンには 0 を流す。
-    // 0 は「無し」なので、下流の Int→Bool (x != 0) で点灯/消灯がそのまま伝わり、
-    // Route の下に Route/Loop/Equal を重ねると位置が木を流れ落ちて排他が構造的に保たれる。
+    // 選ばれたレーン "1 + (Index - 1) % N" には Index をそのまま流す。
+    // Send 0 が ON (既定) のとき、レーンは脱選択の瞬間に 0 を1回流す。
+    // 0 は「無し」の符号で、下流の Int→Bool (x != 0) を通じて VFX の消灯や
+    // レーン点灯表示を担う。OFF にするとマッチした値だけが流れる純粋な選別になる。
+    // Send 0 は emission ごとにサンプルされる (イベント出力ノードのパラメータ規則)。
     public sealed class Route2Node : Node
     {
         public const string NodeName = "Route 2";
@@ -16,12 +18,14 @@ namespace Rector.UI.Graphs.Nodes
         public override OutputSlot[] OutputSlots { get; }
 
         readonly ReactiveProperty<int> index = new(0);
+        readonly ReactiveProperty<bool> sendZero = new(true);
 
         public Route2Node(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
-                new ReactivePropertyIntInputSlot(id, 0, "Index", index, 0, 0, 256, IsMuted)
+                new ReactivePropertyIntInputSlot(id, 0, "Index", index, 0, 0, 256, IsMuted),
+                new ReactivePropertyInputSlot<bool>(id, 1, "Send 0", sendZero, true, IsMuted)
             };
 
             OutputSlots = new OutputSlot[2];
@@ -29,7 +33,9 @@ namespace Rector.UI.Graphs.Nodes
             {
                 var ind = i;
                 OutputSlots[i] = new ObservableOutputSlot<int>(id, i, (i + 1).ToString(),
-                    index.Select(x => x >= 1 && (x - 1) % 2 == ind ? x : 0).DistinctUntilChanged(), IsMuted);
+                    index.Select(x => x >= 1 && (x - 1) % 2 == ind ? x : 0)
+                        .DistinctUntilChanged()
+                        .Where(x => x != 0 || sendZero.Value), IsMuted);
             }
         }
     }
@@ -43,12 +49,14 @@ namespace Rector.UI.Graphs.Nodes
         public override OutputSlot[] OutputSlots { get; }
 
         readonly ReactiveProperty<int> index = new(0);
+        readonly ReactiveProperty<bool> sendZero = new(true);
 
         public Route4Node(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
-                new ReactivePropertyIntInputSlot(id, 0, "Index", index, 0, 0, 256, IsMuted)
+                new ReactivePropertyIntInputSlot(id, 0, "Index", index, 0, 0, 256, IsMuted),
+                new ReactivePropertyInputSlot<bool>(id, 1, "Send 0", sendZero, true, IsMuted)
             };
 
             OutputSlots = new OutputSlot[4];
@@ -56,7 +64,9 @@ namespace Rector.UI.Graphs.Nodes
             {
                 var ind = i;
                 OutputSlots[i] = new ObservableOutputSlot<int>(id, i, (i + 1).ToString(),
-                    index.Select(x => x >= 1 && (x - 1) % 4 == ind ? x : 0).DistinctUntilChanged(), IsMuted);
+                    index.Select(x => x >= 1 && (x - 1) % 4 == ind ? x : 0)
+                        .DistinctUntilChanged()
+                        .Where(x => x != 0 || sendZero.Value), IsMuted);
             }
         }
     }
@@ -70,12 +80,14 @@ namespace Rector.UI.Graphs.Nodes
         public override OutputSlot[] OutputSlots { get; }
 
         readonly ReactiveProperty<int> index = new(0);
+        readonly ReactiveProperty<bool> sendZero = new(true);
 
         public Route16Node(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
-                new ReactivePropertyIntInputSlot(id, 0, "Index", index, 0, 0, 256, IsMuted)
+                new ReactivePropertyIntInputSlot(id, 0, "Index", index, 0, 0, 256, IsMuted),
+                new ReactivePropertyInputSlot<bool>(id, 1, "Send 0", sendZero, true, IsMuted)
             };
 
             OutputSlots = new OutputSlot[16];
@@ -83,7 +95,9 @@ namespace Rector.UI.Graphs.Nodes
             {
                 var ind = i;
                 OutputSlots[i] = new ObservableOutputSlot<int>(id, i, (i + 1).ToString(),
-                    index.Select(x => x >= 1 && (x - 1) % 16 == ind ? x : 0).DistinctUntilChanged(), IsMuted);
+                    index.Select(x => x >= 1 && (x - 1) % 16 == ind ? x : 0)
+                        .DistinctUntilChanged()
+                        .Where(x => x != 0 || sendZero.Value), IsMuted);
             }
         }
     }
