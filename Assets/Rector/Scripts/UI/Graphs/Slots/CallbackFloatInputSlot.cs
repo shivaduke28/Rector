@@ -3,7 +3,7 @@ using R3;
 
 namespace Rector.UI.Graphs.Slots
 {
-    public sealed class CallbackFloatInputSlot : InputSlot<float>, ICallbackInputSlot
+    public sealed class CallbackFloatInputSlot : InputSlot<float>
     {
         readonly Subject<float> subject = new();
         readonly Action<float> action;
@@ -21,13 +21,6 @@ namespace Rector.UI.Graphs.Slots
             MinValue = minValue;
             MaxValue = maxValue;
             this.isMuted = isMuted;
-        }
-
-        public void SendForce()
-        {
-            latestValue.Value = 1f;
-            action.Invoke(1f);
-            subject.OnNext(1f);
         }
 
         public override void Send(float value)
