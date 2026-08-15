@@ -9,7 +9,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class FilterNode : Node
     {
         public const string NodeName = "Filter";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }

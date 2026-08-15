@@ -143,19 +143,6 @@ namespace Rector.UI.Graphs.Nodes
         public void RemoveFrom(VisualElement parent) => parent.Remove(Root);
 
         static Texture2D GetCategoryIcon(NodeCategory category)
-        {
-            return category switch
-            {
-                NodeCategory.Vfx => VisualElementFactory.Instance.Icons.vfx,
-                NodeCategory.Camera => VisualElementFactory.Instance.Icons.camera,
-                NodeCategory.Event => VisualElementFactory.Instance.Icons.@event,
-                NodeCategory.Operator => VisualElementFactory.Instance.Icons.@operator,
-                NodeCategory.Math => VisualElementFactory.Instance.Icons.math,
-                NodeCategory.Scene => VisualElementFactory.Instance.Icons.scene,
-                NodeCategory.System => VisualElementFactory.Instance.Icons.system,
-                NodeCategory.Input => VisualElementFactory.Instance.Icons.input,
-                _ => null
-            };
-        }
+            => VisualElementFactory.Instance.Icons.GetIcon(category);
     }
 }
