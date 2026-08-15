@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hudSettings:
     appName: Rector
-    version: 1.1.0
+    version: 1.2.0
   sceneSettings:
     sceneNames:
     - Room
