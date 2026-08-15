@@ -20,8 +20,8 @@ namespace Rector.UI.Graphs.Nodes
             };
             OutputSlots = new OutputSlot[]
             {
-                new ObservableOutputSlot<float>(id, 0, "step", x.Select(v => v > a.Value ? 1f : 0f), IsMuted),
-                new ObservableOutputSlot<float>(id, 1, "step*x", x.Select(v => v > a.Value ? v : 0f), IsMuted),
+                new ObservableOutputSlot<float>(id, 0, "step", x.CombineLatest(a, (v, th) => v > th ? 1f : 0f), IsMuted),
+                new ObservableOutputSlot<float>(id, 1, "step*x", x.CombineLatest(a, (v, th) => v > th ? v : 0f), IsMuted),
             };
         }
 
