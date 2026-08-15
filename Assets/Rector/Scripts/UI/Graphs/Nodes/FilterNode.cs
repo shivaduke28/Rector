@@ -3,12 +3,12 @@ using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    // Equal: 1始まりの Index を Value と比較する2択分岐。
+    // Filter: 1始まりの Index を Value と比較して流れを2択に選別する。
     // 一致すれば Match に、一致しなければ NoMatch に Index をそのまま流す。
     // Index が 1 未満（=無し）のときは両方 0。Route と同じ素通し規律なので木に重ねられる。
-    public sealed class EqualNode : Node
+    public sealed class FilterNode : Node
     {
-        public const string NodeName = "Equal";
+        public const string NodeName = "Filter";
         public static NodeCategory GetCategory() => NodeCategory.Operator;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
@@ -19,7 +19,7 @@ namespace Rector.UI.Graphs.Nodes
 
         public ReadOnlyReactiveProperty<int> Value => value;
 
-        public EqualNode(NodeId id) : base(id, NodeName)
+        public FilterNode(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {

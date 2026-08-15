@@ -3,11 +3,11 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class EqualNodeView : NodeView
+    public sealed class FilterNodeView : NodeView
     {
-        public EqualNodeView(VisualElement templateContainer, EqualNode equalNode) : base(templateContainer, equalNode)
+        public FilterNodeView(VisualElement templateContainer, FilterNode filterNode) : base(templateContainer, filterNode)
         {
-            equalNode.Value.Subscribe(v => NameLabel.text = $" == {v}").AddTo(Disposables);
+            filterNode.Value.Subscribe(v => NameLabel.text = $" == {v}").AddTo(Disposables);
         }
     }
 }

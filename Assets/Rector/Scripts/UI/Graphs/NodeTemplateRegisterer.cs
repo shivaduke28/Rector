@@ -83,7 +83,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<Route2Node>(Route2Node.GetCategory(), Route2Node.NodeName, id => CreateNodeView(new Route2Node(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<Route4Node>(Route4Node.GetCategory(), Route4Node.NodeName, id => CreateNodeView(new Route4Node(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<Route16Node>(Route16Node.GetCategory(), Route16Node.NodeName, id => CreateNodeView(new Route16Node(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Code<EqualNode>(EqualNode.GetCategory(), EqualNode.NodeName, id => CreateNodeView(new EqualNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<FilterNode>(FilterNode.GetCategory(), FilterNode.NodeName, id => CreateNodeView(new FilterNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<AndNode>(AndNode.GetCategory(), AndNode.NodeName, id => CreateNodeView(new AndNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<OrNode>(OrNode.GetCategory(), OrNode.NodeName, id => CreateNodeView(new OrNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<GateNode>(GateNode.GetCategory(), GateNode.NodeName, id => CreateNodeView(new GateNode(id))));
@@ -130,10 +130,10 @@ namespace Rector.UI.Graphs
                         var nodeView = new LoopNodeView(ve, loopNode);
                         return nodeView;
                     }
-                case EqualNode equalNode:
+                case FilterNode filterNode:
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();
-                        var nodeView = new EqualNodeView(ve, equalNode);
+                        var nodeView = new FilterNodeView(ve, filterNode);
                         return nodeView;
                     }
                 case LearnableSourceNode learnableSourceNode:
