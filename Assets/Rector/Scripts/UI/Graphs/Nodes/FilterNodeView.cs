@@ -7,7 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     {
         public FilterNodeView(VisualElement templateContainer, FilterNode filterNode) : base(templateContainer, filterNode)
         {
-            filterNode.Value.Subscribe(v => NameLabel.text = $" == {v}").AddTo(Disposables);
+            filterNode.Value.Subscribe(v => NameLabel.text = $"Filter {v}").AddTo(Disposables);
         }
     }
 }
