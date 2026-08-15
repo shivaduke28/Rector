@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class LearnableSourceNodeView : NodeView
+    public sealed class LearnableSourceNodeView : ActiveSourceNodeView
     {
         public LearnableSourceNodeView(VisualElement templateContainer, LearnableSourceNode sourceNode) : base(templateContainer, sourceNode)
         {

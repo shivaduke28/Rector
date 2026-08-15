@@ -7,6 +7,12 @@ namespace Rector.UI.Graphs.Nodes
     {
         public SequenceNodeView(VisualElement templateContainer, SequenceNode sequenceNode) : base(templateContainer, sequenceNode)
         {
+            // カテゴリはSequenceのまま、activeを持つ源としてEventのplayアイコンで表示する
+            var icons = VisualElementFactory.Instance.Icons;
+            sequenceNode.ActiveState
+                .Subscribe(active => Icon.style.backgroundImage = new StyleBackground(active ? icons.eventFilled : icons.@event))
+                .AddTo(Disposables);
+
             // beat を length の桁数でゼロ埋めして、桁数変化でノード幅が揺れないようにする
             sequenceNode.Beat.CombineLatest(sequenceNode.Length, (beat, len) =>
                 {

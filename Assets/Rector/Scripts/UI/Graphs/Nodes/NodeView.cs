@@ -11,6 +11,7 @@ namespace Rector.UI.Graphs.Nodes
     {
         protected readonly VisualElement Root;
         protected readonly Label NameLabel;
+        protected readonly VisualElement Icon;
         protected readonly VisualElement InputSlotList;
         protected readonly VisualElement OutputSlotList;
 
@@ -55,16 +56,8 @@ namespace Rector.UI.Graphs.Nodes
             InputSlotList = Root.Q<VisualElement>("input-slot-list");
             OutputSlotList = Root.Q<VisualElement>("output-slot-list");
 
-            var icon = Root.Q<VisualElement>("icon");
-            var outlineIcon = GetCategoryIcon(node.Category);
-            icon.style.backgroundImage = new StyleBackground(outlineIcon);
-            if (node is IActiveStateNode activeStateNode &&
-                VisualElementFactory.Instance.Icons.GetFilledIcon(node.Category) is { } filledIcon)
-            {
-                activeStateNode.ActiveState
-                    .Subscribe(active => icon.style.backgroundImage = new StyleBackground(active ? filledIcon : outlineIcon))
-                    .AddTo(Disposables);
-            }
+            Icon = Root.Q<VisualElement>("icon");
+            Icon.style.backgroundImage = new StyleBackground(VisualElementFactory.Instance.Icons.GetIcon(node.Category));
 
             Node = node;
             NameLabel.text = node.Name;
@@ -151,7 +144,5 @@ namespace Rector.UI.Graphs.Nodes
         public void AddTo(VisualElement parent) => parent.Add(Root);
         public void RemoveFrom(VisualElement parent) => parent.Remove(Root);
 
-        static Texture2D GetCategoryIcon(NodeCategory category)
-            => VisualElementFactory.Instance.Icons.GetIcon(category);
     }
 }

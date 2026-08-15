@@ -5,7 +5,7 @@ using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class SequenceNode : Node, IInitializable, IDisposable
+    public sealed class SequenceNode : SourceNode, IInitializable, IDisposable
     {
         public const string NodeName = "Seq";
         public static NodeCategory GetCategory() => NodeCategory.Sequence;
@@ -23,16 +23,18 @@ namespace Rector.UI.Graphs.Nodes
         public SequenceNode(NodeId id, SequenceModel sequenceModel) : base(id, NodeName)
         {
             this.sequenceModel = sequenceModel;
-            InputSlots = new InputSlot[]
+            InputSlots = new[]
             {
-                new CallbackInputSlot(id, 0, "Step", sequenceModel.Step, IsMuted),
-                new CallbackInputSlot(id, 1, "Reset", sequenceModel.Reset, IsMuted),
-                new ReactivePropertyIntInputSlot(id, 2, "Length", length, SequenceModel.DefaultLength, SequenceModel.MinLength, SequenceModel.MaxLength, IsMuted)
+                SlotConverter.Convert(id, 0, ActiveInput, IsMuted),
+                new CallbackInputSlot(id, 1, "Step", sequenceModel.Step, IsMuted),
+                new CallbackInputSlot(id, 2, "Reset", sequenceModel.Reset, IsMuted),
+                new ReactivePropertyIntInputSlot(id, 3, "Length", length, SequenceModel.DefaultLength, SequenceModel.MinLength, SequenceModel.MaxLength, IsMuted)
             };
 
             OutputSlots = new OutputSlot[]
             {
-                new ObservableOutputSlot<int>(id, 0, "Beat", sequenceModel.BeatProperty, IsMuted)
+                // 非activeは出力だけ止める(フリーズ)。Stepはグローバルなmodelを進め続ける
+                new ObservableOutputSlot<int>(id, 0, "Beat", sequenceModel.BeatProperty.Where(_ => IsActive), IsMuted)
             };
         }
 
@@ -43,8 +45,6 @@ namespace Rector.UI.Graphs.Nodes
             sequenceModel.LengthProperty.Subscribe(x => length.Value = x).AddTo(disposable);
             length.Subscribe(sequenceModel.SetLength).AddTo(disposable);
         }
-
-        public override void DoAction() => sequenceModel.Step();
 
         public void Dispose()
         {
