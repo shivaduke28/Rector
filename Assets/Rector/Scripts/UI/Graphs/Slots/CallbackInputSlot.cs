@@ -3,7 +3,7 @@ using R3;
 
 namespace Rector.UI.Graphs.Slots
 {
-    public sealed class CallbackInputSlot : InputSlot<Unit>, ICallbackInputSlot
+    public sealed class CallbackInputSlot : InputSlot<Unit>
     {
         readonly Subject<Unit> subject = new();
         readonly Action action;

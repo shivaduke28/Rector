@@ -82,6 +82,11 @@ namespace Rector.UI.GraphPages.NodeParameters
                             boolInputView.AddTo(propertyRoot);
                             boolInputView.Bind(boolInput).AddTo(disposable);
                             break;
+                        case ExposedCallbackFloatInputModel callbackFloatInput:
+                            var callbackFloatInputView = new ExposedCallbackFloatInputView(VisualElementFactory.Instance.CreateExposedFloatSlot());
+                            callbackFloatInputView.AddTo(propertyRoot);
+                            callbackFloatInputView.Bind(callbackFloatInput).AddTo(disposable);
+                            break;
                         case ExposedCallbackInputModel callbackInput:
                             var callbackInputView = new ExposedCallbackInputView(VisualElementFactory.Instance.CreateExposedCallbackSlot());
                             callbackInputView.AddTo(propertyRoot);
