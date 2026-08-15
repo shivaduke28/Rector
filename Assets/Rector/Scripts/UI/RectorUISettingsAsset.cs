@@ -33,5 +33,22 @@ namespace Rector.UI
         public Texture2D system;
         public Texture2D input;
         public Texture2D sequence;
+
+        public Texture2D GetIcon(Graphs.NodeCategory category)
+        {
+            return category switch
+            {
+                Graphs.NodeCategory.Vfx => vfx,
+                Graphs.NodeCategory.Camera => camera,
+                Graphs.NodeCategory.Event => @event,
+                Graphs.NodeCategory.Operator => @operator,
+                Graphs.NodeCategory.Math => math,
+                Graphs.NodeCategory.Scene => scene,
+                Graphs.NodeCategory.System => system,
+                Graphs.NodeCategory.Input => input,
+                Graphs.NodeCategory.Sequence => sequence,
+                _ => null
+            };
+        }
     }
 }
