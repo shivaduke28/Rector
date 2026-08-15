@@ -56,10 +56,10 @@ namespace Rector.UI.Graphs.Nodes
             OutputSlotList = Root.Q<VisualElement>("output-slot-list");
 
             var icon = Root.Q<VisualElement>("icon");
-            var outlineIcon = GetCategoryIcon(node.Category);
+            var outlineIcon = GetOutlineIcon(node);
             icon.style.backgroundImage = new StyleBackground(outlineIcon);
             if (node is IActiveStateNode activeStateNode &&
-                VisualElementFactory.Instance.Icons.GetFilledIcon(node.Category) is { } filledIcon)
+                GetFilledIcon(node) is { } filledIcon)
             {
                 activeStateNode.ActiveState
                     .Subscribe(active => icon.style.backgroundImage = new StyleBackground(active ? filledIcon : outlineIcon))
@@ -151,7 +151,12 @@ namespace Rector.UI.Graphs.Nodes
         public void AddTo(VisualElement parent) => parent.Add(Root);
         public void RemoveFrom(VisualElement parent) => parent.Remove(Root);
 
-        static Texture2D GetCategoryIcon(NodeCategory category)
-            => VisualElementFactory.Instance.Icons.GetIcon(category);
+        // 既定はカテゴリから引く。コンストラクタから呼ばれるので、overrideは派生側の
+        // インスタンス状態に触らないこと(シングルトン参照のみ)
+        protected virtual Texture2D GetOutlineIcon(Node node)
+            => VisualElementFactory.Instance.Icons.GetIcon(node.Category);
+
+        protected virtual Texture2D GetFilledIcon(Node node)
+            => VisualElementFactory.Instance.Icons.GetFilledIcon(node.Category);
     }
 }

@@ -71,7 +71,6 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<BeatNode>(BeatNode.GetCategory(), BeatNode.NodeName, id => CreateNodeView(new BeatNode(id, beatModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<UpdateNode>(UpdateNode.GetCategory(), UpdateNode.NodeName, id => CreateNodeView(new UpdateNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<TimeNode>(TimeNode.GetCategory(), TimeNode.NodeName, id => CreateNodeView(new TimeNode(id))));
-            nodeTemplateRepository.Add(NodeTemplate.Code<SequenceNode>(SequenceNode.GetCategory(), SequenceNode.NodeName, id => CreateNodeView(new SequenceNode(id, sequenceModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<ButtonNode>(ButtonNode.GetCategory(), ButtonNode.NodeName, id => CreateNodeView(new ButtonNode(id))));
 
             // input
@@ -80,6 +79,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<OscNode>(OscNode.GetCategory(), OscNode.NodeName, id => CreateNodeView(new OscNode(id, oscModel))));
 
             // sequence
+            nodeTemplateRepository.Add(NodeTemplate.Code<SequenceNode>(SequenceNode.GetCategory(), SequenceNode.NodeName, id => CreateNodeView(new SequenceNode(id, sequenceModel))));
             nodeTemplateRepository.Add(NodeTemplate.Code<LoopNode>(LoopNode.GetCategory(), LoopNode.NodeName, id => CreateNodeView(new LoopNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<Route2Node>(Route2Node.GetCategory(), Route2Node.NodeName, id => CreateNodeView(new Route2Node(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<Route4Node>(Route4Node.GetCategory(), Route4Node.NodeName, id => CreateNodeView(new Route4Node(id))));

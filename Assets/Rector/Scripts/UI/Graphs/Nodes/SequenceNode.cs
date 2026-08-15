@@ -8,7 +8,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class SequenceNode : SourceNode, IInitializable, IDisposable
     {
         public const string NodeName = "Seq";
-        public static NodeCategory GetCategory() => NodeCategory.Event;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
