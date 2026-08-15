@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class BeatNodeView : NodeView
+    public sealed class BeatNodeView : ActiveSourceNodeView
     {
         public BeatNodeView(VisualElement templateContainer, BeatNode beatNode) : base(templateContainer, beatNode)
         {

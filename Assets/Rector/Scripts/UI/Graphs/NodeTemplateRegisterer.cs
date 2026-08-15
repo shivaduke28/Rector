@@ -156,6 +156,14 @@ namespace Rector.UI.Graphs
                         return nodeView;
                     }
                 /* You can add custom node view here */
+                case SourceNode:
+                case CameraNode:
+                case VfxNode:
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new ActiveSourceNodeView(ve, node);
+                        return nodeView;
+                    }
                 default:
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();
