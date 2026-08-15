@@ -57,6 +57,10 @@ namespace Rector.UI.GraphPages.NodeParameters
                         case ReactivePropertyInputSlot<bool> boolInputSlot:
                             rows.Add(new ExposedBoolInputModel(boolInputSlot));
                             break;
+                        // ICallbackInputSlotにもマッチするので、このcaseを先に置く
+                        case CallbackFloatInputSlot callbackFloatInputSlot:
+                            rows.Add(new ExposedCallbackFloatInputModel(callbackFloatInputSlot, stepType));
+                            break;
                         case ICallbackInputSlot callbackInputSlot:
                             rows.Add(new ExposedCallbackInputModel(callbackInputSlot));
                             break;

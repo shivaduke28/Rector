@@ -15,7 +15,7 @@ namespace Rector.UI.Graphs.Nodes
         {
             InputSlots = new InputSlot[]
             {
-                new CallbackFloatInputSlot(id, 0, "In", x => subject.OnNext(x), IsMuted),
+                new CallbackFloatInputSlot(id, 0, "In", x => subject.OnNext(x), float.NegativeInfinity, float.PositiveInfinity, IsMuted),
                 new ReactivePropertyInputSlot<bool>(id, 1, "Gate", gate, gate.Value, IsMuted),
             };
 
