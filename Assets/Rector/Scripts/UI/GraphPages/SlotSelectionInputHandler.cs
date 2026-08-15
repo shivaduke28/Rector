@@ -91,6 +91,10 @@ namespace Rector.UI.GraphPages
                 case CallbackInputSlot callbackInputSlot:
                     callbackInputSlot.Send(Unit.Default);
                     break;
+                case CallbackFloatInputSlot callbackFloatInputSlot:
+                    // Unit→Float接続の変換(1f)と同じ値を送る
+                    callbackFloatInputSlot.Send(1f);
+                    break;
                 case ReactivePropertyInputSlot<bool> boolInputSlot:
                     boolInputSlot.Send(!boolInputSlot.Property.Value);
                     break;
