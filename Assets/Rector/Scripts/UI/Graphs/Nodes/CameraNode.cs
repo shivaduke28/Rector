@@ -1,11 +1,12 @@
 using System;
 using R3;
+using R3;
 using Rector.Cameras;
 using Rector.UI.Graphs.Slots;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class CameraNode : Node
+    public sealed class CameraNode : Node, IActiveStateNode
     {
         public static NodeCategory GetCategory() => NodeCategory.Camera;
         public override NodeCategory Category => GetCategory();
@@ -13,6 +14,8 @@ namespace Rector.UI.Graphs.Nodes
         public override OutputSlot[] OutputSlots => Array.Empty<OutputSlot>();
 
         readonly CameraNodeBehaviour cameraNodeBehaviour;
+
+        public ReadOnlyReactiveProperty<bool> ActiveState => cameraNodeBehaviour.IsActive;
         IDisposable disposable;
 
 

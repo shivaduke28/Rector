@@ -119,6 +119,12 @@ namespace Rector.UI.Graphs
         {
             switch (node)
             {
+                case CameraBlendNode cameraBlendNode:
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new CameraBlendNodeView(ve, cameraBlendNode);
+                        return nodeView;
+                    }
                 case BeatNode beatNode:
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();

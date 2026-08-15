@@ -26,19 +26,20 @@ namespace Rector.Cameras
         public ReadOnlyReactiveProperty<string> CurrentCamera => currentCamera;
 
         readonly ReactiveProperty<CameraBlend> blendStyle = new(CameraBlend.Cut);
-        public readonly BoolInput[] BlendInputs;
+        public readonly CallbackInput[] BlendInputs;
         public readonly ReactiveProperty<float> BlendTime = new(1f);
+        public ReadOnlyReactiveProperty<CameraBlend> BlendStyle => blendStyle;
 
         public CameraManager(CinemachineBrain brain, CameraNodeBehaviour[] cameraBehaviours)
         {
             this.brain = brain;
             this.cameraBehaviours = cameraBehaviours;
 
-            BlendInputs = new BoolInput[Enum.GetValues(typeof(CameraBlend)).Length];
+            BlendInputs = new CallbackInput[Enum.GetValues(typeof(CameraBlend)).Length];
             for (var i = 0; i < BlendInputs.Length; i++)
             {
                 var blend = (CameraBlend)i;
-                BlendInputs[i] = new BoolInput(blend.ToString(), false);
+                BlendInputs[i] = new CallbackInput(blend.ToString(), () => blendStyle.Value = blend);
             }
         }
 
@@ -70,22 +71,6 @@ namespace Rector.Cameras
                 };
             }).AddTo(disposables);
 
-            for (var i = 0; i < BlendInputs.Length; i++)
-            {
-                var index = i;
-                BlendInputs[i].Value.Where(x => x).Subscribe(x =>
-                {
-                    blendStyle.Value = (CameraBlend)index;
-                }).AddTo(disposables);
-            }
-
-            blendStyle.Subscribe(style =>
-            {
-                for (var i = 0; i < BlendInputs.Length; i++)
-                {
-                    BlendInputs[i].Value.Value = i == (int)style;
-                }
-            }).AddTo(disposables);
         }
 
         void DisableOthers(CameraNodeBehaviour cameraNode)

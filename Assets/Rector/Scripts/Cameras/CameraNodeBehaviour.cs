@@ -11,7 +11,7 @@ namespace Rector.Cameras
     {
         [SerializeField] CameraInputSlotBehaviour cameraInputSlot;
 
-        public ReactiveProperty<bool> IsActive => cameraInputSlot.ActiveInput.Value;
+        public ReactiveProperty<bool> IsActive => cameraInputSlot.IsActive;
 
 
         public override void RetrieveComponents()

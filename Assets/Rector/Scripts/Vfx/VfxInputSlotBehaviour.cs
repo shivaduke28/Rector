@@ -20,6 +20,8 @@ namespace Rector.Vfx
 
         IInput[] inputs;
 
+        public BoolInput ActiveInput => activeInput;
+
         void Reset() => visualEffect = GetComponent<VisualEffect>();
 
         public override IInput[] GetInputs()

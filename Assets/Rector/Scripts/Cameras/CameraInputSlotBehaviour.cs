@@ -11,25 +11,27 @@ namespace Rector.Cameras
     public sealed class CameraInputSlotBehaviour : InputSlotBehaviour
     {
         [SerializeField] CinemachineCamera cinemachineCamera;
-
-        [SerializeField] BoolInput activeInput = new("Active", false);
         [SerializeField] FloatInput dutchInput = new("Dutch", 0, -180, 180);
 
+        // 活性化は出来事(Unit)。CameraManagerはtrueしか読まず、消灯はDisableOthersが担うため、
+        // 状態はスロットではなくこのRPが持つ
+        readonly ReactiveProperty<bool> isActive = new(false);
         IInput[] inputs;
-        public BoolInput ActiveInput => activeInput;
+
+        public ReactiveProperty<bool> IsActive => isActive;
 
         public override IInput[] GetInputs()
         {
             return inputs ??= new IInput[]
             {
-                activeInput,
+                new CallbackInput("Active", () => isActive.Value = true),
                 dutchInput,
             };
         }
 
         void Start()
         {
-            activeInput.Value.Subscribe(x => cinemachineCamera.Priority = x ? 1 : 0).AddTo(this);
+            isActive.Subscribe(x => cinemachineCamera.Priority = x ? 1 : 0).AddTo(this);
             dutchInput.Value.Subscribe(UpdateDutch).AddTo(this);
         }
 

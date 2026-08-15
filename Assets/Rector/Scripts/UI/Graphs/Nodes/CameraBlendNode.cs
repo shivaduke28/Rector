@@ -1,4 +1,5 @@
 using System;
+using R3;
 using Rector.Cameras;
 using Rector.UI.Graphs.Slots;
 
@@ -12,8 +13,11 @@ namespace Rector.UI.Graphs.Nodes
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots => Array.Empty<OutputSlot>();
 
+        public ReadOnlyReactiveProperty<CameraBlend> BlendStyle { get; }
+
         public CameraBlendNode(NodeId id, CameraManager cameraManager) : base(id, NodeName)
         {
+            BlendStyle = cameraManager.BlendStyle;
             var blendInputs = cameraManager.BlendInputs;
             InputSlots = new InputSlot[blendInputs.Length + 1];
             for (var i = 0; i < blendInputs.Length; i++)

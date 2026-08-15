@@ -1,13 +1,16 @@
+using R3;
 using Rector.UI.Graphs.Slots;
 using Rector.Vfx;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    public sealed class VfxNode : Node
+    public sealed class VfxNode : Node, IActiveStateNode
     {
         public static NodeCategory GetCategory() => NodeCategory.Vfx;
         public override NodeCategory Category => GetCategory();
         readonly VfxNodeBehaviour behaviour;
+
+        public ReadOnlyReactiveProperty<bool> ActiveState => behaviour.IsActive;
 
         public VfxNode(NodeId id, VfxNodeBehaviour behaviour) : base(id, behaviour.Name)
         {

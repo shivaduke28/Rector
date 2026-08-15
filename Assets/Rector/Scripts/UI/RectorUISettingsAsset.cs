@@ -33,6 +33,9 @@ namespace Rector.UI
         public Texture2D system;
         public Texture2D input;
         public Texture2D sequence;
+        public Texture2D cameraFilled;
+        public Texture2D vfxFilled;
+        public Texture2D eventFilled;
 
         public Texture2D GetIcon(Graphs.NodeCategory category)
         {
@@ -47,6 +50,18 @@ namespace Rector.UI
                 Graphs.NodeCategory.System => system,
                 Graphs.NodeCategory.Input => input,
                 Graphs.NodeCategory.Sequence => sequence,
+                _ => null
+            };
+        }
+
+        // アクティブ状態表示用。未割当(null)のカテゴリは outline のまま
+        public Texture2D GetFilledIcon(Graphs.NodeCategory category)
+        {
+            return category switch
+            {
+                Graphs.NodeCategory.Camera => cameraFilled,
+                Graphs.NodeCategory.Vfx => vfxFilled,
+                Graphs.NodeCategory.Event => eventFilled,
                 _ => null
             };
         }
