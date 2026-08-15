@@ -32,5 +32,6 @@ namespace Rector.UI
         public Texture2D scene;
         public Texture2D system;
         public Texture2D input;
+        public Texture2D sequence;
     }
 }

@@ -7,7 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Switch4Node : Node
     {
         public const string NodeName = "Switch 4";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         readonly ReactiveProperty<int> sequence = new(0);
 
@@ -41,7 +41,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Switch2Node : Node
     {
         public const string NodeName = "Switch 2";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
 
         readonly ReactiveProperty<bool> state = new(true);
@@ -69,7 +69,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Switch16Node : Node
     {
         public const string NodeName = "Switch 16";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
 
         readonly ReactiveProperty<int> sequence = new(0);
@@ -104,7 +104,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Switch4By4Node : Node
     {
         public const string NodeName = "Switch 4x4";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         readonly ReactiveProperty<int> sequence = new(0);
         public override InputSlot[] InputSlots { get; }

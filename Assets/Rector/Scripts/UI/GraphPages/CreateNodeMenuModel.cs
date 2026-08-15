@@ -184,6 +184,7 @@ namespace Rector.UI.GraphPages
                 NodeCategory.Scene => VisualElementFactory.Instance.Icons.scene,
                 NodeCategory.System => VisualElementFactory.Instance.Icons.system,
                 NodeCategory.Input => VisualElementFactory.Instance.Icons.input,
+                NodeCategory.Sequence => VisualElementFactory.Instance.Icons.sequence,
                 _ => null
             };
         }

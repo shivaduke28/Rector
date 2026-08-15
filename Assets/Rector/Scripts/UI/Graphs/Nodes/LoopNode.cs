@@ -7,7 +7,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class LoopNode : Node
     {
         public const string NodeName = "Loop";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }

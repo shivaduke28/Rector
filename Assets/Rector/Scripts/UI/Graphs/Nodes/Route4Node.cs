@@ -12,7 +12,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Route2Node : Node
     {
         public const string NodeName = "Route 2";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
@@ -43,7 +43,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Route4Node : Node
     {
         public const string NodeName = "Route 4";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
@@ -74,7 +74,7 @@ namespace Rector.UI.Graphs.Nodes
     public sealed class Route16Node : Node
     {
         public const string NodeName = "Route 16";
-        public static NodeCategory GetCategory() => NodeCategory.Operator;
+        public static NodeCategory GetCategory() => NodeCategory.Sequence;
         public override NodeCategory Category => GetCategory();
         public override InputSlot[] InputSlots { get; }
         public override OutputSlot[] OutputSlots { get; }
