@@ -13,11 +13,12 @@ namespace Rector.UI.Graphs.Nodes
                 .Subscribe(active => Icon.style.backgroundImage = new StyleBackground(active ? icons.eventFilled : icons.@event))
                 .AddTo(Disposables);
 
+            // 名前側にlength（静的設定）、あとは現在位置 (issue #151)。
             // beat を length の桁数でゼロ埋めして、桁数変化でノード幅が揺れないようにする
             sequenceNode.Beat.CombineLatest(sequenceNode.Length, (beat, len) =>
                 {
                     var digits = len.ToString().Length;
-                    return $"Seq {beat.ToString().PadLeft(digits, '0')}/{len}";
+                    return $"Seq{len} {beat.ToString().PadLeft(digits, '0')}";
                 })
                 .Subscribe(text => NameLabel.text = text)
                 .AddTo(Disposables);
