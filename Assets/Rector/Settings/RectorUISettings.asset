@@ -43,3 +43,4 @@ MonoBehaviour:
     sequence: {fileID: 2800000, guid: 551400ef548164a44be139e42f6ce555, type: 3}
     cameraFilled: {fileID: 2800000, guid: e23a14fee3b95444691615a3695328c9, type: 3}
     vfxFilled: {fileID: 2800000, guid: a65bac0cce4364429b0b42cbab60249b, type: 3}
+    eventFilled: {fileID: 2800000, guid: cc797d0309010489cbc6e073dec14115, type: 3}

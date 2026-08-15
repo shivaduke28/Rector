@@ -35,6 +35,7 @@ namespace Rector.UI
         public Texture2D sequence;
         public Texture2D cameraFilled;
         public Texture2D vfxFilled;
+        public Texture2D eventFilled;
 
         public Texture2D GetIcon(Graphs.NodeCategory category)
         {
@@ -60,6 +61,7 @@ namespace Rector.UI
             {
                 Graphs.NodeCategory.Camera => cameraFilled,
                 Graphs.NodeCategory.Vfx => vfxFilled,
+                Graphs.NodeCategory.Event => eventFilled,
                 _ => null
             };
         }
