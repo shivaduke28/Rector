@@ -161,6 +161,7 @@ namespace Rector
 
             // set first camera active
             cameraManager.GetCameraBehaviours()[0].IsActive.Value = true;
+            Cli.PsoExperiment.TryWarmupAtStartup(); // issue #136 PoC
             bgSceneManager.Load(rectorSettingsAsset.sceneSettings.sceneNames[0]);
         }
 
