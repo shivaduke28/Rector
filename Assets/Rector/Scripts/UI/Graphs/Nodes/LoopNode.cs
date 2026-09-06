@@ -13,18 +13,18 @@ namespace Rector.UI.Graphs.Nodes
         public override OutputSlot[] OutputSlots { get; }
 
         // Beat は1始まりの位置 (Seq.Beat, Loop.Cycle など)。0は「位置なし」。
-        // 同値の拍（length=1のSeqなど）でも毎回評価が走るよう、同値通知を抑制しない
-        readonly ReactiveProperty<int> beat = new(0, equalityComparer: null);
+        // 同値の拍（length=1のSeqなど）でも毎回評価が走るよう、同値を捨てない BehaviorSubject で持つ
+        readonly BehaviorSubject<int> beat = new(0);
         readonly ReactiveProperty<int> length = new(4);
 
-        public ReadOnlyReactiveProperty<int> Beat => beat;
+        public Observable<int> Beat => beat;
         public ReadOnlyReactiveProperty<int> Length => length;
 
         public LoopNode(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
-                new ReactivePropertyIntInputSlot(id, 0, "Beat", beat, 0, 0, 256, IsMuted),
+                new BehaviorSubjectIntInputSlot(id, 0, "Beat", beat, 0, 0, 256, IsMuted),
                 new ReactivePropertyIntInputSlot(id, 1, "Length", length, 4, 1, 256, IsMuted)
             };
 
