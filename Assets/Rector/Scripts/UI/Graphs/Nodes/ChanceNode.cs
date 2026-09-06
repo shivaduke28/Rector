@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Rector.UI.Graphs.Nodes
 {
-    /// <summary>In が来るたびに Chance の確率で Out へ通すゲート (issue #162)。</summary>
+    /// <summary>In が来るたびに Chance の確率で Out へ通すゲート。</summary>
     public sealed class ChanceNode : Node
     {
         public const string NodeName = "Chance";
