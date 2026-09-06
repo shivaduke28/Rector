@@ -14,6 +14,21 @@ namespace Rector.UI.GraphPages
         Perform,
     }
 
+    /// <summary>グループ移動の1回分。Directionは-1か1。</summary>
+    public readonly struct GroupMove
+    {
+        public readonly int Direction;
+
+        /// <summary>Lock(L2/Tab)も押していたら、選択ノードの子孫も一緒に動かす。</summary>
+        public readonly bool WithDescendants;
+
+        public GroupMove(int direction, bool withDescendants)
+        {
+            Direction = direction;
+            WithDescendants = withDescendants;
+        }
+    }
+
     public sealed class GraphInputAction : RectorInput.IGraphActions, IInitializable, IDisposable
     {
         readonly RectorInput rectorInput;
@@ -24,14 +39,12 @@ namespace Rector.UI.GraphPages
         readonly Subject<HoldState> removeEdge = new();
         readonly Subject<HoldState> removeNode = new();
         readonly Subject<Unit> mute = new();
-        readonly Subject<Unit> lockStarted = new();
-        readonly Subject<Unit> lockEnded = new();
         readonly Subject<Unit> openNodeParameter = new();
         readonly Subject<Unit> closeNodeParameter = new();
         readonly Subject<Unit> openSystem = new();
         readonly Subject<Unit> openScene = new();
         readonly Subject<Unit> resetTransform = new();
-        readonly Subject<int> moveNodeToGroup = new();
+        readonly Subject<GroupMove> moveNodeToGroup = new();
 
         readonly NavigateInputThrottle navigateInputThrottle = new();
 
@@ -42,16 +55,15 @@ namespace Rector.UI.GraphPages
         public Observable<HoldState> RemoveEdge => removeEdge;
         public Observable<HoldState> RemoveNode => removeNode;
         public Observable<Unit> Mute => mute;
-        public Observable<Unit> LockStarted => lockStarted;
-        public Observable<Unit> LockEnded => lockEnded;
         public ReadOnlyReactiveProperty<bool> GrabModifierHeld => grabModifierHeld;
+        public ReadOnlyReactiveProperty<bool> LockHeld => lockHeld;
         public Observable<Unit> OpenNodeParameter => openNodeParameter;
         public Observable<Unit> CloseNodeParameter => closeNodeParameter;
         public Observable<Unit> OpenSystem => openSystem;
         public Observable<Unit> OpenScene => openScene;
         public Observable<Unit> ResetTransform => resetTransform;
         public Observable<Vector2> Navigate => navigateInputThrottle.Navigate;
-        public Observable<int> MoveNodeToGroup => moveNodeToGroup;
+        public Observable<GroupMove> MoveNodeToGroup => moveNodeToGroup;
 
         public Vector2 Translate { get; private set; }
         public float Zoom { get; private set; }
@@ -70,6 +82,9 @@ namespace Rector.UI.GraphPages
 
         // ガイドバー等が購読できるようReactivePropertyで持つ
         readonly ReactiveProperty<bool> grabModifierHeld = new(false);
+
+        // Grab中の十字キーが「子孫も一緒に」になるかを発火時に読む
+        readonly ReactiveProperty<bool> lockHeld = new(false);
 
         /// <summary>
         /// 操作ガイドを光らせるための押下状態。位置ごとに1つ持つ。
@@ -140,8 +155,8 @@ namespace Rector.UI.GraphPages
 
         /// <remarks>
         /// GrabModifier(R2/Option)を押している間は十字キーを別コマンドとして扱う。
-        /// 左右は選択ノードのグループ移動。離散的な操作なのでリピートさせず、
-        /// 方向が新しく確定した瞬間だけ発火させる。
+        /// 左右は選択ノードのグループ移動。Lock(L2/Tab)も押していれば子孫ごと動かす。
+        /// 離散的な操作なのでリピートさせず、方向が新しく確定した瞬間だけ発火させる。
         /// </remarks>
         void HandleChordNavigate(Vector2 value)
         {
@@ -167,10 +182,10 @@ namespace Rector.UI.GraphPages
             switch (d)
             {
                 case NavigateDirection.Left:
-                    moveNodeToGroup.OnNext(-1);
+                    moveNodeToGroup.OnNext(new GroupMove(-1, lockHeld.Value));
                     break;
                 case NavigateDirection.Right:
-                    moveNodeToGroup.OnNext(1);
+                    moveNodeToGroup.OnNext(new GroupMove(1, lockHeld.Value));
                     break;
             }
         }
@@ -374,17 +389,23 @@ namespace Rector.UI.GraphPages
             }
         }
 
+        /// <remarks>
+        /// 押している間は選択ノードに画面が追従する(GraphPage が LockHeld を見て始める)。
+        /// Grab(R2/Option)と同時押しのときは十字キーのグループ移動が子孫ごとになり
+        /// (<see cref="HandleChordNavigate"/>)、追従の方は GraphPage 側で止まる。
+        /// initialStateCheck付きなので、押したままページを出入りしても performed が来て状態が復元される。
+        /// </remarks>
         public void OnLock(InputAction.CallbackContext context)
         {
             if (context.performed)
             {
                 SetPressed(GuideInput.UpperLeft, true);
-                lockStarted.OnNext(Unit.Default);
+                lockHeld.Value = true;
             }
             else if (context.canceled)
             {
                 SetPressed(GuideInput.UpperLeft, false);
-                lockEnded.OnNext(Unit.Default);
+                lockHeld.Value = false;
             }
         }
 

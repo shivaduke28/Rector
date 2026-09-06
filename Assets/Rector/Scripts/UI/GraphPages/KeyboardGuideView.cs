@@ -63,7 +63,7 @@ namespace Rector.UI.GraphPages
             var modifierRow = CreateRow();
             paramChip = new InputGuideChip(ParamKey);
             grabChip = new InputGuideChip(GrabKey, "GRAB");
-            lockChip = new InputGuideChip(LockKey, "LOCK");
+            lockChip = new InputGuideChip(LockKey, InputGuideContents.LockLabel);
             modifierRow.Add(paramChip);
             modifierRow.Add(grabChip);
             modifierRow.Add(lockChip);
@@ -85,6 +85,7 @@ namespace Rector.UI.GraphPages
 
         public void Apply(GuideContent content)
         {
+            lockChip.SetAction(content.Lock);
             lockChip.SetState(true, false);
             grabChip.SetState(content.Grab, false);
             muteChip.SetState(content.Mute, false);

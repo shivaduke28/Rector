@@ -10,8 +10,9 @@ namespace Rector.UI.GraphPages
 
         /// <summary>
         /// 選択中のノードを隣のグループへ移す。directionは-1か1。GrabModifier(R2/Option)を押しながらの左右。
+        /// Lock(L2/Tab)も押していれば withDescendants が立ち、選択ノードの子孫も一緒に動かす。
         /// </summary>
-        public virtual void MoveNodeToGroup(int direction)
+        public virtual void MoveNodeToGroup(int direction, bool withDescendants)
         {
         }
 

@@ -24,12 +24,19 @@ namespace Rector.UI.GraphPages
         public bool ParamActive;
 
         public bool Grab;
+
+        /// <summary>左上ボタン(L2/TAB)の文言。掴んでいる間だけ「子孫ごと移動」の修飾キーに変わる。</summary>
+        public string Lock = InputGuideContents.LockLabel;
     }
 
     public static class InputGuideContents
     {
         public const string ParamLabel = "PARAM";
         public const string ReplaceLabel = "REPLACE";
+        public const string LockLabel = "LOCK";
+
+        /// <summary>LOCK/MUTE/GRAB と同じ4文字。左列は右寄せなので、長くするとボタン名が左へ押し出される。</summary>
+        public const string TreeLabel = "TREE";
 
         static readonly Dictionary<GraphPageState, GuideContent> Contents = new()
         {
@@ -83,7 +90,8 @@ namespace Rector.UI.GraphPages
             },
         };
 
-        // R2(ALT)で掴んでいる間のノード選択。△がコピーになり、長押し削除は効かない
+        // R2(ALT)で掴んでいる間のノード選択。△がコピーになり、長押し削除は効かない。
+        // L2(TAB)は追従に加えて「左右で子孫ごと移動」の修飾キーになる
         static readonly GuideContent NodeSelectionGrab = new()
         {
             FaceTop = "COPY",
@@ -93,6 +101,7 @@ namespace Rector.UI.GraphPages
             Mute = true,
             Param = ParamLabel,
             Grab = true,
+            Lock = TreeLabel,
         };
 
         public static GuideContent Get(GraphPageState state, bool grabbing) =>
