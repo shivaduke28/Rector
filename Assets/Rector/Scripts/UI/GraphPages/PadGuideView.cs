@@ -68,8 +68,8 @@ namespace Rector.UI.GraphPages
             pickingMode = PickingMode.Ignore;
 
             // セルは透明な位置決め箱で、背景の塗りは文字ぴったりの内側チップにだけ載せる。
-            // ショルダーの動作名は固定なので、ここで入れたら以後はボタン名しか触らない
-            var lockCell = CreateCell(InputGuideClassNames.CellLeft, out lockChip, "LOCK");
+            // ショルダーの動作名はほぼ固定。L2だけは掴んでいる間 Apply で差し替わる
+            var lockCell = CreateCell(InputGuideClassNames.CellLeft, out lockChip, InputGuideContents.LockLabel);
             var grabCell = CreateCell(InputGuideClassNames.CellRight, out grabChip, "GRAB");
             var muteCell = CreateCell(InputGuideClassNames.CellLeft, out muteChip, "MUTE");
             var paramCell = CreateCell(InputGuideClassNames.CellRight, out paramChip);
@@ -104,6 +104,7 @@ namespace Rector.UI.GraphPages
             SetFace(faceBottom, names.FaceBottom, content.FaceBottom, names.FaceIsSymbol);
 
             lockChip.SetKey(names.UpperLeft);
+            lockChip.SetAction(content.Lock);
             lockChip.SetState(true, false);
             grabChip.SetKey(names.UpperRight);
             grabChip.SetState(content.Grab, false);

@@ -154,7 +154,7 @@ namespace Rector.UI.GraphPages
             Groups.Count.Subscribe(_ => Sort()).AddTo(disposable);
 
             graphInputAction.Navigate.Subscribe(x => CurrentInputHandler.Navigate(x)).AddTo(disposable);
-            graphInputAction.MoveNodeToGroup.Subscribe(x => CurrentInputHandler.MoveNodeToGroup(x)).AddTo(disposable);
+            graphInputAction.MoveNodeToGroup.Subscribe(x => CurrentInputHandler.MoveNodeToGroup(x.Direction, x.WithDescendants)).AddTo(disposable);
             graphInputAction.Submit.Subscribe(_ => CurrentInputHandler.Submit()).AddTo(disposable);
             graphInputAction.Cancel.Subscribe(_ => CurrentInputHandler.Cancel()).AddTo(disposable);
             graphInputAction.Action.Subscribe(_ => CurrentInputHandler.Action()).AddTo(disposable);
@@ -166,10 +166,17 @@ namespace Rector.UI.GraphPages
             State.Subscribe(_ => UpdateGrabIndicator()).AddTo(disposable);
             // ロックは押した瞬間の画面位置をアンカーにする(中央へは寄せない)。以後の追従は
             // FollowLockedNodeの既存呼び出し(選択・ターゲット変更時)が拾う。
-            graphInputAction.LockStarted
-                .Subscribe(_ => graphContentTransformer.BeginLockFollow(GetFocusNodeForCurrentState())).AddTo(disposable);
-            graphInputAction.LockEnded
-                .Subscribe(_ => graphContentTransformer.EndLockFollow()).AddTo(disposable);
+            // R2で掴んでいる間はL2を「子孫ごと移動」の修飾キーとしてだけ扱い、追従は止める。
+            // 追従したままだとノードが画面に固定されて周りが滑り、隣の列へ飛ばした感じが出ない。
+            // R2を先に離せばその場の位置をアンカーにして追従が再開する。
+            graphInputAction.LockHeld
+                .CombineLatest(graphInputAction.GrabModifierHeld, (locked, grabbing) => locked && !grabbing)
+                .DistinctUntilChanged()
+                .Subscribe(follow =>
+                {
+                    if (follow) graphContentTransformer.BeginLockFollow(GetFocusNodeForCurrentState());
+                    else graphContentTransformer.EndLockFollow();
+                }).AddTo(disposable);
             graphInputAction.OpenNodeParameter.Subscribe(_ => CurrentInputHandler.OpenNodeParameter()).AddTo(disposable);
             graphInputAction.CloseNodeParameter.Subscribe(_ => CurrentInputHandler.CloseNodeParameter()).AddTo(disposable);
             graphInputAction.RemoveNode.Subscribe(x => CurrentInputHandler.RemoveNode(x)).AddTo(disposable);
@@ -226,8 +233,15 @@ namespace Rector.UI.GraphPages
 
         /// <summary>
         /// 選択中のノードを隣のグループへ移す。directionは-1か1。
+        /// withDescendants なら下流のノードも全員、選択ノードの行き先へ集める。
         /// </summary>
-        public void MoveSelectedNodeToGroup(int direction)
+        /// <remarks>
+        /// 子孫を「それぞれ同じ方向へ1つずらす」形は採らなかった。端で回り込むと木が
+        /// 継ぎ目で割れるし、4→1へ飛んだ子を目で追うのが難しい。集める形なら回り込みは
+        /// 選択ノードの1回だけで、押した結果がその列を見れば分かる。
+        /// 上流(親)は動かさない。他の親からも繋がる合流ノードは子孫なので一緒に動く。
+        /// </remarks>
+        public void MoveSelectedNodeToGroup(int direction, bool withDescendants)
         {
             if (SelectedNode is not { } node) return;
 
@@ -240,7 +254,20 @@ namespace Rector.UI.GraphPages
             // 上書きすると、数を戻しても並びが復元できなくなる(Foldが生の値を保存する設計)。
             if (target == current) return;
 
-            MoveNodeToGroup(node, target);
+            node.Group = target;
+            if (withDescendants)
+            {
+                var descendants = new HashSet<LayeredNode>();
+                Graph.CollectDescendants(node, descendants);
+                foreach (var descendant in descendants)
+                {
+                    // 既に行き先に見えている子孫は生のGroupを触らない(上と同じ理由)
+                    if (Groups.Fold(descendant.Group) == target) continue;
+                    descendant.Group = target;
+                }
+            }
+
+            Sort();
         }
 
         public void MoveNodeToGroup(LayeredNode node, int group)

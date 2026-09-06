@@ -241,6 +241,33 @@ namespace Rector.UI.LayeredGraphDrawing
             }
         }
 
+        /// <summary>
+        /// rootから下流にたどれるノードをすべてresultへ足す。root自身は含めない。
+        /// </summary>
+        /// <remarks>
+        /// 菱形(同じノードへ2本の道がある)で二重に積まないよう、通ったノードはresultで判定する。
+        /// ループはValidateLoopが弾いているが、万一あってもここで止まる。
+        /// </remarks>
+        public void CollectDescendants(LayeredNode root, HashSet<LayeredNode> result)
+        {
+            var visited = new HashSet<LayeredNode> { root };
+            var stack = new Stack<LayeredNode>();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                var node = stack.Pop();
+                foreach (var edge in node.EdgesToChild)
+                {
+                    if (!TryGetNode(edge.EdgeView.Edge.InputSlot.NodeId, out var child)) continue;
+                    if (!visited.Add(child)) continue;
+
+                    result.Add(child);
+                    stack.Push(child);
+                }
+            }
+        }
+
         // fromからtoに向かうedgeがあるかどうかを再帰的に調べる
         bool CheckRecursively(LayeredNode from, LayeredNode to)
         {
