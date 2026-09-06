@@ -94,6 +94,7 @@ namespace Rector.UI.Graphs
             nodeTemplateRepository.Add(NodeTemplate.Code<AndNode>(AndNode.GetCategory(), AndNode.NodeName, id => CreateNodeView(new AndNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<OrNode>(OrNode.GetCategory(), OrNode.NodeName, id => CreateNodeView(new OrNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<GateNode>(GateNode.GetCategory(), GateNode.NodeName, id => CreateNodeView(new GateNode(id))));
+            nodeTemplateRepository.Add(NodeTemplate.Code<ChanceNode>(ChanceNode.GetCategory(), ChanceNode.NodeName, id => CreateNodeView(new ChanceNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<NegateNode>(NegateNode.GetCategory(), NegateNode.NodeName, id => CreateNodeView(new NegateNode(id))));
             nodeTemplateRepository.Add(NodeTemplate.Code<WithNode>(WithNode.GetCategory(), WithNode.NodeName, id => CreateNodeView(new WithNode(id))));
 
@@ -141,6 +142,12 @@ namespace Rector.UI.Graphs
                     {
                         var ve = VisualElementFactory.Instance.CreateNode();
                         var nodeView = new LoopNodeView(ve, loopNode);
+                        return nodeView;
+                    }
+                case ChanceNode chanceNode:
+                    {
+                        var ve = VisualElementFactory.Instance.CreateNode();
+                        var nodeView = new ChanceNodeView(ve, chanceNode);
                         return nodeView;
                     }
                 case FilterNode filterNode:
