@@ -8,7 +8,10 @@ namespace Rector.UI.Graphs.Slots
     /// </summary>
     public interface IIntValueInputSlot : ISlot
     {
-        /// <summary>現在値。set はワイヤと同じ経路で流れる（ミュートは見ない）。</summary>
+        /// <summary>
+        /// 現在値。set は HUD の編集とプリセット復元のための入口で、ミュート中でも書ける。
+        /// ミュートが止めるのはワイヤ（Send）と出力だけで、パラメータ操作は別（ReactivePropertyInputSlot.Property と同じ扱い）。
+        /// </summary>
         int Value { get; set; }
         int MinValue { get; }
         int MaxValue { get; }
