@@ -25,10 +25,36 @@ namespace Rector.Tests.EditMode
 
             Assert.That(node.OutputSlots[0].Name, Is.EqualTo("Out"));
             Assert.That(node.OutputSlots[1].Name, Is.EqualTo("Hit"));
+            Assert.That(node.OutputSlots[2].Name, Is.EqualTo("Miss"));
 
             var initialHit = true;
             using var subscription = node.Hit.Subscribe(x => initialHit = x);
             Assert.That(initialHit, Is.False);
+        }
+
+        [Test]
+        public void MissIsTheComplementOfHitOnEveryRoll()
+        {
+            var node = new ChanceNode(NodeId.Generate());
+            var input = (CallbackFloatInputSlot)node.InputSlots[0];
+            var chance = (ReactivePropertyFloatInputSlot)node.InputSlots[1];
+            var miss = (ObservableOutputSlot<bool>)node.OutputSlots[2];
+
+            var received = new System.Collections.Generic.List<bool>();
+            using var subscription = miss.Observable().Subscribe(received.Add);
+
+            // 抽選前は Hit=false なので Miss=true がリプレイされる
+            Assert.That(received, Is.EqualTo(new[] { true }));
+
+            chance.Property.Value = 0f;
+            input.Send(1f);
+            input.Send(2f);
+            chance.Property.Value = 1f;
+            input.Send(3f);
+            // 0 は消灯信号なので抽選せず、Miss も動かない
+            input.Send(0f);
+
+            Assert.That(received, Is.EqualTo(new[] { true, true, true, false }));
         }
 
         [Test]
