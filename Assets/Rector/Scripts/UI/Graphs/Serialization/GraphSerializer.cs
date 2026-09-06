@@ -136,6 +136,9 @@ namespace Rector.UI.Graphs.Serialization
                     case ReactivePropertyInputSlot<float> s:
                         floats.Add(new FloatSlotValue { index = s.Index, value = s.Property.Value });
                         break;
+                    case IIntValueInputSlot s:
+                        ints.Add(new IntSlotValue { index = s.Index, value = s.Value });
+                        break;
                     case ReactivePropertyInputSlot<int> s:
                         ints.Add(new IntSlotValue { index = s.Index, value = s.Property.Value });
                         break;
@@ -236,7 +239,8 @@ namespace Rector.UI.Graphs.Serialization
 
             foreach (var v in saved.ints)
             {
-                if (ValueSlotAt<int>(node, v.index) is { } slot) slot.Property.Value = v.value;
+                if (SlotAt(node.InputSlots, v.index) is IIntValueInputSlot slot) slot.Value = v.value;
+                else if (ValueSlotAt<int>(node, v.index) is { } plainSlot) plainSlot.Property.Value = v.value;
                 else RectorLogger.GraphLoadSkippedValue(node, v.index, "Int");
             }
 

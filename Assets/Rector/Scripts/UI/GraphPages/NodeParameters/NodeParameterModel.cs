@@ -48,7 +48,7 @@ namespace Rector.UI.GraphPages.NodeParameters
                         case ReactivePropertyFloatInputSlot floatInputSlot:
                             rows.Add(new ExposedFloatInputModel(floatInputSlot, stepType));
                             break;
-                        case ReactivePropertyIntInputSlot intInputSlot:
+                        case IIntValueInputSlot intInputSlot:
                             rows.Add(new ExposedIntInputModel(intInputSlot));
                             break;
                         case ReactivePropertyInputSlot<Vector3> vector3InputSlot:

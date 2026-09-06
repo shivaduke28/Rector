@@ -11,6 +11,9 @@ namespace Rector.UI.GraphPages.NodeParameters
         readonly RectorSliderInt slider;
         readonly Label valueLabel;
 
+        // スライダーは ReactiveProperty を要求するので、スロットの裏が何であれ表示用の値を挟む。
+        // 書き戻しはスロットの現在値と違うときだけ（BehaviorSubject 裏だと同値でも流れるので、素直に往復させると無限ループ）
+        readonly ReactiveProperty<int> displayValue = new(0);
         RectorSliderIntState sliderState;
 
         public ExposedIntInputView(VisualElement container)
@@ -25,10 +28,18 @@ namespace Rector.UI.GraphPages.NodeParameters
         {
             var slot = model.Slot;
             nameLabel.text = model.Label;
-            sliderState = new RectorSliderIntState(slot.Property, slot.MinValue, slot.MaxValue);
+            sliderState = new RectorSliderIntState(displayValue, slot.MinValue, slot.MaxValue);
             return new CompositeDisposable(
                 slider.Bind(sliderState),
-                slot.Property.Subscribe(x => valueLabel.text = x.ToString()),
+                slot.Observable().Subscribe(x =>
+                {
+                    displayValue.Value = x;
+                    valueLabel.text = x.ToString();
+                }),
+                displayValue.Subscribe(x =>
+                {
+                    if (x != slot.Value) slot.Value = x;
+                }),
                 model.IsFocused.Subscribe(x => root.EnableInClassList("rector-exposed-input--focused", x))
             );
         }
