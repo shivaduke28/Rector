@@ -189,13 +189,16 @@ release build driven through `eval` from the running editor hangs there, and
 "Disable Pipeline" silently flips `enableInBuilds` back to `false` in the JSON.
 Build as a Development Build, or build headless, when driving from the CLI.
 
-**`enableInBuilds` is deliberately left on** — every build, release included,
-runs the server. Rector is a personal instrument rather than distributed
-software, and being able to drive any build is worth more here than closing a
-port that only processes running as the same user can reach. Reviewers have
-flagged this; it is a decision, not an oversight. Revisit it if Rector is ever
-handed to someone else, and note the exposure is the whole runtime command
-surface, not just `rector_*`.
+**`enableInBuilds` is off in the committed config.** It used to be deliberately
+on (Rector is a personal instrument, and driving any build was worth more than
+closing a loopback-only port), but with package 0.6.0 every GUI release build
+would pop the security dialog above, which is confusing for anyone else
+building Rector. To drive a Player, flip it on for that build —
+`set_runtime_pipeline_settings --settings '{"enableInBuilds": true}' --confirm
+true` — build as a Development Build, and flip it back before committing. If
+this becomes routine, a Rector-side `IPreprocessBuildWithReport` with
+`callbackOrder < 0` can set it from `EditorUserBuildSettings.development`
+before the package's processor (order 0) reads it.
 
 ### Caveats
 

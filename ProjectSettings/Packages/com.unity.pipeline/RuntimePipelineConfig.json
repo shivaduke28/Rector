@@ -1,5 +1,5 @@
 {
-    "enableInBuilds": true,
+    "enableInBuilds": false,
     "port": 0,
     "requestTimeoutMs": 30000,
     "enableAuditLogging": true,
