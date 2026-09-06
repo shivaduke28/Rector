@@ -341,11 +341,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 19034542}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -737,11 +732,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 194669237}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -1019,11 +1009,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 418786974}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -1504,57 +1489,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &652315990
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 652315991}
-  - component: {fileID: 652315992}
-  m_Layer: 0
-  m_Name: RuntimePipelineManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &652315991
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652315990}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &652315992
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652315990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd4ab1c9091e0194196b5f5d51cb932f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Pipeline::Unity.Pipeline.RuntimePipelineManager
-  enableInBuilds: 1
-  port: 0
-  requestTimeoutMs: 30000
-  enableAuditLogging: 1
-  autoStart: 1
-  maxWorkItemsPerFrame: 10
-  m_AllowedReloadRoots: []
 --- !u!1 &829044796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1921,11 +1855,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 868003833}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -2650,11 +2579,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1219071079}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -2901,11 +2825,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1275581332}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -3054,11 +2973,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1312409703}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -3218,11 +3132,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1364943579}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -3507,11 +3416,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1431009460}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -3899,11 +3803,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1792300575}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -4356,11 +4255,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineCamera: {fileID: 1970195321}
-  activeInput:
-    name: Active
-    value:
-      value: 0
-    defaultValue: 0
   dutchInput:
     name: Dutch
     value:
@@ -4530,7 +4424,6 @@ SceneRoots:
   - {fileID: 1859786337}
   - {fileID: 1141867452}
   - {fileID: 463492732}
-  - {fileID: 652315991}
   - {fileID: 134190178}
   - {fileID: 20401573}
   - {fileID: 938920420}

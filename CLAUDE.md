@@ -123,8 +123,8 @@ cursor via `--since` to follow along.
 
 ### Inspecting and driving the project
 
-`unity command` with no argument lists all 140 built-in commands. Destructive
-ones require `--confirm true` and accept `--dry_run true`.
+`unity command` with no argument lists every command, `rector_*` included.
+Destructive ones require `--confirm true` and accept `--dry_run true`.
 
 ```bash
 unity status                         # connected editors: port, project, state, PID
@@ -158,22 +158,36 @@ Watch the shell instead: **zsh does not word-split unquoted parameters**, so
 argument `--runtime Rector`, which is not recognised and the call goes to
 the editor. Write the flags out, or use an array.
 
-`Base.unity` carries a `RuntimePipelineManager` with `enableInBuilds` on, which
-starts the server in a Player. The listener binds `http://+:<port>/` — every
+No scene component is involved (the `RuntimePipelineManager` GameObject that
+`Base.unity` used to carry is gone since package 0.6.0). The runtime server is
+configured in `ProjectSettings/Packages/com.unity.pipeline/RuntimePipelineConfig.json`
+(Project Settings → Pipeline → Runtime, or `set_runtime_pipeline_settings
+--settings '{"enableInBuilds": true}' --confirm true`). At build time the
+package bakes that JSON into a transient asset under
+`Assets/Settings/Pipeline/Resources/` and deletes it afterwards — those paths
+are gitignored; a leftover from an interrupted build is safe to delete. At boot
+`RuntimePipelineBootstrap` creates the driver, which starts the server when
+`autoStart && enableInBuilds`. The listener binds `http://+:<port>/` — every
 interface — and rejects non-loopback callers with 403 in the request handler,
 ahead of the bearer-token check. The token lives in the runtime descriptor,
 which on macOS is written **inside the .app bundle** (`Application.dataPath/..`),
 not beside it.
 
-Only the Roslyn compilers sit behind
-`#if UNITY_EDITOR || (UNITY_STANDALONE && DEBUG)` — `EvalCodeCompiler`,
-`HotReloadCompiler`, `RoslynCompilationService`. The `eval` and hot-reload
-*commands* stay registered in a release build and return "Platform Not
-Supported". Rector is IL2CPP, so they cannot work in any build regardless.
-Nothing gates the server itself: `RuntimePipelineManager.Start()` checks only
-`autoStart && enableInBuilds`, and the build processor never consults
-`EditorUserBuildSettings.development`. A release build from this scene opens
-the port, and `quit` / `set_timescale` / `simulate_key` come with it.
+The server itself is not gated on Development Build; only hot reload (the
+PlayerConnection receiver and its overlay) sits behind `DEVELOPMENT_BUILD`, and
+the Roslyn compilers behind `#if UNITY_EDITOR || (UNITY_STANDALONE && DEBUG)`.
+The `eval` and hot-reload *commands* stay registered in a release build and
+return "Platform Not Supported". Rector is IL2CPP, so they cannot work in any
+build regardless. A release build opens the port, and `quit` / `set_timescale`
+/ `simulate_key` come with it.
+
+**The build processor does consult `EditorUserBuildSettings.development`.**
+With `enableInBuilds` on and Development Build off it logs a SECURITY RISK
+warning, and in a GUI editor (`!Application.isBatchMode`) it also opens a modal
+dialog — Continue / Cancel / Disable Pipeline — which blocks the API. So a
+release build driven through `eval` from the running editor hangs there, and
+"Disable Pipeline" silently flips `enableInBuilds` back to `false` in the JSON.
+Build as a Development Build, or build headless, when driving from the CLI.
 
 **`enableInBuilds` is deliberately left on** — every build, release included,
 runs the server. Rector is a personal instrument rather than distributed
@@ -185,8 +199,14 @@ surface, not just `rector_*`.
 
 ### Caveats
 
-- `com.unity.pipeline` is experimental (`0.4.0-exp.1`); its command surface may
+- `com.unity.pipeline` is experimental (`0.6.0-exp.1`); its command surface may
   change between versions
+- The CLI and the package move together. After `brew upgrade unity-cli`, an
+  editor still on an older package rejects every command with "too old to
+  parse command lines". Run `unity pipeline upgrade`; it edits
+  `Packages/manifest.json` and `packages-lock.json`, so commit that separately
+- `capture_game_view` / `capture_scene_view` only write `--save_path` inside
+  the project root; a scratchpad path is rejected
 - Modal dialogs in the editor block the API — anything waiting on one hangs
 - Editing an asset on disk while the editor holds it in memory gets overwritten
   on the editor's next save. Change those through the CLI or the Inspector
