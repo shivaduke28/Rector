@@ -77,6 +77,12 @@ namespace Rector.UI.Graphs.Serialization
         /// <summary>templateKind == Behaviour のとき、NodeBehaviour.guid。</summary>
         public string behaviourGuid = "";
 
+        /// <summary>
+        /// 0始まりのグループ番号。保存時のグループ数は持たないので、ロード先で足りなければ増やす。
+        /// キーの無い古いファイルでは 0 になり、全部先頭グループに入る。
+        /// </summary>
+        public int group;
+
         // 値の型はどの配列に入っているかで決まる。復元時は同じ型の入力スロットにしか入らない。
         public FloatSlotValue[] floats = Array.Empty<FloatSlotValue>();
         public IntSlotValue[] ints = Array.Empty<IntSlotValue>();

@@ -24,6 +24,8 @@ namespace Rector.Tests.EditMode
             Assert.That(restored.savedAt, Is.EqualTo("2026-08-09T00:12:34.0000000+09:00"));
             Assert.That(restored.nodes.Length, Is.EqualTo(2));
             Assert.That(restored.nodes[0].nodeType, Is.EqualTo("MidiCcNode"));
+            Assert.That(restored.nodes[0].group, Is.EqualTo(0));
+            Assert.That(restored.nodes[1].group, Is.EqualTo(3));
             Assert.That(restored.nodes[0].ints[0].index, Is.EqualTo(1));
             Assert.That(restored.nodes[0].ints[0].value, Is.EqualTo(42));
             Assert.That(restored.nodes[0].bools[0].value, Is.True);
@@ -37,12 +39,14 @@ namespace Rector.Tests.EditMode
         /// <remarks>
         /// 配列フィールドの初期化子が効いていることの確認。これが崩れると、キーの無い JSON で
         /// 配列が null になり復元側の foreach が落ちる。
+        /// group はキーが無ければ 0(先頭グループ)。group を持たない古いファイルが従来通りに読める根拠。
         /// </remarks>
         [Test]
         public void MissingArrayKeysStayEmptyRatherThanNull()
         {
             var restored = JsonUtility.FromJson<GraphSaveData>("{\"version\":1,\"nodes\":[{\"nodeType\":\"FloatNode\"}]}");
 
+            Assert.That(restored.nodes[0].group, Is.EqualTo(0));
             Assert.That(restored.edges, Is.Not.Null.And.Empty);
             Assert.That(restored.nodes[0].floats, Is.Not.Null.And.Empty);
             Assert.That(restored.nodes[0].ints, Is.Not.Null.And.Empty);

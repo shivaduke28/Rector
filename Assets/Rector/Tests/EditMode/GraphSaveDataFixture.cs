@@ -25,7 +25,7 @@ namespace Rector.Tests.EditMode
                     },
                     new NodeSaveData
                     {
-                        templateKind = "Code", nodeType = "FloatNode",
+                        templateKind = "Code", nodeType = "FloatNode", group = 3,
                         floats = new[] { new FloatSlotValue { index = 0, value = 0.25f } },
                         vector3s = new[] { new Vector3SlotValue { index = 3, value = new Vector3(1, 2, 3) } },
                     },

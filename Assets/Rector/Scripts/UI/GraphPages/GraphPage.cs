@@ -189,9 +189,14 @@ namespace Rector.UI.GraphPages
         /// <summary>
         /// ノードを追加する。新しいノードは選択中のノードと同じグループに入る。
         /// </summary>
-        public void AddNode(NodeView nodeView)
+        public void AddNode(NodeView nodeView) => AddNode(nodeView, SelectedNode?.Group ?? 0);
+
+        /// <summary>
+        /// ノードを指定のグループへ追加する。グループ数を超えた番号はそのまま持たせ、表示は Fold が畳む。
+        /// </summary>
+        public void AddNode(NodeView nodeView, int group)
         {
-            Graph.AddNode(nodeView, SelectedNode?.Group ?? 0);
+            Graph.AddNode(nodeView, group);
             Sort();
         }
 

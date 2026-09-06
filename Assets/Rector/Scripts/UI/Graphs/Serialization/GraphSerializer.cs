@@ -81,7 +81,7 @@ namespace Rector.UI.Graphs.Serialization
                 }
 
                 indexOf.Add(node.Id, nodes.Count);
-                nodes.Add(CaptureNode(node));
+                nodes.Add(CaptureNode(node, layeredNode.Group));
             }
 
             var edges = new List<EdgeSaveData>();
@@ -118,7 +118,8 @@ namespace Rector.UI.Graphs.Serialization
             };
         }
 
-        static NodeSaveData CaptureNode(Node node)
+        /// <param name="group">生のグループ番号。Fold で畳んだ表示上の番号ではなく、グループ数を戻したときに並びが復元できる値を残す。</param>
+        static NodeSaveData CaptureNode(Node node, int group)
         {
             var floats = new List<FloatSlotValue>();
             var ints = new List<IntSlotValue>();
@@ -150,6 +151,7 @@ namespace Rector.UI.Graphs.Serialization
 
             var data = new NodeSaveData
             {
+                group = group,
                 floats = floats.ToArray(),
                 ints = ints.ToArray(),
                 bools = bools.ToArray(),
@@ -176,12 +178,14 @@ namespace Rector.UI.Graphs.Serialization
         /// <remarks>
         /// 既存のノードには触らない(非破壊)。ノードIDは採番し直し、エッジは保存ファイル内の
         /// index から引くので、読み込んだノード同士しか繋がらない。既存グラフと混線することはない。
-        /// 差し込み先のグループは AddNode が決める(選択中のノードと同じグループ)ので、
-        /// メニューを開く前に選んでおいたノードが行き先になる。
+        /// ノードは保存時と同じ番号のグループへ入る。選択中のノードの位置は見ない。
+        /// 番号が今のグループ数を超えていれば足りない分だけ増やす(上限は NodeGroups.MaxCount)。
         /// 丸ごと入れ替えたいときは、呼ぶ側が先に GraphPage.ClearGraph を通すこと。
         /// </remarks>
         public GraphLoadResult Restore(GraphSaveData data)
         {
+            GrowGroupsToFit(data);
+
             var nodeIds = new NodeId?[data.nodes.Length];
             var skippedNodeCount = 0;
             NodeId? firstNodeId = null;
@@ -198,7 +202,8 @@ namespace Rector.UI.Graphs.Serialization
                 }
 
                 var nodeView = template.Create(NodeId.Generate());
-                graphPage.AddNode(nodeView);
+                // 手で編集したファイルの負数は先頭へ。上限側は Fold が畳むのでここでは切らない
+                graphPage.AddNode(nodeView, Mathf.Max(0, saved.group));
                 nodeIds[i] = nodeView.Node.Id;
                 firstNodeId ??= nodeView.Node.Id;
 
@@ -220,6 +225,26 @@ namespace Rector.UI.Graphs.Serialization
 
             graphPage.Sort();
             return new GraphLoadResult(data.nodes.Length - skippedNodeCount, edgeCount, skippedNodeCount, skippedEdgeCount);
+        }
+
+        /// <summary>
+        /// 保存されたグループ番号が今のグループ数に収まらなければ、足りない分だけ増やす。減らすことはしない。
+        /// </summary>
+        /// <remarks>
+        /// NodeGroups.MaxCount を超える番号は増やしても収まらず、既存の Fold が末尾へ畳む。
+        /// SetCount は PlayerPrefs にも書くので、ロード後のグループ数はそのまま次回起動へ持ち越される。
+        /// </remarks>
+        void GrowGroupsToFit(GraphSaveData data)
+        {
+            var maxGroup = -1;
+            foreach (var saved in data.nodes)
+            {
+                maxGroup = Mathf.Max(maxGroup, saved.group);
+            }
+
+            var groups = graphPage.Groups;
+            var needed = Mathf.Min(maxGroup + 1, NodeGroups.MaxCount);
+            if (needed > groups.CurrentCount) groups.SetCount(needed);
         }
 
         /// <remarks>
