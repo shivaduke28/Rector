@@ -28,10 +28,12 @@ namespace Rector.UI.Graphs.Nodes
                 new ReactivePropertyFloatInputSlot(id, 1, "Chance", chance, chance.Value, 0f, 1f, IsMuted),
             };
 
+            // Miss は Hit の反転。Negate を挟まずに外れ側の流れを組めるようにする（抽選前は Hit=false / Miss=true）
             OutputSlots = new OutputSlot[]
             {
                 new ObservableOutputSlot<float>(id, 0, "Out", subject, IsMuted),
-                new ObservableOutputSlot<bool>(id, 1, "Hit", hit, IsMuted)
+                new ObservableOutputSlot<bool>(id, 1, "Hit", hit, IsMuted),
+                new ObservableOutputSlot<bool>(id, 2, "Miss", hit.Select(x => !x), IsMuted)
             };
         }
 
