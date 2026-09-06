@@ -95,8 +95,8 @@ namespace Rector.UI.GraphPages
                     // Unit→Float接続の変換(1f)と同じ値を送る
                     callbackFloatInputSlot.Send(1f);
                     break;
-                case ReactivePropertyInputSlot<bool> boolInputSlot:
-                    boolInputSlot.Send(!boolInputSlot.Property.Value);
+                case IValueInputSlot<bool> boolInputSlot:
+                    boolInputSlot.Send(!boolInputSlot.Value);
                     break;
             }
         }

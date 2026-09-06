@@ -5,12 +5,18 @@ namespace Rector.UI.Graphs.Slots
 {
     // abstractにしてValueTypeごとに作った方がいいかもしれん
 
-    public class ReactivePropertyInputSlot<T> : InputSlot<T>
+    public class ReactivePropertyInputSlot<T> : InputSlot<T>, IValueInputSlot<T>
     {
         // Muteを見ていないのでグラフからは使わないようにする
         public readonly ReactiveProperty<T> Property;
         readonly T? defaultValue;
         readonly ReadOnlyReactiveProperty<bool> isMuted;
+
+        public T Value
+        {
+            get => Property.Value;
+            set => Property.Value = value;
+        }
 
         public override void Send(T value)
         {
