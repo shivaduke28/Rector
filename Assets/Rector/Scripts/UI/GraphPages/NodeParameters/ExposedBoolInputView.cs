@@ -21,11 +21,21 @@ namespace Rector.UI.GraphPages.NodeParameters
 
         public IDisposable Bind(ExposedBoolInputModel model)
         {
+            var slot = model.Slot;
             nameLabel.text = model.Label;
             return new CompositeDisposable(
                 toggle.Bind(model.ToggleState),
                 model.IsFocused.Subscribe(x => root.EnableInClassList("rector-exposed-input--focused", x)),
-                model.ToggleState.Value.Subscribe(x => valueLabel.text = x ? "true" : "false")
+                slot.Observable().Subscribe(x =>
+                {
+                    model.DisplayValue.Value = x;
+                    valueLabel.text = x ? "true" : "false";
+                }),
+                // 書き戻しはスロットの現在値と違うときだけ（BehaviorSubject 裏だと同値でも流れるので、素直に往復させると無限ループ）
+                model.DisplayValue.Subscribe(x =>
+                {
+                    if (x != slot.Value) slot.Value = x;
+                })
             );
         }
 

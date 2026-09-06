@@ -133,20 +133,17 @@ namespace Rector.UI.Graphs.Serialization
 
                 switch (slot)
                 {
-                    case ReactivePropertyInputSlot<float> s:
-                        floats.Add(new FloatSlotValue { index = s.Index, value = s.Property.Value });
+                    case IValueInputSlot<float> s:
+                        floats.Add(new FloatSlotValue { index = s.Index, value = s.Value });
                         break;
-                    case IIntValueInputSlot s:
+                    case IValueInputSlot<int> s:
                         ints.Add(new IntSlotValue { index = s.Index, value = s.Value });
                         break;
-                    case ReactivePropertyInputSlot<int> s:
-                        ints.Add(new IntSlotValue { index = s.Index, value = s.Property.Value });
+                    case IValueInputSlot<bool> s:
+                        bools.Add(new BoolSlotValue { index = s.Index, value = s.Value });
                         break;
-                    case ReactivePropertyInputSlot<bool> s:
-                        bools.Add(new BoolSlotValue { index = s.Index, value = s.Property.Value });
-                        break;
-                    case ReactivePropertyInputSlot<Vector3> s:
-                        vector3s.Add(new Vector3SlotValue { index = s.Index, value = s.Property.Value });
+                    case IValueInputSlot<Vector3> s:
+                        vector3s.Add(new Vector3SlotValue { index = s.Index, value = s.Value });
                         break;
                 }
             }
@@ -233,32 +230,31 @@ namespace Rector.UI.Graphs.Serialization
         {
             foreach (var v in saved.floats)
             {
-                if (ValueSlotAt<float>(node, v.index) is { } slot) slot.Property.Value = v.value;
+                if (ValueSlotAt<float>(node, v.index) is { } slot) slot.Value = v.value;
                 else RectorLogger.GraphLoadSkippedValue(node, v.index, "Float");
             }
 
             foreach (var v in saved.ints)
             {
-                if (SlotAt(node.InputSlots, v.index) is IIntValueInputSlot slot) slot.Value = v.value;
-                else if (ValueSlotAt<int>(node, v.index) is { } plainSlot) plainSlot.Property.Value = v.value;
+                if (ValueSlotAt<int>(node, v.index) is { } slot) slot.Value = v.value;
                 else RectorLogger.GraphLoadSkippedValue(node, v.index, "Int");
             }
 
             foreach (var v in saved.bools)
             {
-                if (ValueSlotAt<bool>(node, v.index) is { } slot) slot.Property.Value = v.value;
+                if (ValueSlotAt<bool>(node, v.index) is { } slot) slot.Value = v.value;
                 else RectorLogger.GraphLoadSkippedValue(node, v.index, "Boolean");
             }
 
             foreach (var v in saved.vector3s)
             {
-                if (ValueSlotAt<Vector3>(node, v.index) is { } slot) slot.Property.Value = v.value;
+                if (ValueSlotAt<Vector3>(node, v.index) is { } slot) slot.Value = v.value;
                 else RectorLogger.GraphLoadSkippedValue(node, v.index, "Vector3");
             }
         }
 
-        static ReactivePropertyInputSlot<T>? ValueSlotAt<T>(Node node, int index) =>
-            SlotAt(node.InputSlots, index) as ReactivePropertyInputSlot<T>;
+        static IValueInputSlot<T>? ValueSlotAt<T>(Node node, int index) =>
+            SlotAt(node.InputSlots, index) as IValueInputSlot<T>;
 
         static T? SlotAt<T>(T[] slots, int index) where T : class, ISlot =>
             index >= 0 && index < slots.Length ? slots[index] : null;

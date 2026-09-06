@@ -8,15 +8,16 @@ namespace Rector.UI.Graphs.Nodes
         public const string NodeName = "Or";
         public static NodeCategory GetCategory() => NodeCategory.Operator;
         public override NodeCategory Category => GetCategory();
-        readonly ReactiveProperty<bool> x = new(true);
-        readonly ReactiveProperty<bool> y = new(true);
+        // どちらかに値が届くたびに評価し直す。同じ値でも捨てない（BehaviorSubject）
+        readonly BehaviorSubject<bool> x = new(true);
+        readonly BehaviorSubject<bool> y = new(true);
 
         public OrNode(NodeId id) : base(id, NodeName)
         {
             InputSlots = new InputSlot[]
             {
-                new ReactivePropertyInputSlot<bool>(id, 0, "x", x, x.Value, IsMuted),
-                new ReactivePropertyInputSlot<bool>(id, 1, "y", y, y.Value, IsMuted),
+                new BehaviorSubjectInputSlot<bool>(id, 0, "x", x, true, IsMuted),
+                new BehaviorSubjectInputSlot<bool>(id, 1, "y", y, true, IsMuted),
             };
 
             OutputSlots = new OutputSlot[]

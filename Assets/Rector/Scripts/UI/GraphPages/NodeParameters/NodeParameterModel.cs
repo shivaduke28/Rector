@@ -54,7 +54,7 @@ namespace Rector.UI.GraphPages.NodeParameters
                         case ReactivePropertyInputSlot<Vector3> vector3InputSlot:
                             rows.AddRange(ExposedVector3Parameter.CreateRows(vector3InputSlot, stepType));
                             break;
-                        case ReactivePropertyInputSlot<bool> boolInputSlot:
+                        case IValueInputSlot<bool> boolInputSlot:
                             rows.Add(new ExposedBoolInputModel(boolInputSlot));
                             break;
                         case CallbackFloatInputSlot callbackFloatInputSlot:
