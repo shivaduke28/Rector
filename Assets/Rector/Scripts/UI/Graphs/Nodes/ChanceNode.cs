@@ -39,6 +39,14 @@ namespace Rector.UI.Graphs.Nodes
         // Out を受けた側が Hit を見ると今回の結果になっている
         void OnIn(float x)
         {
+            // 0 は出来事ではなく消灯信号（Route の Send 0 など）なので、抽選せずに素通しする。
+            // 抽選すると外れたときに消灯が捨てられて VFX が点きっぱなしになり、Hit も脱選択のたびに揺れる
+            if (x == 0f)
+            {
+                subject.OnNext(x);
+                return;
+            }
+
             var passed = Roll();
             hit.OnNext(passed);
             if (passed) subject.OnNext(x);

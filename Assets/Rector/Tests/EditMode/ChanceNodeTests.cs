@@ -57,6 +57,30 @@ namespace Rector.Tests.EditMode
         }
 
         [Test]
+        public void ZeroPassesWithoutRollingAndLeavesHitUntouched()
+        {
+            var node = new ChanceNode(NodeId.Generate());
+            var input = (CallbackFloatInputSlot)node.InputSlots[0];
+            var chance = (ReactivePropertyFloatInputSlot)node.InputSlots[1];
+            var output = (ObservableOutputSlot<float>)node.OutputSlots[0];
+
+            var outputs = new System.Collections.Generic.List<float>();
+            var hits = new System.Collections.Generic.List<bool>();
+            using var outSubscription = output.Observable().Subscribe(outputs.Add);
+            using var hitSubscription = node.Hit.Subscribe(hits.Add);
+
+            // 当たりのあとに消灯信号(0)が来ても、抽選せずに通す。Hit は直前の結果のまま
+            chance.Property.Value = 1f;
+            input.Send(1f);
+            chance.Property.Value = 0f;
+            input.Send(0f);
+            input.Send(0f);
+
+            Assert.That(outputs, Is.EqualTo(new[] { 1f, 0f, 0f }));
+            Assert.That(hits, Is.EqualTo(new[] { false, true }));
+        }
+
+        [Test]
         public void HitIsUpdatedBeforeOutFires()
         {
             var node = new ChanceNode(NodeId.Generate());
@@ -87,7 +111,8 @@ namespace Rector.Tests.EditMode
             var fired = 0;
             using var subscription = output.Observable().Subscribe(_ => fired++);
 
-            for (var i = 0; i < 100; i++) input.Send(i);
+            // 0 は消灯信号として抽選せずに通るので、出来事の値だけを送る
+            for (var i = 1; i <= 100; i++) input.Send(i);
 
             Assert.That(fired, Is.EqualTo(0));
         }

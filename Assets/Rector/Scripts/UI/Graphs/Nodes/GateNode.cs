@@ -19,9 +19,11 @@ namespace Rector.UI.Graphs.Nodes
                 new ReactivePropertyInputSlot<bool>(id, 1, "Gate", gate, gate.Value, IsMuted),
             };
 
+            // 0 は出来事ではなく消灯信号（Route の Send 0 など）なので、閉じていても止めない。
+            // 止めると Route が次のレーンへ移っても下流の VFX が点いたまま残る
             OutputSlots = new OutputSlot[]
             {
-                new ObservableOutputSlot<float>(id, 0, "Out", subject.Where(_ => gate.Value), IsMuted)
+                new ObservableOutputSlot<float>(id, 0, "Out", subject.Where(x => x == 0f || gate.Value), IsMuted)
             };
         }
 
