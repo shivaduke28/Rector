@@ -33,11 +33,11 @@ namespace Rector.UI.Graphs.Nodes
             var beats = beat.Where(b => b >= 1);
 
             // Cycle(何周目)が主産物なので先頭に置く: 階層を組むときの幹線がこのスロットになる。
-            // On/OffはDistinctUntilChangedを付けずに毎拍emitする
-            // （付けるとlength=1のとき値が変化せず一度も発火しなくなる）
+            // 下流のLoop/Routeの拍として使われるので、周の先頭拍(Phase=1)でだけ流す。
+            // Phase/On/Offは毎拍emitする（DistinctUntilChangedを付けるとlength=1のとき一度も発火しなくなる）
             OutputSlots = new OutputSlot[]
             {
-                new ObservableOutputSlot<int>(id, 0, "Cycle", beats.Select(b => (b - 1) / Len() + 1), IsMuted),
+                new ObservableOutputSlot<int>(id, 0, "Cycle", beats.Where(b => (b - 1) % Len() == 0).Select(b => (b - 1) / Len() + 1), IsMuted),
                 new ObservableOutputSlot<int>(id, 1, "Phase", beats.Select(b => (b - 1) % Len() + 1), IsMuted),
                 new ObservableOutputSlot<bool>(id, 2, "On", beats.Select(b => (b - 1) % Len() == 0), IsMuted),
                 new ObservableOutputSlot<bool>(id, 3, "Off", beats.Select(b => (b - 1) % Len() != 0), IsMuted)
